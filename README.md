@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/nerveshub.png" alt="NervesHub Logo" width="120" />
+</p>
+
 # NervesHub Mobile
 
 A React Native mobile client for [NervesHub](https://www.nerves-hub.org/).
