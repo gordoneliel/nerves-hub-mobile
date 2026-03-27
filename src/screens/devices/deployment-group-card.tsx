@@ -45,7 +45,10 @@ function MetaRow({ label, value }: { label: string; value?: string | null }) {
   );
 }
 
-export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier }: DeploymentGroupCardProps) {
+export function DeploymentGroupCard({
+  currentDeploymentGroupId,
+  deviceIdentifier,
+}: DeploymentGroupCardProps) {
   const { colors } = useTheme();
   const { orgId, productId } = useOrgProduct();
   const { data, isLoading } = useDeployments();
@@ -54,7 +57,9 @@ export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
   const deploymentGroups = data?.data ?? [];
-  const current = deploymentGroups.find((dg) => dg.name === currentDeploymentGroupId);
+  const current = deploymentGroups.find(
+    (dg) => dg.name === currentDeploymentGroupId,
+  );
 
   if (isLoading) {
     return <LoadingView message="Loading deployments…" />;
@@ -62,11 +67,13 @@ export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier
 
   const isActive = current?.is_active ?? current?.state === "on";
 
-  const dropdownItems: DropDownItem<DeploymentGroup>[] = deploymentGroups.map((dg) => ({
-    id: dg.name ?? String(dg.id),
-    label: dg.name ?? "Unnamed",
-    value: dg,
-  }));
+  const dropdownItems: DropDownItem<DeploymentGroup>[] = deploymentGroups.map(
+    (dg) => ({
+      id: dg.name ?? String(dg.id),
+      label: dg.name ?? "Unnamed",
+      value: dg,
+    }),
+  );
 
   const handleSelect = useCallback((item: DropDownItem<DeploymentGroup>) => {
     selectedGroupIdRef.current = item.id;
@@ -74,53 +81,63 @@ export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier
   }, []);
 
   const handleRemove = () => {
-    if (!currentDeploymentGroupId || !orgId || !productId) return;
     Alert.alert(
-      "Remove Deployment",
-      "Are you sure you want to remove this device from its deployment group?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: () => {
-            updateDevice.mutate(
-              {
-                orgName: orgId,
-                productName: productId,
-                identifier: deviceIdentifier,
-                data: { device: { deployment_group_id: 0 } },
-              },
-              {
-                onSuccess: () => Alert.alert("Success", "Device removed from deployment group."),
-                onError: () => Alert.alert("Error", "Failed to remove deployment group."),
-              },
-            );
-          },
-        },
-      ],
+      "Coming Soon",
+      "Removing a device from a deployment is not ready yet!",
     );
+    // if (!currentDeploymentGroupId || !orgId || !productId) return;
+    // Alert.alert(
+    //   "Remove Deployment",
+    //   "Are you sure you want to remove this device from its deployment group?",
+    //   [
+    //     { text: "Cancel", style: "cancel" },
+    //     {
+    //       text: "Remove",
+    //       style: "destructive",
+    //       onPress: () => {
+    //         updateDevice.mutate(
+    //           {
+    //             orgName: orgId,
+    //             productName: productId,
+    //             identifier: deviceIdentifier,
+    //             data: { device: { deployment_group_id: 0 } },
+    //           },
+    //           {
+    //             onSuccess: () => Alert.alert("Success", "Device removed from deployment group."),
+    //             onError: () => Alert.alert("Error", "Failed to remove deployment group."),
+    //           },
+    //         );
+    //       },
+    //     },
+    //   ],
+    // );
   };
 
   const handleAssign = () => {
-    const groupName = selectedGroupIdRef.current;
-    if (groupName == null || !orgId || !productId) return;
-    const selected = deploymentGroups.find((dg) => dg.name === groupName);
-    if (!selected) return;
-    console.log("Group: ", groupName, "id:", selected.id);
-
-    updateDevice.mutate(
-      {
-        orgName: orgId,
-        productName: productId,
-        identifier: deviceIdentifier,
-        data: { device: { deployment_group_id: selected.id } },
-      },
-      {
-        onSuccess: () => Alert.alert("Success", "Deployment group updated."),
-        onError: () => Alert.alert("Error", "Failed to update deployment group."),
-      },
+    Alert.alert(
+      "Coming Soon",
+      "Assinging a device to a deployment is not ready yet!",
     );
+
+    // const groupName = selectedGroupIdRef.current;
+    // if (groupName == null || !orgId || !productId) return;
+    // const selected = deploymentGroups.find((dg) => dg.name === groupName);
+    // if (!selected) return;
+    // console.log("Group: ", groupName, "id:", selected.id);
+
+    // updateDevice.mutate(
+    //   {
+    //     orgName: orgId,
+    //     productName: productId,
+    //     identifier: deviceIdentifier,
+    //     data: { device: { deployment_group_id: selected.id } },
+    //   },
+    //   {
+    //     onSuccess: () => Alert.alert("Success", "Deployment group updated."),
+    //     onError: () =>
+    //       Alert.alert("Error", "Failed to update deployment group."),
+    //   },
+    // );
   };
 
   return (
@@ -167,17 +184,19 @@ export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier
               />
             </View>
             <MetaRow label="Version" value={current.firmware?.version} />
-            <MetaRow label="Platform" value={current.conditions?.tags?.join(", ")} />
-            <MetaRow label="Device count" value={String(current.device_count ?? 0)} />
+            <MetaRow
+              label="Platform"
+              value={current.conditions?.tags?.join(", ")}
+            />
+            <MetaRow
+              label="Device count"
+              value={String(current.device_count ?? 0)}
+            />
           </>
         ) : (
           <View style={styles.emptyRow}>
             <StackIcon width={28} height={28} color={colors.textCaption} />
-            <Typography
-              type="body"
-              fontSize={14}
-              color={colors.textCaption}
-            >
+            <Typography type="body" fontSize={14} color={colors.textCaption}>
               No deployment assigned
             </Typography>
           </View>
@@ -188,7 +207,9 @@ export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier
               items={dropdownItems}
               defaultSelectedItemId={current?.name}
               size="sm"
-              placeholderLabel={current ? "Switch deployment" : "Select deployment"}
+              placeholderLabel={
+                current ? "Switch deployment" : "Select deployment"
+              }
               fullWidth
               fullItemsWidth
               onSelect={handleSelect}
@@ -205,7 +226,13 @@ export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier
               <Button
                 size="sm"
                 type="icon"
-                iconLeft={<TrashIcon width={16} height={16} color={colors.textDestructive} />}
+                iconLeft={
+                  <TrashIcon
+                    width={16}
+                    height={16}
+                    color={colors.textDestructive}
+                  />
+                }
                 isLoading={updateDevice.isPending && !!currentDeploymentGroupId}
                 onPress={handleRemove}
               />
@@ -220,7 +247,7 @@ export function DeploymentGroupCard({ currentDeploymentGroupId, deviceIdentifier
 const styles = StyleSheet.create({
   section: {
     marginBottom: spacing.md,
-    gap: spacing.sm
+    gap: spacing.sm,
   },
   headerRow: {
     flexDirection: "row",
@@ -238,11 +265,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     gap: spacing.sm,
-    paddingVertical: spacing.xxl
+    paddingVertical: spacing.xxl,
   },
   dropdownRow: {
     flexDirection: "row",
     marginTop: spacing.sm,
-    gap: 6
+    gap: 6,
   },
 });

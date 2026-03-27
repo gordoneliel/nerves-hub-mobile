@@ -23,7 +23,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NervesHub/Info.plist; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = NervesHub/SplashScreen.storyboard; sourceTree = "<group>"; };
 		AD2FAFCD36C8134C05C24B17 /* Pods-NervesHub.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.debug.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.debug.xcconfig"; sourceTree = "<group>"; };
-		B866936219FF5F3649B0E9B0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = NervesHub/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B866936219FF5F3649B0E9B0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = NervesHub/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		D5573E9A9C83253C9AD13DD3 /* libPods-NervesHub.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NervesHub.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9DE400E32D001097EF9A3E9 /* Pods-NervesHub.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.release.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.release.xcconfig"; sourceTree = "<group>"; };
@@ -73,7 +73,6 @@
 				AD2FAFCD36C8134C05C24B17 /* Pods-NervesHub.debug.xcconfig */,
 				D9DE400E32D001097EF9A3E9 /* Pods-NervesHub.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -350,6 +349,7 @@
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = NervesHub/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NervesHub;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -384,6 +384,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = F97WMQ2CYP;
 				INFOPLIST_FILE = NervesHub/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NervesHub;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

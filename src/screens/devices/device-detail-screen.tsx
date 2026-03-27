@@ -93,18 +93,29 @@ export default function DeviceDetailScreen({ route }: Props) {
       ),
     );
 
-  const handleNavigateToConsole = () =>
-    navigation.navigate("DeviceConsole", { id: deviceId });
-
-  const handleIdentify = () =>
-    confirmAction("Identify", () =>
-      customInstance({
-        url: `/orgs/${orgId}/products/${productId}/devices/${identifier}/identify`,
-        method: "POST",
-      })
-        .then(() => Alert.alert("Success", "Identify command sent."))
-        .catch(() => Alert.alert("Error", "Failed to identify device.")),
+  const handleNavigateToConsole = () => {
+    // navigation.navigate("DeviceConsole", { id: deviceId });
+    Alert.alert(
+      "Coming Soon",
+      "Device console is still in the works! We will update the app when its reaady.",
     );
+  };
+
+  const handleIdentify = () => {
+    Alert.alert(
+      "Coming Soon",
+      "Identify devices is still in the works! We will update the app when its reaady.",
+    );
+
+    // confirmAction("Identify", () =>
+    //   customInstance({
+    //     url: `/orgs/${orgId}/products/${productId}/devices/${identifier}/identify`,
+    //     method: "POST",
+    //   })
+    //     .then(() => Alert.alert("Success", "Identify command sent."))
+    //     .catch(() => Alert.alert("Error", "Failed to identify device.")),
+    // );
+  };
 
   if (isLoading) return <LoadingView message="Loading device…" />;
   if (isError || !device)
