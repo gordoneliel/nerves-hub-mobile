@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/PlusJakartaSans-VariableFont_wght.ttf",
+      "sha1": "d2b13009d3ac63f6ee2f28dc244164b0a492278b"
+    },
+    {
+      "path": "assets/fonts/Sora-VariableFont_wght.ttf",
+      "sha1": "7b9fafa9a96c6331cfbbbe969953c88572a12057"
+    }
+  ]
+}

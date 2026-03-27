@@ -1,15 +1,20 @@
-import * as SecureStore from "expo-secure-store";
+import * as Keychain from "react-native-keychain";
 
-const TOKEN_KEY = "api_token";
+const SERVICE_NAME = "nerveshub";
 
 export async function getToken(): Promise<string | null> {
-  return SecureStore.getItemAsync(TOKEN_KEY);
+  const credentials = await Keychain.getGenericPassword({
+    service: SERVICE_NAME,
+  });
+  return credentials ? credentials.password : null;
 }
 
 export async function setToken(token: string): Promise<void> {
-  await SecureStore.setItemAsync(TOKEN_KEY, token);
+  await Keychain.setGenericPassword("token", token, {
+    service: SERVICE_NAME,
+  });
 }
 
 export async function deleteToken(): Promise<void> {
-  await SecureStore.deleteItemAsync(TOKEN_KEY);
+  await Keychain.resetGenericPassword({ service: SERVICE_NAME });
 }

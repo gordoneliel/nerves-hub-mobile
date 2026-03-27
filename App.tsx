@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
-import { StatusBar } from "expo-status-bar";
+import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "./src/context/AuthContext";
 import { OrgProductProvider } from "./src/context/OrgProductContext";
 import {
@@ -11,8 +9,6 @@ import {
   useTheme,
 } from "./src/theme/ThemeProvider";
 import Navigation from "./src/navigation/root";
-
-SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,27 +45,12 @@ function AppInner() {
   return (
     <>
       <Navigation theme={navTheme} />
-      <StatusBar style={isDark ? "light" : "dark"} />
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
     </>
   );
 }
 
 export default function App() {
-  const [fontsLoaded, fontError] = useFonts({
-    PlusJakartaSans: require("./assets/fonts/PlusJakartaSans-VariableFont_wght.ttf"),
-    Sora: require("./assets/fonts/Sora-VariableFont_wght.ttf"),
-  });
-
-  useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
-
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
-
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
