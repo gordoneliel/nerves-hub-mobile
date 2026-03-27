@@ -48,7 +48,9 @@ export default function DeviceSearchScreen() {
         return (
           d.identifier?.toLowerCase().includes(q) ||
           d.description?.toLowerCase().includes(q) ||
-          d.tags?.toLowerCase().includes(q)
+          (Array.isArray(d.tags)
+            ? d.tags.some((t: string) => t.toLowerCase().includes(q))
+            : String(d.tags ?? "").toLowerCase().includes(q))
         );
       })
     : allDevices;
