@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/nerveshub.png" alt="NervesHub Logo" width="120" />
-</p>
+<img src="assets/nerveshub.png" alt="NervesHub Logo" width="120" />
 
 # NervesHub Mobile
 
