@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H17C18.1046 19 19 18.1046 19 17V7C19 5.89543 18.1046 5 17 5H7ZM7 7H17V17H7V7Z" fill="currentColor"/>
+<rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/>
+<rect x="8" y="2" width="2" height="3" rx="0.5" fill="currentColor"/>
+<rect x="14" y="2" width="2" height="3" rx="0.5" fill="currentColor"/>
+<rect x="8" y="19" width="2" height="3" rx="0.5" fill="currentColor"/>
+<rect x="14" y="19" width="2" height="3" rx="0.5" fill="currentColor"/>
+<rect x="2" y="8" width="3" height="2" rx="0.5" fill="currentColor"/>
+<rect x="2" y="14" width="3" height="2" rx="0.5" fill="currentColor"/>
+<rect x="19" y="8" width="3" height="2" rx="0.5" fill="currentColor"/>
+<rect x="19" y="14" width="3" height="2" rx="0.5" fill="currentColor"/>
+</svg>

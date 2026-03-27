@@ -1,0 +1,3906 @@
+{
+  "components": {
+    "responses": {
+      "unprocessable_entity": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "description": "Unprocessable Entity"
+      }
+    },
+    "schemas": {
+      "CACertificate": {
+        "example": {
+          "description": "Example CA",
+          "jitp": {
+            "description": "Production",
+            "product_name": "ExampleProduct",
+            "tags": [
+              "prod"
+            ]
+          },
+          "not_after": "2050-04-20T00:33:09Z",
+          "not_before": "2025-04-20T00:28:09Z",
+          "serial": "4016688295714810857"
+        },
+        "properties": {
+          "description": {
+            "pattern": "[a-zA-Z][a-zA-Z0-9_]+",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Creation timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "jitp": {
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "product_name": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "not_after": {
+            "description": "Certificate expiration timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "not_before": {
+            "description": "Certificate valid from timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "serial": {
+            "type": "integer"
+          },
+          "updated_at": {
+            "description": "Last updated timestamp",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "CACertificate",
+        "type": "object"
+      },
+      "CACertificateCreationRequest": {
+        "description": "POST body for creating a CA Certificate",
+        "example": {
+          "product": {
+            "cert": "base64 encoded certificate",
+            "description": "Example CA",
+            "jitp": {
+              "description": "Production",
+              "product_id": 33438,
+              "tags": [
+                "prod"
+              ]
+            }
+          }
+        },
+        "properties": {
+          "ca_certificate": {
+            "properties": {
+              "cert": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "jitp": {
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "product_id": {
+                    "type": "integer"
+                  },
+                  "tags": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "required": [
+          "description",
+          "cert"
+        ],
+        "title": "CACertificateCreationRequest",
+        "type": "object"
+      },
+      "CACertificateListResponse": {
+        "description": "Response schema for multiple CA Certificates",
+        "example": {
+          "data": [
+            {
+              "description": "Example CA",
+              "jitp": {
+                "description": "Staging",
+                "product_name": "StagingProduct",
+                "tags": [
+                  "staging"
+                ]
+              },
+              "not_after": "2050-04-20T00:33:09Z",
+              "not_before": "2025-04-20T00:28:09Z",
+              "serial": "4016688295714810857"
+            },
+            {
+              "description": "Another Example CA",
+              "jitp": {
+                "description": "QA",
+                "product_name": "QAProduct",
+                "tags": [
+                  "qa"
+                ]
+              },
+              "not_after": "2050-04-20T00:33:09Z",
+              "not_before": "2025-04-20T00:28:09Z",
+              "serial": "8033376591429621714"
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "description": "The CA Certificate details",
+            "items": {
+              "$ref": "#/components/schemas/CACertificate"
+            },
+            "type": "array"
+          }
+        },
+        "title": "CACertificateListResponse",
+        "type": "object"
+      },
+      "Device": {
+        "example": {
+          "connection_status": "connected",
+          "deployment_group": {
+            "firmware_uuid": "6fd2bbc8-52b8-4826-5c2a-189968d0de23",
+            "firmware_version": "1.2.3",
+            "is_active": true,
+            "name": "Prod Deployment"
+          },
+          "description": "A great device",
+          "firmware_metadata": {
+            "architecture": "arm",
+            "author": "",
+            "description": "Prod Firmware",
+            "fwup_version": "1.10.1",
+            "id": "3f2264c3-cc52-2ba9-b77d-e441f8bb91b6",
+            "misc": "extra comments",
+            "platform": "rpi5",
+            "product": "AmazingProduct",
+            "uuid": "6fd2bbc8-52b8-4826-5c2a-189968d0de23",
+            "vcs_identifier": "",
+            "version": "1.2.3"
+          },
+          "identifier": "abc123",
+          "last_communication": "2050-04-20T00:33:09Z",
+          "online": true,
+          "org_name": "BigCompany",
+          "product_name": "AmazingProduct",
+          "tags": "prod, customerABC",
+          "updates_blocked_until": "2050-04-20T00:33:09Z",
+          "updates_enabled": true,
+          "version": "1.2.3"
+        },
+        "properties": {
+          "connection_status": {
+            "enum": [
+              "connected",
+              "disconnected"
+            ],
+            "type": "string"
+          },
+          "deployment_group": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "firmware_uuid": {
+                "type": "string"
+              },
+              "firmware_version": {
+                "type": "string"
+              },
+              "is_active": {
+                "type": "boolean"
+              },
+              "platform": {
+                "type": "string"
+              }
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "firmware_metadata": {
+            "type": "object",
+            "properties": {
+              "architecture": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "fwup_version": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "misc": {
+                "type": "string"
+              },
+              "platform": {
+                "type": "string"
+              },
+              "product": {
+                "type": "string"
+              },
+              "uuid": {
+                "type": "string"
+              },
+              "vcs_identifier": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            }
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "last_communication": {
+            "deprecated": true,
+            "format": "date-time",
+            "type": "string"
+          },
+          "online": {
+            "type": "boolean"
+          },
+          "org_name": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "updates_blocked_until": {
+            "description": "Device penalty box expiration timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "updates_enabled": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "title": "Device",
+        "type": "object"
+      },
+      "DeviceCertificateAuthRequest": {
+        "description": "POST body for testing certificate auth for a Device",
+        "example": {
+          "certificate": "Base64 encoded certificate"
+        },
+        "properties": {
+          "certificate": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "certificate"
+        ],
+        "title": "DeviceCertificateAuthRequest",
+        "type": "object"
+      },
+      "DeviceCreationRequest": {
+        "description": "POST body for creating a Device",
+        "example": {
+          "device": {
+            "deployment_group_id": 1,
+            "description": "Example Device",
+            "identifier": "abc123",
+            "tags": "prod, customerJNK",
+            "updates_enabled": false
+          }
+        },
+        "properties": {
+          "device": {
+            "properties": {
+              "deployment_group_id": {
+                "type": "integer"
+              },
+              "description": {
+                "type": "string"
+              },
+              "identifier": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "string"
+              },
+              "updates_enabled": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "identifier"
+            ]
+          }
+        },
+        "required": [
+          "device"
+        ],
+        "title": "DeviceCreationRequest",
+        "type": "object"
+      },
+      "DeviceListResponse": {
+        "description": "Response schema for multiple Devices",
+        "example": {
+          "data": [
+            {
+              "connection_status": "connected",
+              "deployment_group": {
+                "firmware_uuid": "6fd2bbc8-52b8-4826-5c2a-189968d0de23",
+                "firmware_version": "1.2.3",
+                "is_active": true,
+                "name": "Prod Deployment"
+              },
+              "description": "A great device",
+              "firmware_metadata": {
+                "architecture": "arm",
+                "author": "",
+                "description": "Prod Firmware",
+                "fwup_version": "1.10.1",
+                "id": "3f2264c3-cc52-2ba9-b77d-e441f8bb91b6",
+                "misc": "extra comments",
+                "platform": "rpi5",
+                "product": "AmazingProduct",
+                "uuid": "6fd2bbc8-52b8-4826-5c2a-189968d0de23",
+                "vcs_identifier": "",
+                "version": "1.2.3"
+              },
+              "identifier": "abc123",
+              "last_communication": "2050-04-20T00:33:09Z",
+              "online": true,
+              "org_name": "BigCompany",
+              "product_name": "AmazingProduct",
+              "tags": "prod, customerABC",
+              "updates_blocked_until": "2050-04-20T00:33:09Z",
+              "updates_enabled": true,
+              "version": "1.2.3"
+            },
+            {
+              "connection_status": "disconnected",
+              "deployment_group": {
+                "firmware_uuid": "6fd2bbc8-52b8-4826-5c2a-189968d0de23",
+                "firmware_version": "1.2.3",
+                "is_active": true,
+                "name": "Prod Deployment"
+              },
+              "description": "Another great device",
+              "firmware_metadata": {
+                "architecture": "arm",
+                "author": "",
+                "description": "Prod Firmware",
+                "fwup_version": "1.10.1",
+                "id": "3f2264c3-cc52-2ba9-b77d-e441f8bb91b6",
+                "misc": "extra comments",
+                "platform": "rpi5",
+                "product": "AmazingProduct",
+                "uuid": "6fd2bbc8-52b8-4826-5c2a-189968d0de23",
+                "vcs_identifier": "",
+                "version": "1.2.3"
+              },
+              "identifier": "def456",
+              "last_communication": "2050-04-20T00:33:09Z",
+              "online": false,
+              "org_name": "BigCompany",
+              "product_name": "AmazingProduct",
+              "tags": "prod, customerDEF",
+              "updates_blocked_until": "2050-04-20T00:33:09Z",
+              "updates_enabled": true,
+              "version": "1.2.3"
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "description": "The Device schema",
+            "items": {
+              "$ref": "#/components/schemas/Device"
+            },
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        },
+        "title": "DeviceListResponse",
+        "type": "object"
+      },
+      "DeviceUpdateRequest": {
+        "description": "POST body for updating a Device",
+        "example": {
+          "device": {
+            "deployment_group_id": 1,
+            "description": "Example Device",
+            "tags": "prod, customerJNK",
+            "updates_enabled": false
+          }
+        },
+        "properties": {
+          "device": {
+            "properties": {
+              "deployment_group_id": {
+                "type": "integer"
+              },
+              "description": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "string"
+              },
+              "updates_enabled": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "title": "DeviceUpdateRequest",
+        "type": "object"
+      },
+      "Org": {
+        "example": {
+          "data": {
+            "inserted_at": "2024-01-01T00:00:00Z",
+            "name": "example_org",
+            "products": [
+              {
+                "name": "MyProduct"
+              }
+            ],
+            "updated_at": "2024-01-01T00:00:00Z"
+          }
+        },
+        "properties": {
+          "inserted_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "products": {
+            "description": "Included when requested via ?include=products",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "Org",
+        "type": "object"
+      },
+      "OrgListResponse": {
+        "description": "Response schema for multiple Organizations",
+        "example": {
+          "data": [
+            {
+              "inserted_at": "2024-01-01T00:00:00Z",
+              "name": "example_org",
+              "updated_at": "2024-01-01T00:00:00Z"
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "description": "The Organizations",
+            "items": {
+              "$ref": "#/components/schemas/Org"
+            },
+            "type": "array"
+          }
+        },
+        "title": "OrgListResponse",
+        "type": "object"
+      },
+      "OrgUser": {
+        "example": {
+          "data": {
+            "email": "jane@person.com",
+            "name": "Jane Person",
+            "role": "admin"
+          }
+        },
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "manage",
+              "view"
+            ],
+            "type": "string"
+          }
+        },
+        "title": "OrgUser",
+        "type": "object"
+      },
+      "OrgUserCreationRequest": {
+        "description": "POST body for adding or inviting a user to an organization",
+        "example": {
+          "email": "jane@person.com",
+          "role": "manage"
+        },
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "manage",
+              "view"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "role"
+        ],
+        "title": "OrgUserCreationRequest",
+        "type": "object"
+      },
+      "OrgUserListResponse": {
+        "description": "Response schema for multiple Organization Users",
+        "example": {
+          "data": [
+            {
+              "email": "jane@person.com",
+              "name": "Jane Person",
+              "role": "admin"
+            },
+            {
+              "email": "jane@person.com",
+              "name": "Jane Person",
+              "role": "view"
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "description": "The Organization Users details",
+            "items": {
+              "$ref": "#/components/schemas/OrgUser"
+            },
+            "type": "array"
+          }
+        },
+        "title": "OrgUserListResponse",
+        "type": "object"
+      },
+      "OrgUserUpdateRequest": {
+        "description": "POST body for updating a users organization membership",
+        "example": {
+          "role": "manage"
+        },
+        "properties": {
+          "role": {
+            "enum": [
+              "admin",
+              "manage",
+              "view"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "OrgUserUpdateRequest",
+        "type": "object"
+      },
+      "Product": {
+        "example": {
+          "id": 123,
+          "inserted_at": "2017-09-12T12:34:55Z",
+          "name": "Example Product",
+          "updated_at": "2017-09-12T12:34:55Z"
+        },
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "inserted_at": {
+            "description": "Creation timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "name": {
+            "pattern": "[a-zA-Z][a-zA-Z0-9_]+",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Last updated timestamp",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "Product",
+        "type": "object"
+      },
+      "ProductCreationRequest": {
+        "description": "POST body for creating a product",
+        "example": {
+          "product": {
+            "name": "ExampleProduct"
+          }
+        },
+        "properties": {
+          "product": {
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        "required": [
+          "product"
+        ],
+        "title": "ProductCreationRequest",
+        "type": "object"
+      },
+      "ProductListResponse": {
+        "description": "Response schema for multiple products",
+        "example": {
+          "data": [
+            {
+              "id": 123,
+              "inserted_at": "2017-09-12T12:34:55Z",
+              "name": "Example Product",
+              "updated_at": "2017-09-13T10:11:12Z"
+            },
+            {
+              "id": 246,
+              "inserted_at": "2019-09-12T12:34:55Z",
+              "name": "Another Example Product",
+              "updated_at": "2019-09-13T10:11:12Z"
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "description": "The products details",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            },
+            "type": "array"
+          }
+        },
+        "title": "ProductListResponse",
+        "type": "object"
+      },
+      "User": {
+        "description": "A registered user",
+        "example": {
+          "email": "jane@iot-company.com",
+          "id": 123,
+          "inserted_at": "2017-09-12T12:34:55Z",
+          "name": "Jane User",
+          "updated_at": "2017-09-13T10:11:12Z"
+        },
+        "properties": {
+          "email": {
+            "description": "Email address",
+            "format": "email",
+            "type": "string"
+          },
+          "id": {
+            "description": "User ID",
+            "type": "integer"
+          },
+          "inserted_at": {
+            "description": "Creation timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "name": {
+            "description": "Users name",
+            "pattern": "[a-zA-Z][a-zA-Z0-9_]+",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Update timestamp",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ],
+        "title": "User",
+        "type": "object"
+      },
+      "UserAuthRequest": {
+        "description": "POST body for authenticating a user",
+        "example": {
+          "email": "jane@iot-company.com",
+          "password": "my-secure-password"
+        },
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserAuthRequest",
+        "type": "object"
+      },
+      "UserResponse": {
+        "description": "Response schema for single user",
+        "example": {
+          "data": {
+            "email": "jane@iot-company.com",
+            "id": 123,
+            "inserted_at": "2017-09-12T12:34:55Z",
+            "name": "Jane User",
+            "updated_at": "2017-09-13T10:11:12Z"
+          }
+        },
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "title": "UserResponse",
+        "type": "object"
+      },
+      "DeploymentGroupListResponse": {
+        "type": "object",
+        "description": "Response schema for multiple deployment groups",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeploymentGroup"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "DeploymentGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "object",
+            "properties": {
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "version": {
+                "type": "string"
+              }
+            }
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "state": {
+            "type": "string"
+          },
+          "firmware": {
+            "$ref": "#/components/schemas/DeploymentGroupFirmware"
+          },
+          "device_count": {
+            "type": "integer"
+          },
+          "inserted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DeploymentGroupFirmware": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "architecture": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "fwup_version": {
+            "type": "string"
+          },
+          "vcs_identifier": {
+            "type": "string"
+          },
+          "signed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "FirmwareListResponse": {
+        "type": "object",
+        "description": "Response schema for multiple firmwares",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Firmware"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "Firmware": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "architecture": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "inserted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "product": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "signed": {
+            "type": "boolean"
+          },
+          "fwup_version": {
+            "type": "string"
+          },
+          "vcs_identifier": {
+            "type": "string"
+          },
+          "misc": {
+            "type": "string"
+          },
+          "upload_metadata": {
+            "type": "object"
+          }
+        }
+      },
+      "DeviceResponse": {
+        "type": "object",
+        "description": "Response schema for a single device",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Device"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page_number": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_entries": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer_auth": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "title": "NervesHub API",
+    "version": "2.0.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/users/login": {
+      "post": {
+        "callbacks": {},
+        "operationId": "login",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAuthRequest"
+              }
+            }
+          },
+          "description": "Authentication attributes",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "User response"
+          }
+        },
+        "security": [],
+        "summary": "Authenticate a user (deprecated)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/code": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "executeDeviceCode",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device run some Elixir code in it's console connection",
+        "tags": [
+          "Devices"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "description": "Code to execute"
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orgs/{org_name}/products": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listProducts",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductListResponse"
+                }
+              }
+            },
+            "description": "Product list response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Products for an Organization",
+        "tags": [
+          "Products"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "operationId": "createProduct",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductCreationRequest"
+              }
+            }
+          },
+          "description": "Product creation request body",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Product response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Create a new Product in an Organization",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/move": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "moveDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "New Organization Name",
+            "example": "new_example_org",
+            "in": "query",
+            "name": "new_org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "New Product Name",
+            "example": "new_example_product",
+            "in": "query",
+            "name": "new_product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": "Device Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Move a Device to a different Product in the same or different Organization",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/code": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "executeDeviceCodeShort",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device run some Elixir code in it's console connection",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/users/auth": {
+      "post": {
+        "callbacks": {},
+        "operationId": "userAuth",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAuthRequest"
+              }
+            }
+          },
+          "description": "Authentication attributes",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "User response"
+          }
+        },
+        "security": [],
+        "summary": "Authenticate a user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/auth": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "authenticateDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCertificateAuthRequest"
+              }
+            }
+          },
+          "description": "Device certificate auth request body",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": "Device Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Test a Devices Certificate authentication",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/users": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listOrgUsers",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgUserListResponse"
+                }
+              }
+            },
+            "description": "Organization users list response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all members of an Organization",
+        "tags": [
+          "Organization Members"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "operationId": "NervesHubWeb.API.OrgUserController.add",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgUserCreationRequest"
+              }
+            }
+          },
+          "description": "Org User creation request body",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgUser"
+                }
+              }
+            },
+            "description": "Organization User"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Add a user to an Organization",
+        "tags": [
+          "Organization Members"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/certificates/{serial}": {
+      "delete": {
+        "callbacks": {},
+        "operationId": "deleteDeviceCertificate",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifier"
+          },
+          {
+            "name": "serial",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Serial"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Delete a Device's Certificate",
+        "tags": [
+          "Device Certificates"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "operationId": "NervesHubWeb.API.DeviceCertificateController.show",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifier"
+          },
+          {
+            "name": "serial",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Serial"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show a Certificate for a Device",
+        "tags": [
+          "Device Certificates"
+        ]
+      }
+    },
+    "/status/alive": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Provides a simple health check to verify that the application is running, responsive, and can connect to the database.",
+        "operationId": "healthCheck",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "example": "Hello, Friend!",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The application is running and the database is reachable."
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "example": "Sorry, Friend :(",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The application is running but the database is unreachable."
+          }
+        },
+        "security": [],
+        "summary": "Check application status",
+        "tags": [
+          "Status"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/scripts/{name_or_id}": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "sendScriptToDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Support Script Name or ID. Name takes priority.",
+            "example": "my-script",
+            "in": "path",
+            "name": "name_or_id",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          {
+            "description": "How long to wait for a device response in milliseconds",
+            "example": "10000",
+            "in": "query",
+            "name": "timeout",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {}
+            },
+            "description": "Script output"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Send a Support Script to a Device",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/keys/{name}": {
+      "delete": {
+        "callbacks": {},
+        "operationId": "deleteSigningKey",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Delete a Signing Key for an Organization",
+        "tags": [
+          "Signing Keys"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "operationId": "getSigningKey",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show a Signing Key for an Organization",
+        "tags": [
+          "Signing Keys"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/reboot": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "rebootDeviceShort",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device reboot",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/upgrade": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "upgradeDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device upgrade to a different Firmware",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/reconnect": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "reconnectDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device reconnect",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/penalty": {
+      "delete": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "NervesHubWeb.API.Devices.penalty",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Clear the penalty box for a Device",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/penalty": {
+      "delete": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "NervesHubWeb.API.Devices.penalty",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Clear the penalty box for a Device",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/orgs": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listOrgs",
+        "parameters": [
+          {
+            "description": "Comma-separated list of associations to include (e.g. \"products\")",
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgListResponse"
+                }
+              }
+            },
+            "description": "Organization list response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Organizations the authenticated user belongs to",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "callbacks": {},
+        "operationId": "getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "User response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show details of the currently logged in user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}": {
+      "delete": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "deleteDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Delete a Device",
+        "tags": [
+          "Devices"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "getDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show a Device",
+        "tags": [
+          "Devices"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "NervesHubWeb.API.Devices.create",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCreationRequest"
+              }
+            }
+          },
+          "description": "Device creation request body",
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": "Device Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Create a Device",
+        "tags": [
+          "Devices"
+        ]
+      },
+      "put": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "updateDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceUpdateRequest"
+              }
+            }
+          },
+          "description": "Device update request body",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": "Device Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Update a Device",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/certificates": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listDeviceCertificates",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Certificates for a Device",
+        "tags": [
+          "Device Certificates"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "operationId": "createDeviceCertificate",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Create a Certificate for a Device",
+        "tags": [
+          "Device Certificates"
+        ]
+      }
+    },
+    "/api/devices/{identifier}": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "getDeviceShort",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": "Device Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show a Device",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "listDevices",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search filter"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceListResponse"
+                }
+              }
+            },
+            "description": "Device List Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List Devices",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/ca_certificates/{serial}": {
+      "delete": {
+        "callbacks": {},
+        "operationId": "deleteCACertificate",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "CA Certificate Serial",
+            "example": "5111552077003819958",
+            "in": "path",
+            "name": "serial",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Delete an Organization's CA Certificate",
+        "tags": [
+          "CA Certificates"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "operationId": "getCACertificate",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "CA Certificate Serial",
+            "example": "5111552077003819958",
+            "in": "path",
+            "name": "serial",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CACertificate"
+                }
+              }
+            },
+            "description": "CA Certificate response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "View an Organization's CA Certificate",
+        "tags": [
+          "CA Certificates"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/devices/{identifier}/reboot": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "rebootDevice",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device reboot",
+        "tags": [
+          "Devices"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/firmwares/{uuid}": {
+      "delete": {
+        "callbacks": {},
+        "operationId": "deleteFirmware",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Delete a Firmware",
+        "tags": [
+          "Firmwares"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "operationId": "getFirmware",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show a Firmware",
+        "tags": [
+          "Firmwares"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/users/invite": {
+      "post": {
+        "callbacks": {},
+        "operationId": "inviteOrgUser",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgUserCreationRequest"
+              }
+            }
+          },
+          "description": "Org User creation request body",
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Invite a user to the Organization",
+        "tags": [
+          "Organization Members"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/upgrade": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "upgradeDeviceShort",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device upgrade to a different Firmware",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}": {
+      "delete": {
+        "callbacks": {},
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Delete an Organizations Product",
+        "tags": [
+          "Products"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "operationId": "getProduct",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Product Name",
+            "example": "example_product",
+            "in": "path",
+            "name": "product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "Product response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Retrieves a Products details",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/firmwares": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listFirmwares",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Firmware List Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirmwareListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Firmwares for a Product",
+        "tags": [
+          "Firmwares"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "operationId": "createFirmware",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Upload a Firmware for a Product",
+        "tags": [
+          "Firmwares"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/move": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "moveDeviceShort",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "New Organization Name",
+            "example": "new_example_org",
+            "in": "query",
+            "name": "new_org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "New Product Name",
+            "example": "new_example_product",
+            "in": "query",
+            "name": "new_product_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": "Device Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Move a Device to a different Product in the same or different Organization",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/scripts": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listScripts",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Support Scripts for a Product",
+        "tags": [
+          "Support Scripts"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/ca_certificates": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listCACertificates",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CACertificateListResponse"
+                }
+              }
+            },
+            "description": "CA Certificate list response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all CA Certificates for an Organization",
+        "tags": [
+          "CA Certificates"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "operationId": "createCACertificate",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CACertificateCreationRequest"
+              }
+            }
+          },
+          "description": "CA Certificate creation request body",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CACertificate"
+                }
+              }
+            },
+            "description": "CA Certificate response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Create a CA Certificate for an Organization",
+        "tags": [
+          "CA Certificates"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/users/{user_email}": {
+      "delete": {
+        "callbacks": {},
+        "operationId": "deleteOrgUser",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "User Email",
+            "example": "jane@person.com",
+            "in": "path",
+            "name": "user_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Remove a user from an Organization",
+        "tags": [
+          "Organization Members"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "operationId": "NervesHubWeb.API.OrgUserController.show",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "User Email",
+            "example": "jane@person.com",
+            "in": "path",
+            "name": "user_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgUser"
+                }
+              }
+            },
+            "description": "Organization User"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show membership details of a user in an Organization",
+        "tags": [
+          "Organization Members"
+        ]
+      },
+      "put": {
+        "callbacks": {},
+        "operationId": "updateOrgUser",
+        "parameters": [
+          {
+            "description": "Organization Name",
+            "example": "example_org",
+            "in": "path",
+            "name": "org_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "User Email",
+            "example": "jane@person.com",
+            "in": "path",
+            "name": "user_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgUserUpdateRequest"
+              }
+            }
+          },
+          "description": "Org User update request body",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgUser"
+                }
+              }
+            },
+            "description": "Organization User"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Update a user's role in an Organization",
+        "tags": [
+          "Organization Members"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/reconnect": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "reconnectDeviceShort",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Request a Device reconnect",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/scripts/{name_or_id}": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "operationId": "sendScriptToDeviceDirect",
+        "parameters": [
+          {
+            "description": "Device Identifier",
+            "example": "abc123",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Support Script Name or ID. Name takes priority.",
+            "example": "my-script",
+            "in": "path",
+            "name": "name_or_id",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {}
+            },
+            "description": "Script output"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Send a Support Script to a Device",
+        "tags": [
+          "Devices (short URL)"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/keys": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listSigningKeys",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Firmware and Archive Signing Keys for an Organization",
+        "tags": [
+          "Signing Keys"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "operationId": "createSigningKey",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Create a new Signing Key for an Organization",
+        "tags": [
+          "Signing Keys"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/deployments": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listDeploymentGroups",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployment Group List Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentGroupListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Deployment Groups for a Product",
+        "tags": [
+          "Deployment Groups"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "operationId": "createDeploymentGroup",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Create a new Deployment Group for a Product",
+        "tags": [
+          "Deployment Groups"
+        ]
+      }
+    },
+    "/api/orgs/{org_name}/products/{product_name}/deployments/{name}": {
+      "delete": {
+        "callbacks": {},
+        "operationId": "deleteDeploymentGroup",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Delete a Product's Deployment Group",
+        "tags": [
+          "Deployment Groups"
+        ]
+      },
+      "get": {
+        "callbacks": {},
+        "operationId": "getDeploymentGroup",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Show a Deployment Group",
+        "tags": [
+          "Deployment Groups"
+        ]
+      },
+      "put": {
+        "callbacks": {},
+        "operationId": "updateDeploymentGroup",
+        "parameters": [
+          {
+            "name": "org_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Org Name"
+          },
+          {
+            "name": "product_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product Name"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "Update a Deployment Group",
+        "tags": [
+          "Deployment Groups"
+        ]
+      }
+    },
+    "/api/devices/{identifier}/scripts": {
+      "get": {
+        "callbacks": {},
+        "operationId": "listDeviceScriptsShort",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearer_auth": []
+          }
+        ],
+        "summary": "List all Support Scripts for a Product",
+        "tags": [
+          "Support Scripts"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "variables": {}
+    }
+  ],
+  "tags": [
+    {
+      "description": "User authentication and API token creation",
+      "name": "Auth"
+    },
+    {
+      "description": "Organization Certificate Authority management",
+      "name": "CA Certificates"
+    },
+    {
+      "description": "Device management, including action requests eg. upgrade, reboot, reconnect",
+      "name": "Devices"
+    },
+    {
+      "description": "Device management, including action requests eg. upgrade, reboot, reconnect",
+      "name": "Devices (short URL)"
+    },
+    {
+      "description": "Device Certificate management",
+      "name": "Device Certificates"
+    },
+    {
+      "description": "Operations related to Deployment Groups",
+      "name": "Deployment Groups"
+    },
+    {
+      "description": "Firmware uploading and management",
+      "name": "Firmwares"
+    },
+    {
+      "description": "Organization User membership",
+      "name": "Organization Members"
+    },
+    {
+      "description": "Product management",
+      "name": "Products"
+    },
+    {
+      "description": "Organization Signing Key management",
+      "name": "Signing Keys"
+    },
+    {
+      "description": "Application healthcheck",
+      "name": "Status"
+    },
+    {
+      "description": "Organization Support Script management",
+      "name": "Support Scripts"
+    }
+  ]
+}

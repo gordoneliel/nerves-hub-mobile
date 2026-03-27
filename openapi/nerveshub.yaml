@@ -1,0 +1,1646 @@
+openapi: 3.0.3
+info:
+  title: NervesHub API
+  description: NervesHub firmware update and device management API
+  version: 2.0.0
+
+servers:
+  - url: "{instanceUrl}/api"
+    description: NervesHub instance
+    variables:
+      instanceUrl:
+        default: https://manage.nervescloud.com
+        description: The NervesHub instance URL
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: "API token authentication. Pass as: Authorization: token {token}"
+
+  parameters:
+    orgName:
+      name: org_name
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Organization name
+    productName:
+      name: product_name
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Product name
+    deviceIdentifier:
+      name: identifier
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Device identifier
+    keyName:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Signing key name
+    caSerial:
+      name: serial
+      in: path
+      required: true
+      schema:
+        type: string
+      description: CA certificate serial number
+    firmwareUuid:
+      name: uuid
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Firmware UUID
+    deploymentName:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Deployment group name
+    userEmail:
+      name: user_email
+      in: path
+      required: true
+      schema:
+        type: string
+      description: User email address
+    certSerial:
+      name: serial
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Device certificate serial number
+
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        id:
+          type: integer
+          description: User ID
+        name:
+          type: string
+          description: User name
+          pattern: "[a-zA-Z][a-zA-Z0-9_]+"
+        email:
+          type: string
+          description: Email address
+          format: email
+        inserted_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Update timestamp
+
+    UserResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/User"
+
+    FirmwareMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+        is_active:
+          type: boolean
+        firmware_uuid:
+          type: string
+        firmware_version:
+          type: string
+
+    DeviceDeploymentGroup:
+      type: object
+      properties:
+        id:
+          type: string
+        misc:
+          type: string
+        uuid:
+          type: string
+        author:
+          type: string
+        product:
+          type: string
+        version:
+          type: string
+        platform:
+          type: string
+        description:
+          type: string
+        architecture:
+          type: string
+        fwup_version:
+          type: string
+        vcs_identifier:
+          type: string
+
+    Device:
+      type: object
+      properties:
+        identifier:
+          type: integer
+        description:
+          type: string
+        tags:
+          type: string
+        online:
+          type: boolean
+        connection_status:
+          type: string
+          enum:
+            - connected
+            - disconnected
+        firmware_metadata:
+          $ref: "#/components/schemas/FirmwareMetadata"
+        version:
+          type: string
+        deployment_group:
+          $ref: "#/components/schemas/DeviceDeploymentGroup"
+        updates_enabled:
+          type: boolean
+        updates_blocked_until:
+          type: string
+          format: date-time
+          description: Device penalty box expiration timestamp
+        org_name:
+          type: string
+        product_name:
+          type: string
+        last_communication:
+          type: string
+          format: date-time
+          deprecated: true
+
+    Pagination:
+      type: object
+      properties:
+        page_number:
+          type: integer
+        page_size:
+          type: integer
+        total_pages:
+          type: integer
+        total_entries:
+          type: integer
+
+    DeviceListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Device"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    DeviceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/Device"
+
+    DeviceCreationRequest:
+      type: object
+      required:
+        - device
+      properties:
+        device:
+          type: object
+          required:
+            - identifier
+          properties:
+            identifier:
+              type: string
+            description:
+              type: string
+            tags:
+              type: string
+            deployment_group_id:
+              type: integer
+            updates_enabled:
+              type: boolean
+
+    DeviceUpdateRequest:
+      type: object
+      properties:
+        device:
+          type: object
+          properties:
+            description:
+              type: string
+            tags:
+              type: string
+            deployment_group_id:
+              type: integer
+            updates_enabled:
+              type: boolean
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          pattern: "[a-zA-Z][a-zA-Z0-9_]+"
+        inserted_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated timestamp
+
+    ProductListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+
+    ProductResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/Product"
+
+    ProductCreationRequest:
+      type: object
+      required:
+        - product
+      properties:
+        product:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+
+    ProductUpdateRequest:
+      type: object
+      properties:
+        product:
+          type: object
+          properties: {}
+
+    OrgUser:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - admin
+            - manage
+            - view
+
+    OrgUserListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrgUser"
+
+    OrgUserCreationRequest:
+      type: object
+      required:
+        - email
+        - role
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - admin
+            - manage
+            - view
+
+    OrgUserUpdateRequest:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum:
+            - admin
+            - manage
+            - view
+
+    SigningKey:
+      type: object
+      properties:
+        name:
+          type: string
+        key:
+          type: string
+        inserted_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SigningKeyListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SigningKey"
+
+    SigningKeyResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/SigningKey"
+
+    SigningKeyCreationRequest:
+      type: object
+      required:
+        - name
+        - key
+      properties:
+        name:
+          type: string
+        key:
+          type: string
+
+    JITP:
+      type: object
+      properties:
+        description:
+          type: string
+        product_name:
+          type: string
+        tags:
+          type: string
+
+    CACertificate:
+      type: object
+      properties:
+        serial:
+          type: integer
+        description:
+          type: string
+        jitp:
+          $ref: "#/components/schemas/JITP"
+        not_after:
+          type: string
+          format: date-time
+          description: Certificate expiration timestamp
+        not_before:
+          type: string
+          format: date-time
+          description: Certificate valid from timestamp
+        inserted_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated timestamp
+
+    CACertificateListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CACertificate"
+
+    CACertificateResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/CACertificate"
+
+    CACertificateCreationRequest:
+      type: object
+      required:
+        - ca_certificate
+      properties:
+        ca_certificate:
+          type: object
+          properties:
+            description:
+              type: string
+            cert:
+              type: string
+            jitp:
+              type: object
+              properties:
+                description:
+                  type: string
+                product_id:
+                  type: integer
+                tags:
+                  type: array
+                  items:
+                    type: string
+
+    DeviceCertificate:
+      type: object
+      properties:
+        serial:
+          type: string
+        not_after:
+          type: string
+          format: date-time
+        not_before:
+          type: string
+          format: date-time
+        inserted_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DeviceCertificateListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceCertificate"
+
+    DeviceCertificateResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/DeviceCertificate"
+
+    DeviceCertificateAuthRequest:
+      type: object
+      required:
+        - certificate
+      properties:
+        certificate:
+          type: string
+
+    Firmware:
+      type: object
+      properties:
+        uuid:
+          type: string
+        architecture:
+          type: string
+        platform:
+          type: string
+        version:
+          type: string
+        author:
+          type: string
+        description:
+          type: string
+        misc:
+          type: string
+        vcs_identifier:
+          type: string
+        fwup_version:
+          type: string
+        signed:
+          type: boolean
+        inserted_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    FirmwareListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Firmware"
+
+    FirmwareResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/Firmware"
+
+    DeploymentGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        is_active:
+          type: boolean
+        state:
+          type: string
+          enum:
+            - "on"
+            - "off"
+        firmware:
+          $ref: "#/components/schemas/Firmware"
+        conditions:
+          type: object
+          properties:
+            version:
+              type: string
+            tags:
+              type: array
+              items:
+                type: string
+        device_count:
+          type: integer
+        inserted_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DeploymentGroupListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeploymentGroup"
+
+    DeploymentGroupResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/DeploymentGroup"
+
+    DeploymentGroupCreationRequest:
+      type: object
+      required:
+        - deployment_group
+      properties:
+        deployment_group:
+          type: object
+          required:
+            - name
+            - firmware_id
+            - conditions
+          properties:
+            name:
+              type: string
+            firmware_id:
+              type: integer
+            is_active:
+              type: boolean
+            conditions:
+              type: object
+              properties:
+                version:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+
+    DeploymentGroupUpdateRequest:
+      type: object
+      properties:
+        deployment_group:
+          type: object
+          properties:
+            name:
+              type: string
+            firmware_id:
+              type: integer
+            is_active:
+              type: boolean
+            conditions:
+              type: object
+              properties:
+                version:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+
+    Script:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        text:
+          type: string
+        inserted_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ScriptListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Script"
+
+    AuthRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+
+paths:
+  # ── Authentication ──────────────────────────────────────────────
+  /users/auth:
+    post:
+      tags: [Authentication]
+      summary: Authenticate user
+      operationId: authUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "200":
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /users/login:
+    post:
+      tags: [Authentication]
+      summary: Login user
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  # ── User ────────────────────────────────────────────────────────
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user
+      operationId: getMe
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Unauthorized
+
+  # ── Org Users ───────────────────────────────────────────────────
+  /orgs/{org_name}/users:
+    get:
+      tags: [Org Users]
+      summary: List org users
+      operationId: listOrgUsers
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      responses:
+        "200":
+          description: List of org users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrgUserListResponse"
+    post:
+      tags: [Org Users]
+      summary: Add user to org
+      operationId: addOrgUser
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrgUserCreationRequest"
+      responses:
+        "201":
+          description: User added
+
+  /orgs/{org_name}/users/invite:
+    post:
+      tags: [Org Users]
+      summary: Invite user to org
+      operationId: inviteOrgUser
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrgUserCreationRequest"
+      responses:
+        "200":
+          description: User invited
+
+  /orgs/{org_name}/users/{user_email}:
+    get:
+      tags: [Org Users]
+      summary: Get org user
+      operationId: getOrgUser
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/userEmail"
+      responses:
+        "200":
+          description: Org user details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrgUser"
+    put:
+      tags: [Org Users]
+      summary: Update org user role
+      operationId: updateOrgUser
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/userEmail"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrgUserUpdateRequest"
+      responses:
+        "200":
+          description: User updated
+    delete:
+      tags: [Org Users]
+      summary: Remove user from org
+      operationId: removeOrgUser
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/userEmail"
+      responses:
+        "204":
+          description: User removed
+
+  # ── Signing Keys ────────────────────────────────────────────────
+  /orgs/{org_name}/keys:
+    get:
+      tags: [Signing Keys]
+      summary: List signing keys
+      operationId: listSigningKeys
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      responses:
+        "200":
+          description: List of signing keys
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SigningKeyListResponse"
+    post:
+      tags: [Signing Keys]
+      summary: Create signing key
+      operationId: createSigningKey
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SigningKeyCreationRequest"
+      responses:
+        "201":
+          description: Signing key created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SigningKeyResponse"
+
+  /orgs/{org_name}/keys/{name}:
+    get:
+      tags: [Signing Keys]
+      summary: Get signing key
+      operationId: getSigningKey
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/keyName"
+      responses:
+        "200":
+          description: Signing key details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SigningKeyResponse"
+    delete:
+      tags: [Signing Keys]
+      summary: Delete signing key
+      operationId: deleteSigningKey
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/keyName"
+      responses:
+        "204":
+          description: Signing key deleted
+
+  # ── CA Certificates ─────────────────────────────────────────────
+  /orgs/{org_name}/ca_certificates:
+    get:
+      tags: [CA Certificates]
+      summary: List CA certificates
+      operationId: listCACertificates
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      responses:
+        "200":
+          description: List of CA certificates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CACertificateListResponse"
+    post:
+      tags: [CA Certificates]
+      summary: Create CA certificate
+      operationId: createCACertificate
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CACertificateCreationRequest"
+      responses:
+        "201":
+          description: CA certificate created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CACertificateResponse"
+
+  /orgs/{org_name}/ca_certificates/{serial}:
+    get:
+      tags: [CA Certificates]
+      summary: Get CA certificate
+      operationId: getCACertificate
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/caSerial"
+      responses:
+        "200":
+          description: CA certificate details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CACertificateResponse"
+    delete:
+      tags: [CA Certificates]
+      summary: Delete CA certificate
+      operationId: deleteCACertificate
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/caSerial"
+      responses:
+        "204":
+          description: CA certificate deleted
+
+  # ── Products ────────────────────────────────────────────────────
+  /orgs/{org_name}/products:
+    get:
+      tags: [Products]
+      summary: List products
+      operationId: listProducts
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+    post:
+      tags: [Products]
+      summary: Create product
+      operationId: createProduct
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreationRequest"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+
+  /orgs/{org_name}/products/{product_name}:
+    get:
+      tags: [Products]
+      summary: Get product
+      operationId: getProduct
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      responses:
+        "200":
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+    delete:
+      tags: [Products]
+      summary: Delete product
+      operationId: deleteProduct
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      responses:
+        "204":
+          description: Product deleted
+
+  # ── Devices (product-scoped) ────────────────────────────────────
+  /orgs/{org_name}/products/{product_name}/devices:
+    get:
+      tags: [Devices]
+      summary: List devices
+      operationId: listDevices
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search filter
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          description: Page size
+      responses:
+        "200":
+          description: List of devices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceListResponse"
+    post:
+      tags: [Devices]
+      summary: Create device
+      operationId: createDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceCreationRequest"
+      responses:
+        "204":
+          description: Device created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+  /orgs/{org_name}/products/{product_name}/devices/auth:
+    post:
+      tags: [Devices]
+      summary: Validate device certificate auth
+      operationId: authDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceCertificateAuthRequest"
+      responses:
+        "200":
+          description: Auth result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}:
+    get:
+      tags: [Devices]
+      summary: Get device
+      operationId: getDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Device details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+    put:
+      tags: [Devices]
+      summary: Update device
+      operationId: updateDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceUpdateRequest"
+      responses:
+        "200":
+          description: Device updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+    delete:
+      tags: [Devices]
+      summary: Delete device
+      operationId: deleteDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "204":
+          description: Device deleted
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/reboot:
+    post:
+      tags: [Devices]
+      summary: Reboot device
+      operationId: rebootDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Reboot requested
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/reconnect:
+    post:
+      tags: [Devices]
+      summary: Reconnect device
+      operationId: reconnectDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Reconnect requested
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/code:
+    post:
+      tags: [Devices]
+      summary: Execute code on device
+      operationId: executeDeviceCode
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: Code execution result
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/upgrade:
+    post:
+      tags: [Devices]
+      summary: Trigger firmware upgrade on device
+      operationId: upgradeDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Upgrade triggered
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/move:
+    post:
+      tags: [Devices]
+      summary: Move device to another product
+      operationId: moveDevice
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - product
+              properties:
+                product:
+                  type: string
+      responses:
+        "200":
+          description: Device moved
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/penalty:
+    delete:
+      tags: [Devices]
+      summary: Clear device penalty
+      operationId: clearDevicePenalty
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Penalty cleared
+
+  # ── Device Certificates ─────────────────────────────────────────
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/certificates:
+    get:
+      tags: [Device Certificates]
+      summary: List device certificates
+      operationId: listDeviceCertificates
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: List of device certificates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceCertificateListResponse"
+    post:
+      tags: [Device Certificates]
+      summary: Create device certificate
+      operationId: createDeviceCertificate
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cert
+              properties:
+                cert:
+                  type: string
+      responses:
+        "201":
+          description: Certificate created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceCertificateResponse"
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/certificates/{serial}:
+    get:
+      tags: [Device Certificates]
+      summary: Get device certificate
+      operationId: getDeviceCertificate
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+        - $ref: "#/components/parameters/certSerial"
+      responses:
+        "200":
+          description: Certificate details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceCertificateResponse"
+    delete:
+      tags: [Device Certificates]
+      summary: Delete device certificate
+      operationId: deleteDeviceCertificate
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+        - $ref: "#/components/parameters/certSerial"
+      responses:
+        "204":
+          description: Certificate deleted
+
+  # ── Firmwares ───────────────────────────────────────────────────
+  /orgs/{org_name}/products/{product_name}/firmwares:
+    get:
+      tags: [Firmwares]
+      summary: List firmwares
+      operationId: listFirmwares
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      responses:
+        "200":
+          description: List of firmwares
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FirmwareListResponse"
+    post:
+      tags: [Firmwares]
+      summary: Upload firmware
+      operationId: createFirmware
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - firmware
+              properties:
+                firmware:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Firmware uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FirmwareResponse"
+
+  /orgs/{org_name}/products/{product_name}/firmwares/{uuid}:
+    get:
+      tags: [Firmwares]
+      summary: Get firmware
+      operationId: getFirmware
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/firmwareUuid"
+      responses:
+        "200":
+          description: Firmware details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FirmwareResponse"
+    delete:
+      tags: [Firmwares]
+      summary: Delete firmware
+      operationId: deleteFirmware
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/firmwareUuid"
+      responses:
+        "204":
+          description: Firmware deleted
+
+  # ── Deployment Groups ───────────────────────────────────────────
+  /orgs/{org_name}/products/{product_name}/deployments:
+    get:
+      tags: [Deployment Groups]
+      summary: List deployment groups
+      operationId: listDeploymentGroups
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      responses:
+        "200":
+          description: List of deployment groups
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeploymentGroupListResponse"
+    post:
+      tags: [Deployment Groups]
+      summary: Create deployment group
+      operationId: createDeploymentGroup
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeploymentGroupCreationRequest"
+      responses:
+        "201":
+          description: Deployment group created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeploymentGroupResponse"
+
+  /orgs/{org_name}/products/{product_name}/deployments/{name}:
+    get:
+      tags: [Deployment Groups]
+      summary: Get deployment group
+      operationId: getDeploymentGroup
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deploymentName"
+      responses:
+        "200":
+          description: Deployment group details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeploymentGroupResponse"
+    put:
+      tags: [Deployment Groups]
+      summary: Update deployment group
+      operationId: updateDeploymentGroup
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deploymentName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeploymentGroupUpdateRequest"
+      responses:
+        "200":
+          description: Deployment group updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeploymentGroupResponse"
+    delete:
+      tags: [Deployment Groups]
+      summary: Delete deployment group
+      operationId: deleteDeploymentGroup
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deploymentName"
+      responses:
+        "204":
+          description: Deployment group deleted
+
+  # ── Scripts ─────────────────────────────────────────────────────
+  /orgs/{org_name}/products/{product_name}/scripts:
+    get:
+      tags: [Scripts]
+      summary: List support scripts
+      operationId: listScripts
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+      responses:
+        "200":
+          description: List of scripts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScriptListResponse"
+
+  /orgs/{org_name}/products/{product_name}/devices/{identifier}/scripts/{name_or_id}:
+    post:
+      tags: [Scripts]
+      summary: Execute script on device
+      operationId: executeScript
+      parameters:
+        - $ref: "#/components/parameters/orgName"
+        - $ref: "#/components/parameters/productName"
+        - $ref: "#/components/parameters/deviceIdentifier"
+        - name: name_or_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Script name or ID
+      responses:
+        "200":
+          description: Script execution result
+
+  # ── Top-level device shortcuts ──────────────────────────────────
+  /devices/{identifier}:
+    get:
+      tags: [Devices]
+      summary: Get device (short URL)
+      operationId: getDeviceShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Device details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+  /devices/{identifier}/reboot:
+    post:
+      tags: [Devices]
+      summary: Reboot device (short URL)
+      operationId: rebootDeviceShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Reboot requested
+
+  /devices/{identifier}/reconnect:
+    post:
+      tags: [Devices]
+      summary: Reconnect device (short URL)
+      operationId: reconnectDeviceShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Reconnect requested
+
+  /devices/{identifier}/code:
+    post:
+      tags: [Devices]
+      summary: Execute code on device (short URL)
+      operationId: executeDeviceCodeShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: Code execution result
+
+  /devices/{identifier}/upgrade:
+    post:
+      tags: [Devices]
+      summary: Upgrade device (short URL)
+      operationId: upgradeDeviceShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Upgrade triggered
+
+  /devices/{identifier}/move:
+    post:
+      tags: [Devices]
+      summary: Move device (short URL)
+      operationId: moveDeviceShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - product
+              properties:
+                product:
+                  type: string
+      responses:
+        "200":
+          description: Device moved
+
+  /devices/{identifier}/penalty:
+    delete:
+      tags: [Devices]
+      summary: Clear device penalty (short URL)
+      operationId: clearDevicePenaltyShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+      responses:
+        "200":
+          description: Penalty cleared
+
+  /devices/{identifier}/scripts/{name_or_id}:
+    post:
+      tags: [Scripts]
+      summary: Execute script on device (short URL)
+      operationId: executeScriptShort
+      parameters:
+        - $ref: "#/components/parameters/deviceIdentifier"
+        - name: name_or_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Script name or ID
+      responses:
+        "200":
+          description: Script execution result
