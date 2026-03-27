@@ -4,8 +4,10 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "ios:dev": "expo run:ios --scheme \"NervesHub Development\"",
+    "ios:prod": "expo run:ios --scheme \"NervesHub Production\"",
+    "android:dev": "expo run:android --variant developmentDebug",
+    "android:prod": "expo run:android --variant productionDebug",
     "web": "expo start --web",
     "api:generate": "orval",
     "api:generate:watch": "orval --watch"
@@ -30,6 +32,7 @@
     "react": "19.2.0",
     "react-native": "0.83.2",
     "react-native-bottom-tabs": "^1.1.0",
+    "react-native-config": "^1.6.1",
     "react-native-context-menu-view": "^1.21.0",
     "react-native-haptic-feedback": "^2.3.3",
     "react-native-linear-gradient": "^2.8.3",

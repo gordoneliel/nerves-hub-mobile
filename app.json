@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.nerveshub-mobile",
+      "bundleIdentifier": "org.nerveshub.mobile",
       "appleTeamId": "F97WMQ2CYP"
     },
     "android": {
@@ -23,7 +23,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.anonymous.nerveshubmobile"
+      "package": "org.nerveshub.mobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
