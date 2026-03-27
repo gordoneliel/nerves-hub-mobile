@@ -4,19 +4,19 @@ import React, {
   useState,
   useCallback,
   useMemo,
-} from 'react';
+} from "react";
 import {
   TextInput as Input,
   StyleSheet,
   TextInputProps,
   View,
   TouchableOpacity,
-} from 'react-native';
-import { LiquidGlassView } from '@callstack/liquid-glass';
+} from "react-native";
+import { LiquidGlassView } from "@callstack/liquid-glass";
 
-import useThemedStyles from '../../theme/useThemedStyles';
-import { ColorTheme } from '../../theme/colors';
-import { useTheme } from '../../theme/ThemeProvider';
+import useThemedStyles from "../../theme/useThemedStyles";
+import { ColorTheme } from "../../theme/colors";
+import { useTheme } from "../../theme/ThemeProvider";
 // Icons
 // import CloseIcon from '../../../assets/icons/close-circle-filled.svg';
 
@@ -41,7 +41,7 @@ const ClearButton = React.memo(
 
 export const TextInput = forwardRef<Input, TextInputOverlayProps>(
   function TextInput(props, ref) {
-    const theme = useTheme()
+    const theme = useTheme();
     const themedStyles = useThemedStyles(createStyles);
     const {
       iconLeft,
@@ -50,7 +50,7 @@ export const TextInput = forwardRef<Input, TextInputOverlayProps>(
       pill,
       style,
       hasShadow = true,
-      clearButtonMode = 'never',
+      clearButtonMode = "never",
       onFocus,
       onBlur,
       value,
@@ -61,7 +61,7 @@ export const TextInput = forwardRef<Input, TextInputOverlayProps>(
 
     const [isFocused, setIsFocused] = useState(false);
     // Internal state for unmanaged mode
-    const [internalValue, setInternalValue] = useState(defaultValue || '');
+    const [internalValue, setInternalValue] = useState(defaultValue || "");
 
     // Memoize calculated values
     const isManaged = useMemo(() => value !== undefined, [value]);
@@ -72,7 +72,7 @@ export const TextInput = forwardRef<Input, TextInputOverlayProps>(
 
     const shouldShowClearButton = useMemo(
       () =>
-        clearButtonMode === 'while-editing' &&
+        clearButtonMode === "while-editing" &&
         isFocused &&
         currentValue &&
         currentValue.length > 0,
@@ -84,10 +84,7 @@ export const TextInput = forwardRef<Input, TextInputOverlayProps>(
       () => ({ opacity: disabled ? 0.5 : 1 }),
       [disabled],
     );
-    const pillStyle = useMemo(
-      () => ({ borderRadius: pill ? 30 : 20 }),
-      [pill],
-    );
+    const pillStyle = useMemo(() => ({ borderRadius: pill ? 30 : 20 }), [pill]);
 
     const containerStyle = useMemo(
       () => [
@@ -140,7 +137,7 @@ export const TextInput = forwardRef<Input, TextInputOverlayProps>(
     );
 
     const handleClear = useCallback(() => {
-      const clearedValue = '';
+      const clearedValue = "";
       // Update internal state for unmanaged mode
       if (!isManaged) {
         setInternalValue(clearedValue);
@@ -153,13 +150,18 @@ export const TextInput = forwardRef<Input, TextInputOverlayProps>(
       if (disabled) {
         return;
       }
-      if (ref && typeof ref === 'object' && 'current' in ref) {
+      if (ref && typeof ref === "object" && "current" in ref) {
         ref.current?.focus();
       }
     }, [disabled, ref]);
 
     return (
-      <LiquidGlassView interactive effect='regular' colorScheme={theme.mode} style={containerStyle}>
+      <LiquidGlassView
+        interactive
+        effect="regular"
+        colorScheme={theme.mode}
+        style={containerStyle}
+      >
         {iconLeft}
         <Input
           editable={!disabled}
@@ -195,10 +197,10 @@ const createStyles = (colors: ColorTheme) =>
       paddingLeft: 14,
       paddingRight: 8,
       backgroundColor: colors.backgroundSecondary,
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
-      borderCurve: 'continuous',
+      borderCurve: "continuous",
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: colors.borderLight,
     },
@@ -223,18 +225,18 @@ const createStyles = (colors: ColorTheme) =>
     placeholderText: {
       color: colors.textCaption,
     },
-    containerError: { borderColor: '#F73B4B80', borderWidth: 1 },
+    containerError: { borderColor: "#F73B4B80", borderWidth: 1 },
     input: {
       flex: 1,
-      fontWeight: '500',
+      fontWeight: "500",
       fontSize: 16,
       color: colors.textBody,
       borderColor: colors.border,
-      height: '100%',
+      height: "100%",
     },
     iconContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
     },
     clearButton: {},

@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native';
-import { colors, ColorTheme } from '../../theme/colors';
-import { isLiquidGlassSupported } from '@callstack/liquid-glass';
+import { StyleSheet } from "react-native";
+import { colors, ColorTheme } from "../../theme/colors";
+import { isLiquidGlassSupported } from "@callstack/liquid-glass";
 
 export const BUTTON_SIZES = {
   none: { height: 19, borderRadius: 0, fontSize: 14, paddingHorizontal: 0 },
@@ -14,17 +14,15 @@ export const BUTTON_SIZES = {
 
 export const getButtonVariants = (theme: ColorTheme) => ({
   primary: {
-    backgroundColor: isLiquidGlassSupported
-      ? colors.blue[400]
-      : colors.blue[500],
-    textColor: colors.blue['000'],
-    borderColor: '#102C4C00',
+    backgroundColor: theme.accent,
+    textColor: colors.blue["000"],
+    borderColor: "#102C4C00",
     borderWidth: 0,
   },
   secondary: {
-    backgroundColor: 'rgb(242, 242, 242)',
-    textColor: '#0C1202E5',
-    borderColor: 'white',
+    backgroundColor: "rgb(242, 242, 242)",
+    textColor: "#0C1202E5",
+    borderColor: "white",
     borderWidth: 1,
   },
   tertiary: {
@@ -34,9 +32,9 @@ export const getButtonVariants = (theme: ColorTheme) => ({
     borderWidth: StyleSheet.hairlineWidth,
   },
   link: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     textColor: theme.textBody,
-    borderColor: 'transparent',
+    borderColor: "transparent",
     borderWidth: 0,
   },
   destructive: {
