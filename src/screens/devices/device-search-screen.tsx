@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -16,33 +16,42 @@ import { useInfiniteDevices } from "../../hooks/useApi";
 import { spacing } from "../../components/tokens";
 import type { Device } from "../../api/generated/schemas";
 
-function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
-
 export default function DeviceSearchScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
   const searchRef = useRef<NativeTextInput>(null);
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebouncedValue(search, 300);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const devicesQuery = useInfiniteDevices(
-    debouncedSearch || undefined,
-  );
+  const devicesQuery = useInfiniteDevices();
 
   useEffect(() => {
     const timer = setTimeout(() => searchRef.current?.focus(), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  const devices =
+  const handleChangeText = useCallback((text: string) => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setSearch(text), 300);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(debounceRef.current);
+  }, []);
+
+  const allDevices =
     devicesQuery.data?.pages.flatMap((p) => p.data ?? []) ?? [];
+
+  const devices = search
+    ? allDevices.filter((d) => {
+        const q = search.toLowerCase();
+        return (
+          d.identifier?.toLowerCase().includes(q) ||
+          d.description?.toLowerCase().includes(q) ||
+          d.tags?.toLowerCase().includes(q)
+        );
+      })
+    : allDevices;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -73,8 +82,7 @@ export default function DeviceSearchScreen() {
               <SearchInput
                 ref={searchRef}
                 placeholder="Search devices"
-                value={search}
-                onChangeText={setSearch}
+                onChangeText={handleChangeText}
                 clearButtonMode="while-editing"
               />
             </View>
@@ -83,7 +91,7 @@ export default function DeviceSearchScreen() {
         ListEmptyComponent={
           devicesQuery.isLoading ? (
             <LoadingView message="Searching…" />
-          ) : debouncedSearch ? (
+          ) : search ? (
             <EmptyView
               title="No Results"
               message="No devices match your search."
