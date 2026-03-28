@@ -103,6 +103,14 @@ export function DevicesLoading() {
           />
         </View>
 
+        {/* Filter chips */}
+        <View style={styles.filtersRow}>
+          <Bone width={70} height={36} borderRadius={18} />
+          <Bone width={80} height={36} borderRadius={18} />
+          <Bone width={60} height={36} borderRadius={18} />
+          <Bone width={90} height={36} borderRadius={18} />
+        </View>
+
         {/* Cards */}
         <SkeletonCard />
         <View style={{ height: 3 }} />
@@ -126,7 +134,14 @@ const styles = StyleSheet.create({
   headerContent: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.md,
+  },
+  filtersRow: {
+    flexDirection: "row",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xl,
+    marginTop: spacing.sm,
   },
   card: {
     borderRadius: radius.xxl,

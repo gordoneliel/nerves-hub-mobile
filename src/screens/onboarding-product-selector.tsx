@@ -1,9 +1,5 @@
-import React, { useMemo, useState } from "react";
-import {
-  SectionList,
-  StyleSheet,
-  View,
-} from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { Alert, SectionList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { spacing } from "../components/tokens";
@@ -11,17 +7,32 @@ import { Card } from "../components/card";
 import { useTheme } from "../theme/ThemeProvider";
 import { Typography } from "../components/typography";
 import { SearchInput } from "../components/search-input";
+import { Button } from "../components/button";
 import { EmptyView, ErrorView, LoadingView } from "../components/ui";
+import { NervesHubLogo } from "../components/NervesHubLogo";
 import { useAuth } from "../context/AuthContext";
 import { useOrgProduct } from "../context/OrgProductContext";
 import { useListOrgs } from "../api/generated/organizations/organizations";
-import { useNavigation } from "@react-navigation/native";
-export default function OrgProductSelector() {
+
+export default function OnboardingProductSelector() {
   const { colors } = useTheme();
-  const { token } = useAuth();
-  const navigation = useNavigation();
-  const { selectOrgAndProduct } = useOrgProduct();
+  const { token, logout } = useAuth();
+  const { selectOrgAndProduct, resetOrgAndProduct } = useOrgProduct();
   const [search, setSearch] = useState("");
+
+  const handleLogout = useCallback(() => {
+    Alert.alert("Log out", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Log out",
+        style: "destructive",
+        onPress: async () => {
+          resetOrgAndProduct();
+          await logout();
+        },
+      },
+    ]);
+  }, [logout, resetOrgAndProduct]);
 
   const { data, isLoading, isError, refetch } = useListOrgs(
     { include: "products" },
@@ -32,7 +43,9 @@ export default function OrgProductSelector() {
 
   const sections = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const filtered = q ? orgs.filter((org) => org.name?.toLowerCase().includes(q)) : orgs;
+    const filtered = q
+      ? orgs.filter((org) => org.name?.toLowerCase().includes(q))
+      : orgs;
     return filtered.map((org) => ({
       title: org.name ?? "",
       orgName: org.name ?? "",
@@ -41,15 +54,12 @@ export default function OrgProductSelector() {
   }, [orgs, search]);
 
   return (
-    <SafeAreaView edges={["top"]} style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <Typography type="header" fontSize={26} fontWeight="600" lineHeight={28} paddingBottom={spacing.md}>
-          Select Product
-        </Typography>
-      </View>
-
+    <SafeAreaView
+      edges={["top"]}
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {isLoading ? (
-        <LoadingView message="Loading organizations…" />
+        <LoadingView message="Loading organizations..." />
       ) : isError ? (
         <ErrorView message="Failed to load organizations" onRetry={refetch} />
       ) : sections.length === 0 && !search ? (
@@ -65,11 +75,37 @@ export default function OrgProductSelector() {
           stickySectionHeadersEnabled={false}
           ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
           ListHeaderComponent={
-            orgs.length > 1 ? (
-              <View style={styles.inputContainer}>
-                <SearchInput placeholder="Filter organizations"  autoCapitalize="none" onChangeText={setSearch} />
+            <View style={styles.header}>
+              <View style={styles.logoRow}>
+                <NervesHubLogo size={36} />
               </View>
-            ) : null
+              <Typography
+                type="header"
+                fontSize={26}
+                fontWeight="600"
+                lineHeight={28}
+                paddingBottom={spacing.xs}
+              >
+                Select a Product
+              </Typography>
+              <Typography
+                type="body"
+                fontSize={14}
+                color={colors.textSecondary}
+                paddingBottom={spacing.lg}
+              >
+                Choose the product you want to manage.
+              </Typography>
+              {orgs.length > 1 ? (
+                <View style={styles.inputContainer}>
+                  <SearchInput
+                    placeholder="Filter organizations"
+                    autoCapitalize="none"
+                    onChangeText={setSearch}
+                  />
+                </View>
+              ) : null}
+            </View>
           }
           ListEmptyComponent={
             search ? (
@@ -95,16 +131,24 @@ export default function OrgProductSelector() {
           )}
           renderItem={({ item: product, section }) => (
             <Card
-              onPress={() => {
-                selectOrgAndProduct(section.orgName, product.name ?? "");
-                navigation.goBack();
-              }}
+              onPress={() =>
+                selectOrgAndProduct(section.orgName, product.name ?? "")
+              }
             >
               <View style={styles.cardContent}>
-                <Typography type="subheader" fontSize={18} fontWeight="600" lineHeight={28}>
+                <Typography
+                  type="subheader"
+                  fontSize={18}
+                  fontWeight="600"
+                  lineHeight={28}
+                >
                   {product.name}
                 </Typography>
-                <Typography type="header" fontSize={26} color={colors.textTertiary}>
+                <Typography
+                  type="header"
+                  fontSize={26}
+                  color={colors.textTertiary}
+                >
                   ›
                 </Typography>
               </View>
@@ -125,6 +169,16 @@ export default function OrgProductSelector() {
           }
         />
       )}
+
+      <View style={styles.footer}>
+        <Button
+          label="Log out"
+          type="tertiary"
+          size="lg"
+          fullWidth
+          onPress={handleLogout}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -132,17 +186,15 @@ export default function OrgProductSelector() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 24,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.sm,
+    paddingTop: spacing.xl,
+  },
+  logoRow: {
+    marginBottom: spacing.lg,
   },
   inputContainer: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,
   },
   list: {
@@ -152,5 +204,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  footer: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
   },
 });

@@ -9,6 +9,7 @@ import {
 } from "../context/OrgProductContext";
 
 import OrgProductSelector from "../screens/org-product-selector";
+import OnboardingProductSelector from "../screens/onboarding-product-selector";
 
 import AuthNavigator from "./auth";
 import HomeNavigator from "./home";
@@ -33,7 +34,7 @@ const RootStack = createNativeStackNavigator({
     },
     OrgProduct: {
       if: useNeedsOrgProduct,
-      screen: OrgProductSelector,
+      screen: OnboardingProductSelector,
     },
     Home: {
       if: useIsSignedIn,

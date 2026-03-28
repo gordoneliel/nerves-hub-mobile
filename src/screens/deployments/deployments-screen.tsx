@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { spacing } from "../../components/tokens";
 import { useNavigation } from "@react-navigation/native";
@@ -30,6 +30,7 @@ export default function DeploymentsScreen() {
 
   if (deploymentsQuery.isLoading)
     return <LoadingView message="Loading deployments…" />;
+
   if (deploymentsQuery.isError)
     return (
       <ErrorView
@@ -162,25 +163,25 @@ export default function DeploymentsScreen() {
         )}
 
         <View style={styles.bottomInfoRow}>
-        <Typography
-          type="body"
-          fontSize={12}
-          marginTop={spacing.sm}
-          color={colors.textTertiary}
-        >
-          {item.device_count ?? 0} device
-          {(item.device_count ?? 0) !== 1 ? "s" : ""}
-        </Typography>
+          <Typography
+            type="body"
+            fontSize={12}
+            marginTop={spacing.sm}
+            color={colors.textTertiary}
+          >
+            {item.device_count ?? 0} device
+            {(item.device_count ?? 0) !== 1 ? "s" : ""}
+          </Typography>
 
-        <Typography
-          type="body"
-          fontSize={12}
-          marginTop={spacing.sm}
-          color={colors.textTertiary}
-        >
-          {item.releases_count ?? 0} release
-          {(item.releases_count ?? 0) !== 1 ? "s" : ""}
-        </Typography>
+          <Typography
+            type="body"
+            fontSize={12}
+            marginTop={spacing.sm}
+            color={colors.textTertiary}
+          >
+            {item.releases_count ?? 0} release
+            {(item.releases_count ?? 0) !== 1 ? "s" : ""}
+          </Typography>
         </View>
 
         {tags.length > 0 && (
@@ -214,10 +215,17 @@ export default function DeploymentsScreen() {
             Deployments
           </Typography>
           {deployments.length > 0 && (
-            <View style={{backgroundColor: colors.backgroundTertiary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8}}>
-            <Typography type="body" fontSize={15} color={colors.textTertiary}>
-              {deployments.length}
-            </Typography>
+            <View
+              style={{
+                backgroundColor: colors.backgroundTertiary,
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderRadius: 8,
+              }}
+            >
+              <Typography type="body" fontSize={15} color={colors.textTertiary}>
+                {deployments.length}
+              </Typography>
             </View>
           )}
         </View>
@@ -264,7 +272,7 @@ const styles = StyleSheet.create({
   list: {
     paddingTop: 120,
     paddingBottom: 120,
-    flexGrow: 1
+    flexGrow: 1,
   },
   listHeader: {
     paddingHorizontal: spacing.lg,
@@ -302,6 +310,6 @@ const styles = StyleSheet.create({
   },
   bottomInfoRow: {
     flexDirection: "row",
-    gap: 6
-  }
+    gap: 6,
+  },
 });
