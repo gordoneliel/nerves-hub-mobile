@@ -11,7 +11,7 @@ import { useTheme } from "../../theme/ThemeProvider";
 import { Typography } from "../../components/typography";
 import { EmptyView, LoadingView } from "../../components/ui";
 import { SearchInput } from "../../components/search-input";
-import { DeviceCard } from "./device-card";
+import { DeviceCard } from "./index/device-card";
 import { useInfiniteDevices } from "../../hooks/useApi";
 import { spacing } from "../../components/tokens";
 import type { Device } from "../../api/generated/schemas";

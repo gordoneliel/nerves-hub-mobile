@@ -14,6 +14,7 @@ import { Typography } from "../components/typography";
 import { Card } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
 import { useOrgProduct } from "../context/OrgProductContext";
+import { useMe } from "../hooks/useApi";
 import { Button } from "../components/button";
 
 import CopyIcon from "../../assets/icons/copy.svg";
@@ -45,8 +46,10 @@ function SectionLabel({ title }: { title: string }) {
 
 export default function SettingsScreen() {
   const { colors, mode, setMode } = useTheme();
-  const { user, logout, instanceUrl } = useAuth();
+  const { logout, instanceUrl } = useAuth();
   const { orgId, productId, resetOrgAndProduct } = useOrgProduct();
+  const { data: meData } = useMe();
+  const user = meData?.data;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

@@ -35,7 +35,7 @@ import {
 import { customInstance } from "../../api/mutator/custom-instance";
 import type { Device } from "../../api/generated/schemas";
 import { Button } from "../../components/button";
-import { SearchInput } from "../../components/search-input";
+// import { SearchInput } from "../../components/search-input";
 import { Dropdown, type DropDownItem } from "../../components/dropdown";
 import { DeviceCard, type DeviceMenuAction } from "./device-card";
 import { DevicesLoading } from "./devices-loading";

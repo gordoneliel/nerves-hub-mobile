@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import DevicesScreen from "../screens/devices/devices-screen";
+import DevicesScreen from "../screens/devices/index/devices-screen";
 import DeviceDetailScreen from "../screens/devices/device-detail-screen";
 import PinnedDevicesScreen from "../screens/devices/pinned-devices-screen";
 import DeviceSearchScreen from "../screens/devices/device-search-screen";

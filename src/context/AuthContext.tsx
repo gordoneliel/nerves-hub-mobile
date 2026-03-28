@@ -14,17 +14,12 @@ import {
 } from "../api/mutator/custom-instance";
 import { deleteToken, getToken, setToken } from "../utils/secureStorage";
 import { storage, STORAGE_KEYS } from "../utils/storage";
-import type {
-  AuthResponse,
-  User,
-  UserResponse,
-} from "../api/generated/schemas";
+import type { AuthResponse } from "../api/generated/schemas";
 
 interface AuthState {
   isLoading: boolean;
   instanceUrl: string | null;
   token: string | null;
-  user: User | null;
 }
 
 interface AuthContextValue extends AuthState {
@@ -43,30 +38,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading: true,
     instanceUrl: null,
     token: null,
-    user: null,
   });
 
-  // Rehydrate on boot
+  // Rehydrate on boot — read stored credentials synchronously where possible
   useEffect(() => {
     (async () => {
       const token = await getToken();
       const instanceUrl = storage.getString(STORAGE_KEYS.INSTANCE_URL) ?? null;
 
-      let user: User | null = null;
       if (token && instanceUrl) {
         configureAxios(instanceUrl, token);
-        try {
-          const res = await customInstance<UserResponse>({
-            url: "/api/users/me",
-            method: "GET",
-          });
-          user = res?.data ?? null;
-        } catch {
-          // Token may be expired; continue without user
-        }
       }
 
-      setState({ isLoading: false, instanceUrl, token, user });
+      setState({ isLoading: false, instanceUrl, token });
     })();
   }, []);
 
@@ -90,8 +74,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error("No token received");
       }
 
-      const { token: _, ...user } = responseData;
-
       await setToken(authToken);
       storage.setString(STORAGE_KEYS.INSTANCE_URL, instanceUrl);
 
@@ -103,10 +85,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ...prev,
         instanceUrl,
         token: authToken,
-        user: {
-          name: responseData.name ?? "",
-          email: responseData.email ?? "",
-        },
       }));
     },
     [],
@@ -122,7 +100,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading: false,
       instanceUrl: null,
       token: null,
-      user: null,
     });
   }, []);
 

@@ -103,11 +103,6 @@ export function DevicesLoading() {
           />
         </View>
 
-        {/* Search bar */}
-        <View style={styles.searchWrapper}>
-          <Bone width="100%" height={52} borderRadius={12} />
-        </View>
-
         {/* Cards */}
         <SkeletonCard />
         <View style={{ height: 3 }} />
@@ -132,10 +127,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.lg,
-  },
-  searchWrapper: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
   },
   card: {
     borderRadius: radius.xxl,
