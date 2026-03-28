@@ -21,28 +21,29 @@ import {
   LiquidGlassContainerView,
 } from "@callstack/liquid-glass";
 
-import { spacing } from "../../components/tokens";
-import { useTheme } from "../../theme/ThemeProvider";
-import { Typography } from "../../components/typography";
-import { EmptyView, ErrorView, LoadingView } from "../../components/ui";
-import { useOrgProduct } from "../../context/OrgProductContext";
-import { useInfiniteDevices } from "../../hooks/useApi";
-import { useDeviceChannel } from "../../hooks/useDeviceChannel";
+import { spacing } from "../../../components/tokens";
+import { useTheme } from "../../../theme/ThemeProvider";
+import { Typography } from "../../../components/typography";
+import { EmptyView, ErrorView, LoadingView } from "../../../components/ui";
+import { useOrgProduct } from "../../../context/OrgProductContext";
+import { useInfiniteDevices } from "../../../hooks/useApi";
+import { useDeviceChannel } from "../../../hooks/useDeviceChannel";
 import {
   useRebootDevice,
   useReconnectDevice,
-} from "../../api/generated/devices/devices";
-import { customInstance } from "../../api/mutator/custom-instance";
-import type { Device } from "../../api/generated/schemas";
-import { Button } from "../../components/button";
-// import { SearchInput } from "../../components/search-input";
-import { Dropdown, type DropDownItem } from "../../components/dropdown";
+} from "../../../api/generated/devices/devices";
+import { customInstance } from "../../../api/mutator/custom-instance";
+import type { Device } from "../../../api/generated/schemas";
+import { Button } from "../../../components/button";
+// import { SearchInput } from "../../../components/search-input";
+import { Dropdown, type DropDownItem } from "../../../components/dropdown";
+import { ARCHITECTURES } from "../../../utils/architectures";
 import { DeviceCard, type DeviceMenuAction } from "./device-card";
 import { DevicesLoading } from "./devices-loading";
 
-import SwitchIcon from "../../../assets/icons/products.svg";
-import StarOutlineIcon from "../../../assets/icons/star-outline.svg";
-import SearchIcon from "../../../assets/icons/search.svg";
+import SwitchIcon from "../../../../assets/icons/products.svg";
+import StarOutlineIcon from "../../../../assets/icons/star-outline.svg";
+import SearchIcon from "../../../../assets/icons/search.svg";
 
 type ListHeaderProps = {
   orgId: string | null;
@@ -51,9 +52,11 @@ type ListHeaderProps = {
   statusItems: DropDownItem<string>[];
   platformItems: DropDownItem<string>[];
   deploymentItems: DropDownItem<string>[];
+  architectureItems: DropDownItem<string>[];
   onStatusFilter: (value: string | null) => void;
   onPlatformFilter: (value: string | null) => void;
   onDeploymentFilter: (value: string | null) => void;
+  onArchitectureFilter: (value: string | null) => void;
 };
 
 const ListHeader = React.memo(function ListHeader({
@@ -63,9 +66,11 @@ const ListHeader = React.memo(function ListHeader({
   statusItems,
   platformItems,
   deploymentItems,
+  architectureItems,
   onStatusFilter,
   onPlatformFilter,
   onDeploymentFilter,
+  onArchitectureFilter,
 }: ListHeaderProps) {
   return (
     <>
@@ -92,6 +97,7 @@ const ListHeader = React.memo(function ListHeader({
         contentContainerStyle={styles.filtersRow}
       >
         <Dropdown
+          label="Status"
           items={statusItems}
           placeholderLabel="Status"
           size="xs"
@@ -100,6 +106,7 @@ const ListHeader = React.memo(function ListHeader({
           onSelect={(item) => onStatusFilter(item.value || null)}
         />
         <Dropdown
+          label="Platform"
           items={platformItems}
           placeholderLabel="Platform"
           size="xs"
@@ -108,6 +115,16 @@ const ListHeader = React.memo(function ListHeader({
           onSelect={(item) => onPlatformFilter(item.value || null)}
         />
         <Dropdown
+          label="Arch"
+          items={architectureItems}
+          placeholderLabel="Arch"
+          size="xs"
+          fullWidth={false}
+          pill
+          onSelect={(item) => onArchitectureFilter(item.value || null)}
+        />
+        <Dropdown
+          label="Deployment"
           items={deploymentItems}
           placeholderLabel="Deployment"
           size="xs"
@@ -139,6 +156,9 @@ export default function DevicesScreen() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [platformFilter, setPlatformFilter] = useState<string | null>(null);
   const [deploymentFilter, setDeploymentFilter] = useState<string | null>(null);
+  const [architectureFilter, setArchitectureFilter] = useState<string | null>(
+    null,
+  );
 
   // Real-time updates
   useDeviceChannel();
@@ -352,6 +372,14 @@ export default function DevicesScreen() {
     ];
   }, [allDevices]);
 
+  const architectureItems = useMemo<DropDownItem<string>[]>(
+    () => [
+      { id: "all", label: "All", value: null as any },
+      ...ARCHITECTURES.map((a) => ({ id: a, label: a, value: a })),
+    ],
+    [],
+  );
+
   // Apply client-side filters
   const devices = useMemo(() => {
     let filtered = allDevices;
@@ -368,8 +396,19 @@ export default function DevicesScreen() {
         (d) => d.deployment_group?.name === deploymentFilter,
       );
     }
+    if (architectureFilter) {
+      filtered = filtered.filter(
+        (d) => d.firmware_metadata?.architecture === architectureFilter,
+      );
+    }
     return filtered;
-  }, [allDevices, statusFilter, platformFilter, deploymentFilter]);
+  }, [
+    allDevices,
+    statusFilter,
+    platformFilter,
+    deploymentFilter,
+    architectureFilter,
+  ]);
 
   const handleStatusFilter = useCallback(
     (v: string | null) => setStatusFilter(v),
@@ -383,6 +422,10 @@ export default function DevicesScreen() {
     (v: string | null) => setDeploymentFilter(v),
     [],
   );
+  const handleArchitectureFilter = useCallback(
+    (v: string | null) => setArchitectureFilter(v),
+    [],
+  );
 
   const listHeader = useMemo(
     () => (
@@ -393,9 +436,11 @@ export default function DevicesScreen() {
         statusItems={statusItems}
         platformItems={platformItems}
         deploymentItems={deploymentItems}
+        architectureItems={architectureItems}
         onStatusFilter={handleStatusFilter}
         onPlatformFilter={handlePlatformFilter}
         onDeploymentFilter={handleDeploymentFilter}
+        onArchitectureFilter={handleArchitectureFilter}
       />
     ),
     [
@@ -405,9 +450,11 @@ export default function DevicesScreen() {
       statusItems,
       platformItems,
       deploymentItems,
+      architectureItems,
       handleStatusFilter,
       handlePlatformFilter,
       handleDeploymentFilter,
+      handleArchitectureFilter,
     ],
   );
 
@@ -496,7 +543,7 @@ const styles = StyleSheet.create({
   headerContent: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.md,
   },
   searchWrapper: {
     paddingHorizontal: spacing.lg,
@@ -506,6 +553,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.xs,
+    marginTop: spacing.sm,
   },
   loadingFooter: {
     paddingVertical: spacing.lg,

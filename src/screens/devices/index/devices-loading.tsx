@@ -7,8 +7,8 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import { spacing, radius } from "../../components/tokens";
-import { useTheme } from "../../theme/ThemeProvider";
+import { spacing, radius } from "../../../components/tokens";
+import { useTheme } from "../../../theme/ThemeProvider";
 
 function Bone({
   width,

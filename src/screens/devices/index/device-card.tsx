@@ -2,20 +2,20 @@ import React, { memo, useCallback } from "react";
 import { View, StyleSheet } from "react-native";
 import ContextMenu from "react-native-context-menu-view";
 
-import { spacing } from "../../components/tokens";
-import { useTheme } from "../../theme/ThemeProvider";
-import { Typography } from "../../components/typography";
-import { Tag } from "../../components/tag";
-import { Card } from "../../components/card";
-import { PulsatingDotWithRipple } from "../../components/pulsating-dot";
-import { Button } from "../../components/button";
-import type { Device } from "../../api/generated/schemas";
+import { spacing } from "../../../components/tokens";
+import { useTheme } from "../../../theme/ThemeProvider";
+import { Typography } from "../../../components/typography";
+import { Tag } from "../../../components/tag";
+import { Card } from "../../../components/card";
+import { PulsatingDotWithRipple } from "../../../components/pulsating-dot";
+import { Button } from "../../../components/button";
+import type { Device } from "../../../api/generated/schemas";
 
-import EllipsisIcon from "../../../assets/icons/ellipsis.svg";
-import HashIcon from "../../../assets/icons/hashtag.svg";
-import CheckShieldIcon from "../../../assets/icons/check-shield.svg";
-import TargetIcon from "../../../assets/icons/cog.svg";
-import PlatformIcon from "../../../assets/icons/platform.svg";
+import EllipsisIcon from "../../../../assets/icons/ellipsis.svg";
+import HashIcon from "../../../../assets/icons/hashtag.svg";
+import CheckShieldIcon from "../../../../assets/icons/check-shield.svg";
+import TargetIcon from "../../../../assets/icons/cog.svg";
+import PlatformIcon from "../../../../assets/icons/platform.svg";
 
 export type DeviceMenuAction = "reboot" | "reconnect" | "identify" | "tags";
 

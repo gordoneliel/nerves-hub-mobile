@@ -29,7 +29,10 @@ interface DropdownProps<T> {
   disabled?: boolean;
   onSelect?: (item: DropDownItem<T>) => void;
   isDefaultOpen?: boolean;
+  /** Label shown when nothing is selected */
   placeholderLabel?: string;
+  /** Prefix label shown before the selected value, e.g. "Status" → "Status: Online" */
+  label?: string;
   pill?: boolean;
   size?: "xs" | "sm" | "md" | "lg";
   expandedPosition?: "left" | "center" | "right";
@@ -50,6 +53,7 @@ export function Dropdown<T>({
   disabled = false,
   pill = false,
   placeholderLabel,
+  label,
   size = "md",
   hasBorder = true,
   hasShadow = true,
@@ -160,7 +164,20 @@ export function Dropdown<T>({
               type="header"
               fontType="native"
             >
-              {selectedItem ? selectedItem?.label : placeholderLabel}
+              {selectedItem && label ? `${label}: ` : null}
+              {selectedItem && label ? (
+                <Typography
+                  fontWeight={600}
+                  fontSize={size === "xs" ? 14 : 14}
+                  lineHeight={0}
+                  type="header"
+                  fontType="native"
+                >
+                  {selectedItem.label}
+                </Typography>
+              ) : (
+                (selectedItem?.label ?? placeholderLabel)
+              )}
             </Typography>
           </View>
           {isLoading ? (
