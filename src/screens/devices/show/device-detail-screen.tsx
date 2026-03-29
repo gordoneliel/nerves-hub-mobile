@@ -1,29 +1,36 @@
-import React from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Alert, ScrollView, StyleSheet, Switch, View } from "react-native";
 import type { StaticScreenProps } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 
-import { spacing } from "../../components/tokens";
-import { useTheme } from "../../theme/ThemeProvider";
-import { Typography } from "../../components/typography";
-import { Card, ErrorView, LoadingView } from "../../components/ui";
-import { Tag } from "../../components/tag";
-import { Button } from "../../components/button";
-import { PulsatingDotWithRipple } from "../../components/pulsating-dot";
-import { useDevice } from "../../hooks/useApi";
+import { spacing } from "../../../components/tokens";
+import { useTheme } from "../../../theme/ThemeProvider";
+import { Typography } from "../../../components/typography";
+import { Card, ErrorView, LoadingView } from "../../../components/ui";
+import { Tag } from "../../../components/tag";
+import { Button } from "../../../components/button";
+import { PulsatingDotWithRipple } from "../../../components/pulsating-dot";
+import { useDevice } from "../../../hooks/useApi";
 import {
   useRebootDevice,
   useReconnectDevice,
-} from "../../api/generated/devices/devices";
-import { customInstance } from "../../api/mutator/custom-instance";
-import { useOrgProduct } from "../../context/OrgProductContext";
-import { Divider } from "../../components/divider";
+} from "../../../api/generated/devices/devices";
+import { customInstance } from "../../../api/mutator/custom-instance";
+import { useOrgProduct } from "../../../context/OrgProductContext";
+import { Divider } from "../../../components/divider";
 import { DeploymentGroupCard } from "./deployment-group-card";
+import { FirmwareUpgradeCard } from "./firmware-upgrade-card";
 
-import PowerIcon from "../../../assets/icons/power.svg";
-import WifiIcon from "../../../assets/icons/wifi-light.svg";
-import TargetIcon from "../../../assets/icons/target.svg";
-import ConsoleIcon from "../../../assets/icons/console.svg";
+import PowerIcon from "../../../../assets/icons/power.svg";
+import WifiIcon from "../../../../assets/icons/wifi-light.svg";
+import TargetIcon from "../../../../assets/icons/target.svg";
+import ConsoleIcon from "../../../../assets/icons/console.svg";
+import CheckShieldIcon from "../../../../assets/icons/check-shield.svg";
+import PlatformIcon from "../../../../assets/icons/platform.svg";
+import StackIcon from "../../../../assets/icons/stack.svg";
+import CogIcon from "../../../../assets/icons/cog.svg";
+import CloseIcon from "../../../../assets/icons/close-big.svg";
+
 type Props = StaticScreenProps<{ identifier: string; deviceId: number }>;
 
 function MetaRow({ label, value }: { label: string; value?: string | null }) {
@@ -166,50 +173,70 @@ export default function DeviceDetailScreen({ route }: Props) {
         </View>
 
         <View style={styles.badgeRow}>
+          {device.firmware_metadata?.product && (
+            <Tag
+              label={device.firmware_metadata.product}
+              size="sm"
+              colorScheme="white"
+              hasBorder
+              iconLeft={{
+                component: StackIcon,
+                props: { width: 12, height: 12, color: colors.textTertiary },
+              }}
+            />
+          )}
+
           {device.version && (
             <Tag
               label={`v${device.version}`}
               size="sm"
               colorScheme="white"
               hasBorder
+              iconLeft={{
+                component: CheckShieldIcon,
+                props: { width: 12, height: 12, color: colors.textTertiary },
+              }}
             />
           )}
 
-          {device.firmware_metadata?.platform && (
+          {/*{device.firmware_metadata?.platform && (
             <Tag
-              label={`Platform ${device.firmware_metadata.platform}`}
+              label={device.firmware_metadata.platform}
               size="sm"
               colorScheme="white"
               hasBorder
+              iconLeft={{
+                component: PlatformIcon,
+                props: { width: 12, height: 12, color: colors.textTertiary },
+              }}
             />
-          )}
+          )}*/}
 
-          {device.firmware_metadata?.product && (
+          {/*{device.firmware_metadata?.architecture && (
             <Tag
-              label={`Product ${device.firmware_metadata.product}`}
+              label={device.firmware_metadata.architecture}
               size="sm"
               colorScheme="white"
               hasBorder
+              iconLeft={{
+                component: CogIcon,
+                props: { width: 12, height: 12, color: colors.textTertiary },
+              }}
             />
-          )}
+          )}*/}
 
-          {device.firmware_metadata?.architecture && (
-            <Tag
-              label={`Architecture ${device.firmware_metadata.architecture}`}
-              size="sm"
-              colorScheme="white"
-              hasBorder
-            />
-          )}
-
-          {device.updates_enabled === false && (
+          {/*{device.updates_enabled === false && (
             <Tag
               label="Updates disabled"
               size="sm"
               colorScheme="white"
               hasBorder
+              iconLeft={{
+                component: CloseIcon,
+                props: { width: 10, height: 10, color: colors.textTertiary },
+              }}
             />
-          )}
+          )}*/}
         </View>
 
         <ScrollView
@@ -268,15 +295,80 @@ export default function DeviceDetailScreen({ route }: Props) {
               <TargetIcon width={17} height={17} color={colors.textSecondary} />
             }
           />
+          <Button
+            label="Certificates"
+            type="tertiary"
+            size="sm"
+            onPress={() =>
+              navigation.navigate("DeviceCertificates", { identifier })
+            }
+            style={styles.actionButton}
+            iconLeft={
+              <CheckShieldIcon
+                width={17}
+                height={17}
+                color={colors.textSecondary}
+              />
+            }
+          />
         </ScrollView>
         <Divider
           horizontalMargin={spacing.lg}
           verticalMargin={{ top: 0, bottom: spacing.lg }}
         />
 
+        <View style={styles.section}>
+          <Typography
+            type="caption"
+            fontSize={11}
+            textTransform="uppercase"
+            letterSpacing={1}
+            paddingBottom={spacing.xs}
+            paddingHorizontal={spacing.lg}
+            marginLeft={spacing.lg}
+            color={colors.textTertiary}
+          >
+            Info
+          </Typography>
+          <Card>
+            <MetaRow label="Organization" value={device.org_name} />
+            <MetaRow label="Product" value={device.product_name} />
+            <MetaRow label="Version" value={device.version} />
+            <MetaRow
+              label="Platform"
+              value={device.firmware_metadata?.platform}
+            />
+            <MetaRow
+              label="Architecture"
+              value={device.firmware_metadata?.architecture}
+            />
+            <MetaRow
+              label="Last seen"
+              value={
+                device.last_communication
+                  ? new Date(device.last_communication).toLocaleString()
+                  : null
+              }
+            />
+          </Card>
+        </View>
+
+        <UpdatesToggleCard
+          deviceIdentifier={identifier}
+          updatesEnabled={device.updates_enabled !== false}
+          onToggled={refetch}
+        />
+
         <DeploymentGroupCard
           currentDeploymentGroupId={device.deployment_group?.name}
           deviceIdentifier={identifier}
+        />
+
+        <FirmwareUpgradeCard
+          deviceIdentifier={identifier}
+          currentVersion={device.version}
+          currentPlatform={device.firmware_metadata?.platform}
+          currentArchitecture={device.firmware_metadata?.architecture}
         />
 
         {device.updates_blocked_until && (
@@ -301,36 +393,91 @@ export default function DeviceDetailScreen({ route }: Props) {
             </Card>
           </View>
         )}
-
-        {(device.last_communication || device.org_name) && (
-          <View style={styles.section}>
-            <Typography
-              type="caption"
-              fontSize={11}
-              textTransform="uppercase"
-              letterSpacing={1}
-              paddingBottom={spacing.xs}
-              paddingHorizontal={spacing.lg}
-              color={colors.textTertiary}
-              marginLeft={spacing.lg}
-            >
-              Info
-            </Typography>
-            <Card>
-              <MetaRow label="Organization" value={device.org_name} />
-              <MetaRow label="Product" value={device.product_name} />
-              <MetaRow
-                label="Last seen"
-                value={
-                  device.last_communication
-                    ? new Date(device.last_communication).toLocaleString()
-                    : null
-                }
-              />
-            </Card>
-          </View>
-        )}
       </ScrollView>
+    </View>
+  );
+}
+
+function UpdatesToggleCard({
+  deviceIdentifier,
+  updatesEnabled,
+  onToggled,
+}: {
+  deviceIdentifier: string;
+  updatesEnabled: boolean;
+  onToggled: () => void;
+}) {
+  const { colors } = useTheme();
+  const { orgId, productId } = useOrgProduct();
+  const [enabled, setEnabled] = useState(updatesEnabled);
+  const [toggling, setToggling] = useState(false);
+
+  const handleToggle = useCallback(
+    async (value: boolean) => {
+      if (!orgId || !productId) return;
+      setEnabled(value);
+      setToggling(true);
+      try {
+        await customInstance({
+          url: `/orgs/${orgId}/products/${productId}/devices/${deviceIdentifier}`,
+          method: "PUT",
+          data: { device: { updates_enabled: value } },
+        });
+        onToggled();
+      } catch {
+        setEnabled(!value);
+        Alert.alert("Error", "Failed to update device.");
+      } finally {
+        setToggling(false);
+      }
+    },
+    [orgId, productId, deviceIdentifier, onToggled],
+  );
+
+  return (
+    <View style={styles.section}>
+      <Typography
+        type="caption"
+        fontSize={11}
+        textTransform="uppercase"
+        letterSpacing={1}
+        paddingBottom={spacing.xs}
+        paddingHorizontal={spacing.lg}
+        marginLeft={spacing.lg}
+        color={colors.textTertiary}
+      >
+        Updates
+      </Typography>
+      <Card>
+        <View style={styles.toggleRow}>
+          <View style={{ flex: 1 }}>
+            <Typography
+              type="body"
+              fontSize={15}
+              fontWeight="600"
+              color={colors.textPrimary}
+            >
+              Firmware updates
+            </Typography>
+            <Typography
+              type="body"
+              fontSize={12}
+              color={colors.textSecondary}
+              marginTop={2}
+            >
+              {enabled
+                ? "Device will receive firmware updates"
+                : "Device will not receive firmware updates"}
+            </Typography>
+          </View>
+          <Switch
+            value={enabled}
+            onValueChange={handleToggle}
+            disabled={toggling}
+            trackColor={{ true: colors.accent }}
+          />
+        </View>
+      </Card>
     </View>
   );
 }
@@ -341,7 +488,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 120,
-    paddingBottom: spacing.xl,
+    paddingBottom: 120,
   },
   header: {
     flexDirection: "column",
@@ -383,5 +530,11 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     gap: 6,
+  },
+  toggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.sm,
   },
 });

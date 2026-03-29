@@ -11,8 +11,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		23FF3D792068F22909394ADC /* libPods-NervesHub.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5573E9A9C83253C9AD13DD3 /* libPods-NervesHub.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		446327BA516144DF9E121317 /* PlusJakartaSans-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9F6F85323D4E4E7492C41499 /* PlusJakartaSans-VariableFont_wght.ttf */; };
+		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F8C13C9DBF024812B1314CC1 /* Sora-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2ECB6994B934322B7694554 /* Sora-VariableFont_wght.ttf */; };
 /* End PBXBuildFile section */
 
@@ -24,17 +24,17 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NervesHub/Info.plist; sourceTree = "<group>"; };
 		1BB44D2E897B6E644AA2C97D /* Pods-NervesHub.production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.production.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.production.xcconfig"; sourceTree = "<group>"; };
 		6F0E07159F9FBB2C0DB013A3 /* Pods-NervesHub.debug-production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.debug-production.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.debug-production.xcconfig"; sourceTree = "<group>"; };
+		9F6F85323D4E4E7492C41499 /* PlusJakartaSans-VariableFont_wght.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-VariableFont_wght.ttf"; path = "../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = NervesHub/SplashScreen.storyboard; sourceTree = "<group>"; };
 		AD2FAFCD36C8134C05C24B17 /* Pods-NervesHub.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.debug.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.debug.xcconfig"; sourceTree = "<group>"; };
 		B866936219FF5F3649B0E9B0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = NervesHub/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C2ECB6994B934322B7694554 /* Sora-VariableFont_wght.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-VariableFont_wght.ttf"; path = "../assets/fonts/Sora-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		D402FE5D4644B9502E1B5015 /* Pods-NervesHub.release-development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.release-development.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.release-development.xcconfig"; sourceTree = "<group>"; };
 		D5573E9A9C83253C9AD13DD3 /* libPods-NervesHub.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NervesHub.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9DE400E32D001097EF9A3E9 /* Pods-NervesHub.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.release.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = NervesHub/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* NervesHub-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NervesHub-Bridging-Header.h"; path = "NervesHub/NervesHub-Bridging-Header.h"; sourceTree = "<group>"; };
-		9F6F85323D4E4E7492C41499 /* PlusJakartaSans-VariableFont_wght.ttf */ = {isa = PBXFileReference; name = "PlusJakartaSans-VariableFont_wght.ttf"; path = "../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C2ECB6994B934322B7694554 /* Sora-VariableFont_wght.ttf */ = {isa = PBXFileReference; name = "Sora-VariableFont_wght.ttf"; path = "../assets/fonts/Sora-VariableFont_wght.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +85,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		80D9AEC995E54AA49F2DE080 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9F6F85323D4E4E7492C41499 /* PlusJakartaSans-VariableFont_wght.ttf */,
+				C2ECB6994B934322B7694554 /* Sora-VariableFont_wght.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -114,16 +123,6 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
-		};
-		80D9AEC995E54AA49F2DE080 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				9F6F85323D4E4E7492C41499 /* PlusJakartaSans-VariableFont_wght.ttf */,
-				C2ECB6994B934322B7694554 /* Sora-VariableFont_wght.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -158,7 +157,6 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = F97WMQ2CYP;
 						LastSwiftMigration = 1250;
 						ProvisioningStyle = Automatic;
 					};
@@ -307,7 +305,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F97WMQ2CYP;
+				DEVELOPMENT_TEAM = F7AL96RPTB;
 				ENABLE_BITCODE = NO;
 				ENVFILE = .env.development;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -316,6 +314,7 @@
 				);
 				INFOPLIST_FILE = NervesHub/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "NervesHub Dev";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -328,7 +327,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = org.nerveshub.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = org.nerveshub.development;
 				PRODUCT_NAME = NervesHub;
 				SWIFT_OBJC_BRIDGING_HEADER = "NervesHub/NervesHub-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -348,10 +347,11 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F97WMQ2CYP;
+				DEVELOPMENT_TEAM = F7AL96RPTB;
 				ENVFILE = .env.production;
 				INFOPLIST_FILE = NervesHub/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NervesHub;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -364,7 +364,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = org.nerveshub.mobile;
+				PRODUCT_BUNDLE_IDENTIFIER = org.nerveshub;
 				PRODUCT_NAME = NervesHub;
 				SWIFT_OBJC_BRIDGING_HEADER = "NervesHub/NervesHub-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

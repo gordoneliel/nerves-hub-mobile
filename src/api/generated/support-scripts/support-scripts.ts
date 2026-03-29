@@ -35,7 +35,7 @@ export const listScripts = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/scripts`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/scripts`, method: 'GET', signal
     },
       );
     }
@@ -131,7 +131,7 @@ export const listDeviceScriptsShort = (
       
       
       return customInstance<void>(
-      {url: `/api/devices/${identifier}/scripts`, method: 'GET', signal
+      {url: `/devices/${identifier}/scripts`, method: 'GET', signal
     },
       );
     }

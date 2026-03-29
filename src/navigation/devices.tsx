@@ -1,10 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DevicesScreen from "../screens/devices/index/devices-screen";
-import DeviceDetailScreen from "../screens/devices/device-detail-screen";
+import DeviceDetailScreen from "../screens/devices/show/device-detail-screen";
 import PinnedDevicesScreen from "../screens/devices/pinned-devices-screen";
 import DeviceSearchScreen from "../screens/devices/device-search-screen";
 import DeviceConsoleScreen from "../screens/devices/device-console-screen";
 import EditDeviceTagsScreen from "../screens/devices/edit-device-tags-screen";
+import NewDeviceScreen from "../screens/devices/new";
+import DeviceCertificatesScreen from "../screens/devices/show/device-certificates-screen";
 
 const DevicesStack = createNativeStackNavigator({
   screenOptions: {
@@ -44,6 +46,20 @@ const DevicesStack = createNativeStackNavigator({
       screen: DeviceConsoleScreen,
       options: {
         title: "Console",
+        headerTransparent: true,
+      },
+    },
+    NewDevice: {
+      screen: NewDeviceScreen,
+      options: {
+        title: "",
+        headerTransparent: true,
+      },
+    },
+    DeviceCertificates: {
+      screen: DeviceCertificatesScreen,
+      options: {
+        title: "",
         headerTransparent: true,
       },
     },

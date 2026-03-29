@@ -11,7 +11,10 @@ import type { DeploymentGroup } from "../../api/generated/schemas";
 import { useOrgProduct } from "../../context/OrgProductContext";
 import { customInstance } from "../../api/mutator/custom-instance";
 import { useQueryClient } from "@tanstack/react-query";
-import { getListDeploymentGroupsQueryKey } from "../../api/generated/deployment-groups/deployment-groups";
+import {
+  getListDeploymentGroupsQueryKey,
+  useDeleteDeploymentGroup,
+} from "../../api/generated/deployment-groups/deployment-groups";
 
 import CheckCircleIcon from "../../../assets/icons/check-circle.svg";
 import CloseIcon from "../../../assets/icons/close-big.svg";
@@ -49,6 +52,7 @@ export default function DeploymentDetailScreen({ route }: Props) {
   const queryClient = useQueryClient();
   const [active, setActive] = useState(dg.is_active ?? dg.state === "on");
   const [toggling, setToggling] = useState(false);
+  const deleteDeployment = useDeleteDeploymentGroup();
 
   const isActive = active;
   const tags = dg.conditions?.tags ?? [];
@@ -69,7 +73,7 @@ export default function DeploymentDetailScreen({ route }: Props) {
             setToggling(true);
             try {
               await customInstance({
-                url: `/api/orgs/${orgId}/products/${productId}/deployments/${dg.name}`,
+                url: `/orgs/${orgId}/products/${productId}/deployments/${dg.name}`,
                 method: "PUT",
                 data: { deployment: { state: nextState ? "on" : "off" } },
               });
@@ -88,6 +92,36 @@ export default function DeploymentDetailScreen({ route }: Props) {
     );
   }, [isActive, orgId, productId, dg.name, queryClient]);
 
+  const handleDelete = useCallback(() => {
+    if (!orgId || !productId || !dg.name) return;
+    Alert.alert(
+      `Delete ${dg.name}`,
+      "Are you sure you want to delete this deployment? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            deleteDeployment.mutate(
+              { orgName: orgId, productName: productId, name: dg.name! },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: getListDeploymentGroupsQueryKey(orgId, productId),
+                  });
+                  navigation.goBack();
+                },
+                onError: () =>
+                  Alert.alert("Error", "Failed to delete deployment."),
+              },
+            );
+          },
+        },
+      ],
+    );
+  }, [orgId, productId, dg.name, deleteDeployment, queryClient, navigation]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       unstable_headerRightItems: () => [
@@ -101,9 +135,17 @@ export default function DeploymentDetailScreen({ route }: Props) {
           onPress: handleToggle,
           disabled: toggling,
         },
+        {
+          type: "button",
+          icon: {
+            type: "sfSymbol",
+            name: "trash",
+          },
+          onPress: handleDelete,
+        },
       ],
     });
-  }, [navigation, isActive, handleToggle, toggling]);
+  }, [navigation, isActive, handleToggle, handleDelete, toggling]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

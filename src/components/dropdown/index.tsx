@@ -33,6 +33,8 @@ interface DropdownProps<T> {
   placeholderLabel?: string;
   /** Prefix label shown before the selected value, e.g. "Status" → "Status: Online" */
   label?: string;
+  /** Icon always shown before the label */
+  icon?: React.ReactElement;
   pill?: boolean;
   size?: "xs" | "sm" | "md" | "lg";
   expandedPosition?: "left" | "center" | "right";
@@ -54,6 +56,7 @@ export function Dropdown<T>({
   pill = false,
   placeholderLabel,
   label,
+  icon,
   size = "md",
   hasBorder = true,
   hasShadow = true,
@@ -154,6 +157,7 @@ export function Dropdown<T>({
       >
         <View style={styles.header}>
           <View style={styles.iconLeftWithLabel}>
+            {icon}
             {selectedItem?.iconLeft}
             <Typography
               fontWeight={500}

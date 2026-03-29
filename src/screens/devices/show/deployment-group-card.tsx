@@ -1,21 +1,21 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 
-import { spacing } from "../../components/tokens";
-import { useTheme } from "../../theme/ThemeProvider";
-import { Typography } from "../../components/typography";
-import { Card, LoadingView } from "../../components/ui";
-import { Tag } from "../../components/tag";
-import { Dropdown, type DropDownItem } from "../../components/dropdown";
-import CheckCircleIcon from "../../../assets/icons/check-circle.svg";
-import CloseIcon from "../../../assets/icons/close-big.svg";
-import StackIcon from "../../../assets/icons/stack.svg";
-import TrashIcon from "../../../assets/icons/trash.svg";
-import { useDeployments } from "../../hooks/useApi";
-import { useUpdateDevice } from "../../api/generated/devices/devices";
-import { useOrgProduct } from "../../context/OrgProductContext";
-import type { DeploymentGroup } from "../../api/generated/schemas";
-import { Button } from "../../components/button";
+import { spacing } from "../../../components/tokens";
+import { useTheme } from "../../../theme/ThemeProvider";
+import { Typography } from "../../../components/typography";
+import { Card, LoadingView } from "../../../components/ui";
+import { Tag } from "../../../components/tag";
+import { Dropdown, type DropDownItem } from "../../../components/dropdown";
+import CheckCircleIcon from "../../../../assets/icons/check-circle.svg";
+import CloseIcon from "../../../../assets/icons/close-big.svg";
+import StackIcon from "../../../../assets/icons/stack.svg";
+import TrashIcon from "../../../../assets/icons/trash.svg";
+import { useDeployments } from "../../../hooks/useApi";
+import { useUpdateDevice } from "../../../api/generated/devices/devices";
+import { useOrgProduct } from "../../../context/OrgProductContext";
+import type { DeploymentGroup } from "../../../api/generated/schemas";
+import { Button } from "../../../components/button";
 
 interface DeploymentGroupCardProps {
   currentDeploymentGroupId?: string | null;

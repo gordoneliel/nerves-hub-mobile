@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
+    paddingTop: spacing.xxl,
   },
   logoRow: {
     marginBottom: spacing.lg,
@@ -207,6 +207,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.xxl,
   },
 });

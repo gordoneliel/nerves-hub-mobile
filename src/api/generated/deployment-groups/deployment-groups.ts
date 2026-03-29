@@ -43,7 +43,7 @@ export const listDeploymentGroups = (
       
       
       return customInstance<DeploymentGroupListResponse>(
-      {url: `/api/orgs/${orgName}/products/${productName}/deployments`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/deployments`, method: 'GET', signal
     },
       );
     }
@@ -140,7 +140,7 @@ export const createDeploymentGroup = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/deployments`, method: 'POST', signal
+      {url: `/orgs/${orgName}/products/${productName}/deployments`, method: 'POST', signal
     },
       );
     }
@@ -203,7 +203,7 @@ export const deleteDeploymentGroup = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/deployments/${name}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/products/${productName}/deployments/${name}`, method: 'DELETE', signal
     },
       );
     }
@@ -266,7 +266,7 @@ export const getDeploymentGroup = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/deployments/${name}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/deployments/${name}`, method: 'GET', signal
     },
       );
     }
@@ -370,7 +370,7 @@ export const updateDeploymentGroup = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/deployments/${name}`, method: 'PUT', signal
+      {url: `/orgs/${orgName}/products/${productName}/deployments/${name}`, method: 'PUT', signal
     },
       );
     }

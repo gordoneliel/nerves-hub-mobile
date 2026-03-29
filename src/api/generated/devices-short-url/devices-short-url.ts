@@ -43,7 +43,7 @@ export const executeDeviceCodeShort = (
       
       
       return customInstance<void>(
-      {url: `/api/devices/${identifier}/code`, method: 'POST', signal
+      {url: `/devices/${identifier}/code`, method: 'POST', signal
     },
       );
     }
@@ -104,7 +104,7 @@ export const rebootDeviceShort = (
       
       
       return customInstance<void>(
-      {url: `/api/devices/${identifier}/reboot`, method: 'POST', signal
+      {url: `/devices/${identifier}/reboot`, method: 'POST', signal
     },
       );
     }
@@ -165,7 +165,7 @@ export const getDeviceShort = (
       
       
       return customInstance<Device>(
-      {url: `/api/devices/${identifier}`, method: 'GET', signal
+      {url: `/devices/${identifier}`, method: 'GET', signal
     },
       );
     }
@@ -255,7 +255,7 @@ export const upgradeDeviceShort = (
       
       
       return customInstance<void>(
-      {url: `/api/devices/${identifier}/upgrade`, method: 'POST', signal
+      {url: `/devices/${identifier}/upgrade`, method: 'POST', signal
     },
       );
     }
@@ -317,7 +317,7 @@ export const moveDeviceShort = (
       
       
       return customInstance<Device>(
-      {url: `/api/devices/${identifier}/move`, method: 'POST',
+      {url: `/devices/${identifier}/move`, method: 'POST',
         params, signal
     },
       );
@@ -379,7 +379,7 @@ export const reconnectDeviceShort = (
       
       
       return customInstance<void>(
-      {url: `/api/devices/${identifier}/reconnect`, method: 'POST', signal
+      {url: `/devices/${identifier}/reconnect`, method: 'POST', signal
     },
       );
     }
@@ -441,7 +441,7 @@ export const sendScriptToDeviceDirect = (
       
       
       return customInstance<unknown>(
-      {url: `/api/devices/${identifier}/scripts/${nameOrId}`, method: 'POST', signal
+      {url: `/devices/${identifier}/scripts/${nameOrId}`, method: 'POST', signal
     },
       );
     }

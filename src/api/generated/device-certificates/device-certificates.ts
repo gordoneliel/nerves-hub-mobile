@@ -41,7 +41,7 @@ export const deleteDeviceCertificate = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates/${serial}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates/${serial}`, method: 'DELETE', signal
     },
       );
     }
@@ -105,7 +105,7 @@ export const nervesHubWebAPIDeviceCertificateControllerShow = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates/${serial}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates/${serial}`, method: 'GET', signal
     },
       );
     }
@@ -215,7 +215,7 @@ export const listDeviceCertificates = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates`, method: 'GET', signal
     },
       );
     }
@@ -319,7 +319,7 @@ export const createDeviceCertificate = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates`, method: 'POST', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/certificates`, method: 'POST', signal
     },
       );
     }

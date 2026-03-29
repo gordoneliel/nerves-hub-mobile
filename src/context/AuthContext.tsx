@@ -9,7 +9,6 @@ import React, {
 import axios from "axios";
 import {
   configureAxios,
-  customInstance,
   resetAxios,
 } from "../api/mutator/custom-instance";
 import { deleteToken, getToken, setToken } from "../utils/secureStorage";
@@ -17,7 +16,7 @@ import { storage, STORAGE_KEYS } from "../utils/storage";
 import type { AuthResponse } from "../api/generated/schemas";
 
 interface AuthState {
-  isLoading: boolean;
+  ready: boolean;
   instanceUrl: string | null;
   token: string | null;
 }
@@ -33,24 +32,27 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+// Instance URL is sync from MMKV
+const initialInstanceUrl =
+  storage.getString(STORAGE_KEYS.INSTANCE_URL) ?? null;
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
-    isLoading: true,
-    instanceUrl: null,
+    ready: false,
+    instanceUrl: initialInstanceUrl,
     token: null,
   });
 
-  // Rehydrate on boot — read stored credentials synchronously where possible
+  // Read token from Keychain on boot
   useEffect(() => {
     (async () => {
       const token = await getToken();
-      const instanceUrl = storage.getString(STORAGE_KEYS.INSTANCE_URL) ?? null;
-
-      if (token && instanceUrl) {
-        configureAxios(instanceUrl, token);
+      if (token && initialInstanceUrl) {
+        configureAxios(initialInstanceUrl, token);
+        setState({ ready: true, instanceUrl: initialInstanceUrl, token });
+      } else {
+        setState((prev) => ({ ...prev, ready: true }));
       }
-
-      setState({ isLoading: false, instanceUrl, token });
     })();
   }, []);
 
@@ -81,11 +83,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       storage.addItem(STORAGE_KEYS.INSTANCE_URLS, instanceUrl);
 
       configureAxios(instanceUrl, authToken);
-      setState((prev) => ({
-        ...prev,
+      setState({
+        ready: true,
         instanceUrl,
         token: authToken,
-      }));
+      });
     },
     [],
   );
@@ -97,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     storage.remove(STORAGE_KEYS.PRODUCT);
     resetAxios();
     setState({
-      isLoading: false,
+      ready: true,
       instanceUrl: null,
       token: null,
     });

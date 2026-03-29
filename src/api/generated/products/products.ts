@@ -44,7 +44,7 @@ export const listProducts = (
       
       
       return customInstance<ProductListResponse>(
-      {url: `/api/orgs/${orgName}/products`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products`, method: 'GET', signal
     },
       );
     }
@@ -135,7 +135,7 @@ export const createProduct = (
       
       
       return customInstance<Product>(
-      {url: `/api/orgs/${orgName}/products`, method: 'POST',
+      {url: `/orgs/${orgName}/products`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: productCreationRequest, signal
     },
@@ -199,7 +199,7 @@ export const deleteProduct = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/products/${productName}`, method: 'DELETE', signal
     },
       );
     }
@@ -261,7 +261,7 @@ export const getProduct = (
       
       
       return customInstance<Product>(
-      {url: `/api/orgs/${orgName}/products/${productName}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}`, method: 'GET', signal
     },
       );
     }

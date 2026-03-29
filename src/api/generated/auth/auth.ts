@@ -34,7 +34,7 @@ export const login = (
       
       
       return customInstance<UserResponse>(
-      {url: `/api/users/login`, method: 'POST',
+      {url: `/users/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: userAuthRequest, signal
     },
@@ -97,7 +97,7 @@ export const userAuth = (
       
       
       return customInstance<UserResponse>(
-      {url: `/api/users/auth`, method: 'POST',
+      {url: `/users/auth`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: userAuthRequest, signal
     },

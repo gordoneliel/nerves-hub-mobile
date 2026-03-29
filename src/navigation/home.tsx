@@ -8,7 +8,7 @@ import {
 import OrgProductSelector from "../screens/org-product-selector";
 import FirmwareStack from "./firmware";
 import DeploymentsStack from "./deployments";
-import SettingsScreen from "../screens/settings-screen";
+import SettingsStack from "./settings";
 import ScriptsScreen from "../screens/scripts-screen";
 import DevicesStack from "./devices";
 import { colors } from "../theme/colors";
@@ -60,7 +60,7 @@ const HomeNavigator = createNativeBottomTabNavigator({
       },
     },
     Settings: {
-      screen: SettingsScreen,
+      screen: SettingsStack,
       options: {
         tabBarIcon: ({ focused }) => ({
           sfSymbol: focused ? "gearshape.fill" : "gearshape",

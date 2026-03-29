@@ -27,7 +27,7 @@ import { Typography } from "../../../components/typography";
 import { EmptyView, ErrorView, LoadingView } from "../../../components/ui";
 import { useOrgProduct } from "../../../context/OrgProductContext";
 import { useInfiniteDevices } from "../../../hooks/useApi";
-import { useDeviceChannel } from "../../../hooks/useDeviceChannel";
+import { useDevicesChannel } from "../../../hooks/useDevicesChannel";
 import {
   useRebootDevice,
   useReconnectDevice,
@@ -44,6 +44,10 @@ import { DevicesLoading } from "./devices-loading";
 import SwitchIcon from "../../../../assets/icons/products.svg";
 import StarOutlineIcon from "../../../../assets/icons/star-outline.svg";
 import SearchIcon from "../../../../assets/icons/search.svg";
+import RadioTowerIcon from "../../../../assets/icons/radio-tower.svg";
+import PlatformIcon from "../../../../assets/icons/platform.svg";
+import CogIcon from "../../../../assets/icons/cog.svg";
+import StackIcon from "../../../../assets/icons/stack.svg";
 
 type ListHeaderProps = {
   orgId: string | null;
@@ -100,6 +104,13 @@ const ListHeader = React.memo(function ListHeader({
           label="Status"
           items={statusItems}
           placeholderLabel="Status"
+          icon={
+            <RadioTowerIcon
+              width={16}
+              height={16}
+              color={colors.textTertiary}
+            />
+          }
           size="xs"
           fullWidth={false}
           pill
@@ -109,6 +120,9 @@ const ListHeader = React.memo(function ListHeader({
           label="Platform"
           items={platformItems}
           placeholderLabel="Platform"
+          icon={
+            <PlatformIcon width={14} height={14} color={colors.textTertiary} />
+          }
           size="xs"
           fullWidth={false}
           pill
@@ -118,6 +132,7 @@ const ListHeader = React.memo(function ListHeader({
           label="Arch"
           items={architectureItems}
           placeholderLabel="Arch"
+          icon={<CogIcon width={14} height={14} color={colors.textTertiary} />}
           size="xs"
           fullWidth={false}
           pill
@@ -127,6 +142,9 @@ const ListHeader = React.memo(function ListHeader({
           label="Deployment"
           items={deploymentItems}
           placeholderLabel="Deployment"
+          icon={
+            <StackIcon width={14} height={14} color={colors.textTertiary} />
+          }
           size="xs"
           fullWidth={false}
           pill
@@ -161,7 +179,7 @@ export default function DevicesScreen() {
   );
 
   // Real-time updates
-  useDeviceChannel();
+  useDevicesChannel();
 
   function navigateToOrgProductSwitcher() {
     navigation.navigate("OrgProductModal");
@@ -241,7 +259,16 @@ export default function DevicesScreen() {
       unstable_headerRightItems: () => [
         {
           type: "button",
-          label: "Edit",
+          icon: {
+            type: "sfSymbol",
+            name: "plus",
+          },
+          onPress: () => {
+            navigation.navigate("NewDevice");
+          },
+        },
+        {
+          type: "button",
           icon: {
             type: "sfSymbol",
             name: "magnifyingglass",
@@ -308,7 +335,7 @@ export default function DevicesScreen() {
         case "identify":
           confirm(`Identify ${identifier}`, () =>
             customInstance({
-              url: `/api/orgs/${orgId}/products/${productId}/devices/${identifier}/identify`,
+              url: `/orgs/${orgId}/products/${productId}/devices/${identifier}/identify`,
               method: "POST",
             })
               .then(() => Alert.alert("Success", "Identify command sent."))
@@ -330,9 +357,33 @@ export default function DevicesScreen() {
           });
           break;
         }
+        case "delete":
+          Alert.alert(
+            `Delete ${identifier}`,
+            "Are you sure? This cannot be undone.",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Delete",
+                style: "destructive",
+                onPress: () =>
+                  customInstance({
+                    url: `/orgs/${orgId}/products/${productId}/devices/${identifier}`,
+                    method: "DELETE",
+                  })
+                    .then(() => {
+                      devicesQuery.refetch();
+                    })
+                    .catch(() =>
+                      Alert.alert("Error", "Failed to delete device."),
+                    ),
+              },
+            ],
+          );
+          break;
       }
     },
-    [orgId, productId, reboot, reconnect, navigation],
+    [orgId, productId, reboot, reconnect, navigation, devicesQuery],
   );
 
   const allDevices =

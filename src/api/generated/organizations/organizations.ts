@@ -39,7 +39,7 @@ export const listOrgs = (
       
       
       return customInstance<OrgListResponse>(
-      {url: `/api/orgs`, method: 'GET',
+      {url: `/orgs`, method: 'GET',
         params, signal
     },
       );

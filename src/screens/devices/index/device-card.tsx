@@ -17,7 +17,7 @@ import CheckShieldIcon from "../../../../assets/icons/check-shield.svg";
 import TargetIcon from "../../../../assets/icons/cog.svg";
 import PlatformIcon from "../../../../assets/icons/platform.svg";
 
-export type DeviceMenuAction = "reboot" | "reconnect" | "identify" | "tags";
+export type DeviceMenuAction = "reboot" | "reconnect" | "identify" | "tags" | "delete";
 
 export type DeviceCardProps = {
   device: Device;
@@ -30,12 +30,14 @@ const MENU_ACTIONS: {
   title: string;
   systemIcon: string;
   key: DeviceMenuAction;
+  destructive?: boolean;
 }[] = [
   { title: "Reboot", systemIcon: "arrow.clockwise", key: "reboot" },
   { title: "Reconnect", systemIcon: "wifi", key: "reconnect" },
   { title: "Identify", systemIcon: "scope", key: "identify" },
   { title: "Edit Tags", systemIcon: "tag", key: "tags" },
-];
+  { title: "Delete", systemIcon: "trash", key: "delete", destructive: true },
+] as const;
 
 export const DeviceCard = memo(DeviceCardRaw, (prev, next) => {
   return (
@@ -106,9 +108,10 @@ function DeviceCardRaw({ device, onPress, onMenuAction }: DeviceCardProps) {
 
         <ContextMenu
           title={`${device.identifier}`}
-          actions={MENU_ACTIONS.map(({ title, systemIcon }) => ({
+          actions={MENU_ACTIONS.map(({ title, systemIcon, destructive }) => ({
             title,
             systemIcon,
+            destructive,
           }))}
           onPress={handleMenuAction}
           dropdownMenuMode
@@ -141,7 +144,7 @@ function DeviceCardRaw({ device, onPress, onMenuAction }: DeviceCardProps) {
             }
           />
         )}
-        {device.deployment_group?.name && (
+        {/*{device.deployment_group?.name && (
           <DetailRow
             label="Deployment"
             value={device.deployment_group.name}
@@ -153,7 +156,7 @@ function DeviceCardRaw({ device, onPress, onMenuAction }: DeviceCardProps) {
               />
             }
           />
-        )}
+        )}*/}
         {device.firmware_metadata?.platform && (
           <DetailRow
             label="Platform"
@@ -190,6 +193,24 @@ function DeviceCardRaw({ device, onPress, onMenuAction }: DeviceCardProps) {
             },
           }}
         />
+
+        {device.deployment_group?.name && (
+          <Tag
+            label={device.deployment_group.name}
+            size="sm"
+            colorScheme="white"
+            hasBorder
+            hasShadow
+            iconLeft={{
+              component: TargetIcon,
+              props: {
+                width: 14,
+                height: 14,
+                color: themeColors.textSecondary,
+              },
+            }}
+          />
+        )}
 
         {tags.map((tag) => (
           <Tag key={tag} label={tag} colorScheme="white" size="sm" hasBorder />

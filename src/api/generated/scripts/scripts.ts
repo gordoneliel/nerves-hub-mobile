@@ -44,7 +44,7 @@ export const listScripts = (
       
       
       return customInstance<ScriptListResponse>(
-      {url: `/api/orgs/${orgName}/products/${productName}/scripts`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/scripts`, method: 'GET', signal
     },
       );
     }
@@ -143,7 +143,7 @@ export const executeScript = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/scripts/${nameOrId}`, method: 'POST', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/scripts/${nameOrId}`, method: 'POST', signal
     },
       );
     }
@@ -205,7 +205,7 @@ export const executeScriptShort = (
       
       
       return customInstance<void>(
-      {url: `/api/devices/${identifier}/scripts/${nameOrId}`, method: 'POST', signal
+      {url: `/devices/${identifier}/scripts/${nameOrId}`, method: 'POST', signal
     },
       );
     }

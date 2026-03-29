@@ -43,7 +43,7 @@ export const getMe = (
       
       
       return customInstance<UserResponse>(
-      {url: `/api/users/me`, method: 'GET', signal
+      {url: `/users/me`, method: 'GET', signal
     },
       );
     }
@@ -133,7 +133,7 @@ export const createConsoleToken = (
       
       
       return customInstance<ConsoleTokenResponse>(
-      {url: `/api/users/console_token`, method: 'POST', signal
+      {url: `/users/console_token`, method: 'POST', signal
     },
       );
     }

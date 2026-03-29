@@ -45,7 +45,7 @@ export const listOrgUsers = (
       
       
       return customInstance<OrgUserListResponse>(
-      {url: `/api/orgs/${orgName}/users`, method: 'GET', signal
+      {url: `/orgs/${orgName}/users`, method: 'GET', signal
     },
       );
     }
@@ -136,7 +136,7 @@ export const nervesHubWebAPIOrgUserControllerAdd = (
       
       
       return customInstance<OrgUser>(
-      {url: `/api/orgs/${orgName}/users`, method: 'POST',
+      {url: `/orgs/${orgName}/users`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: orgUserCreationRequest, signal
     },
@@ -200,7 +200,7 @@ export const inviteOrgUser = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/users/invite`, method: 'POST',
+      {url: `/orgs/${orgName}/users/invite`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: orgUserCreationRequest, signal
     },
@@ -264,7 +264,7 @@ export const deleteOrgUser = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/users/${userEmail}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/users/${userEmail}`, method: 'DELETE', signal
     },
       );
     }
@@ -326,7 +326,7 @@ export const nervesHubWebAPIOrgUserControllerShow = (
       
       
       return customInstance<OrgUser>(
-      {url: `/api/orgs/${orgName}/users/${userEmail}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/users/${userEmail}`, method: 'GET', signal
     },
       );
     }
@@ -424,7 +424,7 @@ export const updateOrgUser = (
       
       
       return customInstance<OrgUser>(
-      {url: `/api/orgs/${orgName}/users/${userEmail}`, method: 'PUT',
+      {url: `/orgs/${orgName}/users/${userEmail}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: orgUserUpdateRequest, signal
     },

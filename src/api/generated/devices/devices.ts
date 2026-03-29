@@ -54,7 +54,7 @@ export const executeDeviceCode = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/code`, method: 'POST',
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/code`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: executeDeviceCodeBody, signal
     },
@@ -120,7 +120,7 @@ export const moveDevice = (
       
       
       return customInstance<Device>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/move`, method: 'POST',
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/move`, method: 'POST',
         params, signal
     },
       );
@@ -184,7 +184,7 @@ export const authenticateDevice = (
       
       
       return customInstance<Device>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/auth`, method: 'POST',
+      {url: `/orgs/${orgName}/products/${productName}/devices/auth`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: deviceCertificateAuthRequest, signal
     },
@@ -251,7 +251,7 @@ export const sendScriptToDevice = (
       
       
       return customInstance<unknown>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/scripts/${nameOrId}`, method: 'POST',
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/scripts/${nameOrId}`, method: 'POST',
         params, signal
     },
       );
@@ -315,7 +315,7 @@ export const upgradeDevice = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/upgrade`, method: 'POST', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/upgrade`, method: 'POST', signal
     },
       );
     }
@@ -378,7 +378,7 @@ export const reconnectDevice = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/reconnect`, method: 'POST', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/reconnect`, method: 'POST', signal
     },
       );
     }
@@ -441,7 +441,7 @@ export const nervesHubWebAPIDevicesPenalty = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/penalty`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/penalty`, method: 'DELETE', signal
     },
       );
     }
@@ -504,7 +504,7 @@ export const deleteDevice = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'DELETE', signal
     },
       );
     }
@@ -567,7 +567,7 @@ export const getDevice = (
       
       
       return customInstance<DeviceResponse>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'GET', signal
     },
       );
     }
@@ -672,7 +672,7 @@ export const nervesHubWebAPIDevicesCreate = (
       
       
       return customInstance<Device>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'POST',
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: deviceCreationRequest, signal
     },
@@ -738,7 +738,7 @@ export const updateDevice = (
       
       
       return customInstance<Device>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'PUT',
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: deviceUpdateRequest, signal
     },
@@ -803,7 +803,7 @@ export const listDevices = (
       
       
       return customInstance<DeviceListResponse>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices`, method: 'GET',
+      {url: `/orgs/${orgName}/products/${productName}/devices`, method: 'GET',
         params, signal
     },
       );
@@ -908,7 +908,7 @@ export const rebootDevice = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/devices/${identifier}/reboot`, method: 'POST', signal
+      {url: `/orgs/${orgName}/products/${productName}/devices/${identifier}/reboot`, method: 'POST', signal
     },
       );
     }

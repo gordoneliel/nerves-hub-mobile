@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createStaticNavigation } from "@react-navigation/native";
-import { LoadingView } from "../components/ui";
+import { View } from "react-native";
 import { useAuth, useIsSignedIn, useIsSignedOut } from "../context/AuthContext";
 import {
   useHasOrgProduct,
@@ -17,14 +17,12 @@ import { isLiquidGlassSupported } from "@callstack/liquid-glass";
 
 const RootStack = createNativeStackNavigator({
   screenOptions: {
-    // headerStyle: { backgroundColor: '#F4F5F6' },
-    // headerTintColor: '#0C1202E5',
     headerShown: false,
     headerTransparent: true,
   },
   layout: ({ children }) => {
-    const { isLoading } = useAuth();
-    if (isLoading) return <LoadingView message="Loading…" />;
+    const { ready } = useAuth();
+    if (!ready) return <View />;
     return <>{children}</>;
   },
   screens: {

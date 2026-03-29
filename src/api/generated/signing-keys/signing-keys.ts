@@ -39,7 +39,7 @@ export const deleteSigningKey = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/keys/${name}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/keys/${name}`, method: 'DELETE', signal
     },
       );
     }
@@ -101,7 +101,7 @@ export const getSigningKey = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/keys/${name}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/keys/${name}`, method: 'GET', signal
     },
       );
     }
@@ -197,7 +197,7 @@ export const listSigningKeys = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/keys`, method: 'GET', signal
+      {url: `/orgs/${orgName}/keys`, method: 'GET', signal
     },
       );
     }
@@ -287,7 +287,7 @@ export const createSigningKey = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/keys`, method: 'POST', signal
+      {url: `/orgs/${orgName}/keys`, method: 'POST', signal
     },
       );
     }

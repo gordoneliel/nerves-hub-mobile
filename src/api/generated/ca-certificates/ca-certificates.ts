@@ -45,7 +45,7 @@ export const deleteCACertificate = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/ca_certificates/${serial}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/ca_certificates/${serial}`, method: 'DELETE', signal
     },
       );
     }
@@ -107,7 +107,7 @@ export const getCACertificate = (
       
       
       return customInstance<CACertificate>(
-      {url: `/api/orgs/${orgName}/ca_certificates/${serial}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/ca_certificates/${serial}`, method: 'GET', signal
     },
       );
     }
@@ -203,7 +203,7 @@ export const listCACertificates = (
       
       
       return customInstance<CACertificateListResponse>(
-      {url: `/api/orgs/${orgName}/ca_certificates`, method: 'GET', signal
+      {url: `/orgs/${orgName}/ca_certificates`, method: 'GET', signal
     },
       );
     }
@@ -294,7 +294,7 @@ export const createCACertificate = (
       
       
       return customInstance<CACertificate>(
-      {url: `/api/orgs/${orgName}/ca_certificates`, method: 'POST',
+      {url: `/orgs/${orgName}/ca_certificates`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: cACertificateCreationRequest, signal
     },

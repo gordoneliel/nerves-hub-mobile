@@ -44,7 +44,7 @@ export const deleteFirmware = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/firmwares/${uuid}`, method: 'DELETE', signal
+      {url: `/orgs/${orgName}/products/${productName}/firmwares/${uuid}`, method: 'DELETE', signal
     },
       );
     }
@@ -107,7 +107,7 @@ export const getFirmware = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/firmwares/${uuid}`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/firmwares/${uuid}`, method: 'GET', signal
     },
       );
     }
@@ -210,7 +210,7 @@ export const listFirmwares = (
       
       
       return customInstance<FirmwareListResponse>(
-      {url: `/api/orgs/${orgName}/products/${productName}/firmwares`, method: 'GET', signal
+      {url: `/orgs/${orgName}/products/${productName}/firmwares`, method: 'GET', signal
     },
       );
     }
@@ -307,7 +307,7 @@ export const createFirmware = (
       
       
       return customInstance<void>(
-      {url: `/api/orgs/${orgName}/products/${productName}/firmwares`, method: 'POST', signal
+      {url: `/orgs/${orgName}/products/${productName}/firmwares`, method: 'POST', signal
     },
       );
     }

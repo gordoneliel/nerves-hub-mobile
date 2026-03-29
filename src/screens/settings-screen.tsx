@@ -12,10 +12,15 @@ import { spacing } from "../components/tokens";
 import { useTheme, type ThemeMode } from "../theme/ThemeProvider";
 import { Typography } from "../components/typography";
 import { Card } from "../components/ui";
+import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import { useOrgProduct } from "../context/OrgProductContext";
 import { useMe } from "../hooks/useApi";
 import { Button } from "../components/button";
+import { Card as CardComponent } from "../components/card";
+
+import GroupIcon from "../../assets/icons/group.svg";
+import CheckShieldIcon from "../../assets/icons/check-shield.svg";
 
 import CopyIcon from "../../assets/icons/copy.svg";
 import { trigger } from "react-native-haptic-feedback";
@@ -46,6 +51,7 @@ function SectionLabel({ title }: { title: string }) {
 
 export default function SettingsScreen() {
   const { colors, mode, setMode } = useTheme();
+  const navigation = useNavigation<any>();
   const { logout, instanceUrl } = useAuth();
   const { orgId, productId, resetOrgAndProduct } = useOrgProduct();
   const { data: meData } = useMe();
@@ -119,21 +125,41 @@ export default function SettingsScreen() {
           </Card>
         </View>
 
-        {/*<View style={styles.section}>
+        <View style={styles.section}>
           <SectionLabel title="Organization" />
-          <Card>
-            <Typography type="body" fontSize={14}>
-              {orgId} / {productId}
-            </Typography>
-            <Button
-              label="Switch Product"
-              type="tertiary"
-              size="sm"
-              onPress={resetOrgAndProduct}
-              style={styles.switchButton}
-            />
-          </Card>
-        </View>*/}
+          <CardComponent onPress={() => navigation.navigate("OrgUsers")}>
+            <View style={styles.navRow}>
+              <GroupIcon width={20} height={20} color={colors.textSecondary} />
+              <View style={{ flex: 1 }}>
+                <Typography type="subheader" fontSize={16} fontWeight="600" lineHeight={22}>
+                  Users
+                </Typography>
+                <Typography type="body" fontSize={12} color={colors.textSecondary}>
+                  Manage members of {orgId}
+                </Typography>
+              </View>
+              <Typography type="header" fontSize={22} color={colors.textTertiary}>
+                ›
+              </Typography>
+            </View>
+          </CardComponent>
+          <CardComponent onPress={() => navigation.navigate("CACertificates")}>
+            <View style={styles.navRow}>
+              <CheckShieldIcon width={20} height={20} color={colors.textSecondary} />
+              <View style={{ flex: 1 }}>
+                <Typography type="subheader" fontSize={16} fontWeight="600" lineHeight={22}>
+                  CA Certificates
+                </Typography>
+                <Typography type="body" fontSize={12} color={colors.textSecondary}>
+                  View certificates for {orgId}
+                </Typography>
+              </View>
+              <Typography type="header" fontSize={22} color={colors.textTertiary}>
+                ›
+              </Typography>
+            </View>
+          </CardComponent>
+        </View>
 
         <View style={styles.section}>
           <SectionLabel title="Appearance" />
@@ -191,6 +217,11 @@ const styles = StyleSheet.create({
   switchButton: {
     alignSelf: "flex-start",
     marginTop: spacing.md,
+  },
+  navRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
   },
   segmentedControlWrapper: {
     paddingHorizontal: spacing.lg,

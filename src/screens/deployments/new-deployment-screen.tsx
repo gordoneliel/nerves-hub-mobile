@@ -96,7 +96,7 @@ export default function NewDeploymentScreen() {
     setSubmitting(true);
     try {
       await customInstance({
-        url: `/api/orgs/${orgId}/products/${productId}/deployments`,
+        url: `/orgs/${orgId}/products/${productId}/deployments`,
         method: "POST",
         data: {
           name: name.trim(),
@@ -266,7 +266,7 @@ export default function NewDeploymentScreen() {
           <Typography type="body" fontSize={15} color={colors.textPrimary}>
             Activate immediately
           </Typography>
-          <Switch value={isActive} onValueChange={setIsActive} />
+          <Switch value={isActive} onValueChange={setIsActive} trackColor={{ true: colors.accent }} />
         </View>
 
         {/* Submit */}
