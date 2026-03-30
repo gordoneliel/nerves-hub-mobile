@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import useThemedStyles from "../theme/useThemedStyles";
 import type { ColorTheme } from "../theme/colors";
@@ -9,6 +9,7 @@ import { Card } from "../components/card";
 import { Tag } from "../components/tag";
 import { EmptyView, ErrorView, LoadingView } from "../components/ui";
 import { useScripts } from "../hooks/useApi";
+import { useRefresh } from "../hooks/useRefresh";
 import type { Script } from "../api/generated/schemas";
 
 import SendIcon from "../../assets/icons/send.svg";
@@ -18,6 +19,7 @@ export default function ScriptsScreen() {
   const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const scriptsQuery = useScripts();
+  const { refreshing, onRefresh } = useRefresh(() => scriptsQuery.refetch());
 
   if (scriptsQuery.isLoading) return <LoadingView message="Loading scripts…" />;
   if (scriptsQuery.isError)
@@ -88,13 +90,8 @@ export default function ScriptsScreen() {
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
-      refreshControl={
-        <RefreshControl
-          refreshing={scriptsQuery.isRefetching}
-          onRefresh={() => scriptsQuery.refetch()}
-          tintColor={themedStyles.textTertiary.color}
-        />
-      }
+      refreshing={refreshing}
+      onRefresh={onRefresh}
       ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
       ListEmptyComponent={
         <EmptyView

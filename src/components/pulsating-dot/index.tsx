@@ -25,15 +25,25 @@ export const PulsatingDotWithRipple: React.FC<PulsatingDotWithRippleProps> = ({
   isDisabled = false,
 }) => {
   const scaleValue = useSharedValue(1);
-  const opacityValue = useSharedValue(0.6);
+  const opacityValue = useSharedValue(1);
+
+  const animatedCircle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scaleValue.value }],
+      opacity: opacityValue.value,
+    };
+  });
 
   const startRippleAnimation = useCallback(() => {
+    // Cancel any existing animations first
     cancelAnimation(scaleValue);
     cancelAnimation(opacityValue);
 
+    // Reset values
     scaleValue.value = 1;
-    opacityValue.value = 0.6;
+    opacityValue.value = 1;
 
+    // Start new animations
     scaleValue.value = withRepeat(withTiming(pulseScale, { duration }), -1);
     opacityValue.value = withRepeat(
       withTiming(0, { duration, easing: Easing.quad }),
@@ -48,7 +58,7 @@ export const PulsatingDotWithRipple: React.FC<PulsatingDotWithRippleProps> = ({
       cancelAnimation(scaleValue);
       cancelAnimation(opacityValue);
       scaleValue.value = 1;
-      opacityValue.value = 0;
+      opacityValue.value = 1;
     }
 
     return () => {
@@ -57,46 +67,45 @@ export const PulsatingDotWithRipple: React.FC<PulsatingDotWithRippleProps> = ({
     };
   }, [startRippleAnimation, isDisabled, scaleValue, opacityValue]);
 
-  const rippleStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scaleValue.value }],
-    opacity: opacityValue.value,
-  }));
-
-  const rippleSize = size * pulseScale;
-
   return (
     <View
       pointerEvents="none"
-      style={{
-        width: size,
-        height: size,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {!isDisabled && (
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            rippleStyle,
-            {
-              position: "absolute",
-              width: size,
-              height: size,
-              borderRadius: size / 2,
-              backgroundColor: color,
-            },
-          ]}
-        />
-      )}
-      <View
-        style={{
+      style={[
+        styles.circle,
+        {
           width: size,
           height: size,
-          borderRadius: size / 2,
           backgroundColor: color,
-        }}
+          borderRadius: size / 2,
+        },
+      ]}
+    >
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          animatedCircle,
+          styles.innerCircle,
+          {
+            backgroundColor: color,
+            borderRadius: size / 2,
+          },
+        ]}
       />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  rippleView: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  circle: {
+    margin: 2,
+  },
+  innerCircle: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+  },
+});

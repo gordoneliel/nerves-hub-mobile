@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import useThemedStyles from "../../theme/useThemedStyles";
 import type { ColorTheme } from "../../theme/colors";
@@ -7,6 +7,7 @@ import type { Spacing } from "../../theme/spacing";
 import { Typography } from "../../components/typography";
 import { Card, EmptyView, ErrorView, LoadingView } from "../../components/ui";
 import { useFirmware } from "../../hooks/useApi";
+import { useRefresh } from "../../hooks/useRefresh";
 import type { Firmware } from "../../api/generated/schemas";
 
 import PackageIcon from "../../../assets/icons/package.svg";
@@ -15,6 +16,7 @@ export default function FirmwareScreen() {
   const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const firmwareQuery = useFirmware();
+  const { refreshing, onRefresh } = useRefresh(() => firmwareQuery.refetch());
 
   if (firmwareQuery.isLoading)
     return <LoadingView message="Loading firmware…" />;
@@ -132,13 +134,8 @@ export default function FirmwareScreen() {
         isEmpty ? themedStyles.listEmpty : themedStyles.list
       }
       ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-      refreshControl={
-        <RefreshControl
-          refreshing={firmwareQuery.isRefetching}
-          onRefresh={() => firmwareQuery.refetch()}
-          tintColor={themedStyles.textTertiary.color}
-        />
-      }
+      refreshing={refreshing}
+      onRefresh={onRefresh}
     />
   );
 }

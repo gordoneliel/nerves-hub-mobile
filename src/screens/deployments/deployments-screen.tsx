@@ -1,5 +1,5 @@
 import { useLayoutEffect } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import useThemedStyles from "../../theme/useThemedStyles";
 import type { ColorTheme } from "../../theme/colors";
@@ -8,6 +8,7 @@ import { Typography } from "../../components/typography";
 import { Card, EmptyView, ErrorView, LoadingView } from "../../components/ui";
 import { Tag } from "../../components/tag";
 import { useDeployments } from "../../hooks/useApi";
+import { useRefresh } from "../../hooks/useRefresh";
 import type { DeploymentGroup } from "../../api/generated/schemas";
 import CheckCircleIcon from "../../../assets/icons/check-circle.svg";
 import CloseIcon from "../../../assets/icons/close-big.svg";
@@ -17,6 +18,7 @@ export default function DeploymentsScreen() {
   const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const deploymentsQuery = useDeployments();
+  const { refreshing, onRefresh } = useRefresh(() => deploymentsQuery.refetch());
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -231,13 +233,8 @@ export default function DeploymentsScreen() {
         isEmpty ? themedStyles.listEmpty : themedStyles.list
       }
       ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-      refreshControl={
-        <RefreshControl
-          refreshing={deploymentsQuery.isRefetching}
-          onRefresh={() => deploymentsQuery.refetch()}
-          tintColor={themedStyles.textTertiary.color}
-        />
-      }
+      refreshing={refreshing}
+      onRefresh={onRefresh}
     />
   );
 }

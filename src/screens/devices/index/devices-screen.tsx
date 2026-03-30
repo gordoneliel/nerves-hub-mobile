@@ -28,6 +28,7 @@ import { EmptyView, ErrorView, LoadingView } from "../../../components/ui";
 import { useOrgProduct } from "../../../context/OrgProductContext";
 import { useInfiniteDevices } from "../../../hooks/useApi";
 import { useDevicesChannel } from "../../../hooks/useDevicesChannel";
+import { useRefresh } from "../../../hooks/useRefresh";
 import {
   useRebootDevice,
   useReconnectDevice,
@@ -159,22 +160,12 @@ const ListHeader = React.memo(function ListHeader({
   );
 });
 
-function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
-
 export default function DevicesScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
   const { orgId, productId } = useOrgProduct();
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebouncedValue(search, 300);
-  const devicesQuery = useInfiniteDevices(debouncedSearch || undefined);
+  const devicesQuery = useInfiniteDevices();
+  const { refreshing, onRefresh } = useRefresh(() => devicesQuery.refetch());
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [platformFilter, setPlatformFilter] = useState<string | null>(null);
   const [deploymentFilter, setDeploymentFilter] = useState<string | null>(null);
@@ -540,24 +531,12 @@ export default function DevicesScreen() {
       contentContainerStyle={styles.list}
       ListHeaderComponent={listHeader}
       contentInsetAdjustmentBehavior="automatic"
-      refreshControl={
-        <RefreshControl
-          refreshing={
-            devicesQuery.isRefetching && !devicesQuery.isFetchingNextPage
-          }
-          onRefresh={() => devicesQuery.refetch()}
-          progressViewOffset={120}
-          tintColor={colors.textTertiary}
-        />
-      }
+      refreshing={refreshing}
+      onRefresh={onRefresh}
       ListEmptyComponent={
         <EmptyView
           title="No Devices"
-          message={
-            search
-              ? "No devices match your search."
-              : "No devices found for this product."
-          }
+          message={"No devices found for this product."}
         />
       }
       onEndReached={() => {
