@@ -258,6 +258,7 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
       borderWidth: 0.2,
       borderColor: colors.borderLight,
       backgroundColor: colors.backgroundSecondary,
+      overflow: "visible",
     },
     details: {
       flexDirection: "column",
