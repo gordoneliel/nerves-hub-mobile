@@ -194,9 +194,9 @@ export const COLORS_LIGHT: ColorTheme = {
 // border       oklch(0.200 0.015 250)→ #252C35
 // borderLight  oklch(0.175 0.015 250)→ #1E252E
 export const COLORS_DARK: ColorTheme = {
-  background: '#111113',
-  backgroundSecondary: '#1A1A1C',
-  backgroundTertiary: '#252528',
+  background: "#050506",
+  backgroundSecondary: "#111113",
+  backgroundTertiary: "#252528",
   surface: "#11161E",
   surfaceHover: "#181E28",
   border: "#252C35",

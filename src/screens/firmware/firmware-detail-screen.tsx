@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
   metaRow: {
     flexDirection: "row",

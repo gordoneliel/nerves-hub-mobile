@@ -344,10 +344,10 @@ export default function DeviceDetailScreen({ route }: Props) {
               value={device.firmware_metadata?.architecture}
             />
             <MetaRow
-              label="Connected for"
+              label="Latest connection"
               value={
                 device.last_communication
-                  ? timeAgo(device.last_communication)
+                  ? `${new Date(device.last_communication).toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} (${timeAgo(device.last_communication)})`
                   : null
               }
             />
@@ -508,6 +508,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
     flex: 1,
     gap: spacing.sm,
   },

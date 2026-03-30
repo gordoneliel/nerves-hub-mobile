@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
   list: {
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
   },
   sectionHeader: {
     flexDirection: "row",

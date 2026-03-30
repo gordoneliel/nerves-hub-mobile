@@ -308,6 +308,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
     gap: spacing.md
   },
   metaRow: {

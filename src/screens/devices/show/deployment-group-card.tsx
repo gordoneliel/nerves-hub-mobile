@@ -247,6 +247,7 @@ export function DeploymentGroupCard({
 const styles = StyleSheet.create({
   section: {
     marginBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
     gap: spacing.sm,
   },
   headerRow: {
@@ -270,6 +271,7 @@ const styles = StyleSheet.create({
   dropdownRow: {
     flexDirection: "row",
     marginTop: spacing.sm,
+    justifyContent: "space-between",
     gap: 6,
   },
 });

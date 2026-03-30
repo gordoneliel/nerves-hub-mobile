@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -14,9 +14,11 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function Card({
   children,
+  style,
   onPress,
 }: {
   children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }) {
   const { colors: themeColors } = useTheme();
@@ -50,6 +52,7 @@ export function Card({
             borderColor: themeColors.border,
           },
           animatedStyle,
+          style,
         ]}
       >
         {children}
@@ -65,6 +68,7 @@ export function Card({
           backgroundColor: themeColors.backgroundSecondary,
           borderColor: themeColors.border,
         },
+        style,
       ]}
     >
       {children}
@@ -78,7 +82,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     paddingBottom: 18,
     paddingHorizontal: spacing.lg,
-    marginHorizontal: spacing.lg,
     borderCurve: "continuous",
     boxShadow: [
       {

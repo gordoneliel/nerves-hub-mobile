@@ -117,18 +117,21 @@ export default function FirmwareScreen() {
             Firmware
           </Typography>
           {firmwares.length > 0 && (
-            <View style={{backgroundColor: colors.backgroundTertiary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8}}>
+            <View
+              style={{
+                backgroundColor: colors.backgroundTertiary,
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderRadius: 8,
+              }}
+            >
               <Typography type="body" fontSize={15} color={colors.textTertiary}>
                 {firmwares.length}
               </Typography>
             </View>
           )}
         </View>
-        <Typography
-          type="body"
-          fontSize={13}
-          color={colors.textTertiary}
-        >
+        <Typography type="body" fontSize={13} color={colors.textTertiary}>
           Uploaded firmware images for this product
         </Typography>
       </View>
@@ -136,31 +139,28 @@ export default function FirmwareScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <FlatList
-        data={firmwares}
-        keyExtractor={(item) => item.uuid ?? String(Math.random())}
-        renderItem={renderFirmware}
-        ListHeaderComponent={renderListHeader}
-        ListEmptyComponent={
-          <EmptyView
-            title="No Firmware"
-            message="No firmware has been uploaded for this product."
-          />
-        }
-        contentContainerStyle={styles.list}
-        style={{ flex: 1 }}
-        ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        refreshControl={
-          <RefreshControl
-            refreshing={firmwareQuery.isRefetching}
-            onRefresh={() => firmwareQuery.refetch()}
-            progressViewOffset={120}
-            tintColor={colors.textTertiary}
-          />
-        }
-      />
-    </View>
+    <FlatList
+      style={[styles.container, { backgroundColor: colors.background }]}
+      data={firmwares}
+      keyExtractor={(item) => item.uuid ?? String(Math.random())}
+      renderItem={renderFirmware}
+      contentInsetAdjustmentBehavior="automatic"
+      ListEmptyComponent={
+        <EmptyView
+          title="No Firmware"
+          message="No firmware has been uploaded for this product."
+        />
+      }
+      contentContainerStyle={styles.list}
+      ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
+      refreshControl={
+        <RefreshControl
+          refreshing={firmwareQuery.isRefetching}
+          onRefresh={() => firmwareQuery.refetch()}
+          tintColor={colors.textTertiary}
+        />
+      }
+    />
   );
 }
 
@@ -189,11 +189,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    paddingTop: 120,
+    paddingTop: spacing.md,
     paddingBottom: 120,
+    paddingHorizontal: spacing.lg,
   },
   listHeader: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.xs,
   },

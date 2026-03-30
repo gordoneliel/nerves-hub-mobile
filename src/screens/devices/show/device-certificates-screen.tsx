@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
   list: {
     paddingTop: 130,
     paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
   },
   header: {
     paddingHorizontal: spacing.lg,

@@ -13,6 +13,7 @@ const DevicesStack = createNativeStackNavigator({
     headerBackButtonDisplayMode: "minimal",
     headerTransparent: true,
     headerLargeTitle: true,
+    headerLargeTitleEnabled: true,
     headerLargeTitleStyle: {
       fontFamily: "PlusJakartaSans-VariableFont_wght",
       fontSize: 26,
@@ -23,7 +24,8 @@ const DevicesStack = createNativeStackNavigator({
     DevicesList: {
       screen: DevicesScreen,
       options: {
-        title: "",
+        title: "Devices",
+        // headerTitle: "Devices",
       },
     },
     DeviceDetail: {

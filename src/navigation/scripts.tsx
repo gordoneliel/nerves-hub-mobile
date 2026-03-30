@@ -17,7 +17,7 @@ const ScriptsStack = createNativeStackNavigator({
     ScriptsList: {
       screen: ScriptsScreen,
       options: {
-        title: "",
+        title: "Scripts",
       },
     },
     RunScript: {

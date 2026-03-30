@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 import ContextMenu from "react-native-context-menu-view";
 
 import { spacing } from "../../../components/tokens";
@@ -21,6 +21,7 @@ export type DeviceMenuAction = "reboot" | "reconnect" | "identify" | "tags" | "d
 
 export type DeviceCardProps = {
   device: Device;
+  style?: StyleProp<ViewStyle>;
   onPress?: (device: Device) => void;
   onEllipsisPress?: (device: Device) => void;
   onMenuAction?: (device: Device, action: DeviceMenuAction) => void;
@@ -51,11 +52,12 @@ export const DeviceCard = memo(DeviceCardRaw, (prev, next) => {
     prev.device.deployment_group?.platform ===
       next.device.deployment_group?.platform &&
     prev.onPress === next.onPress &&
-    prev.onMenuAction === next.onMenuAction
+    prev.onMenuAction === next.onMenuAction &&
+    prev.style === next.style
   );
 });
 
-function DeviceCardRaw({ device, onPress, onMenuAction }: DeviceCardProps) {
+function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps) {
   const { colors: themeColors } = useTheme();
 
   const handlePress = useCallback(() => {
@@ -80,7 +82,7 @@ function DeviceCardRaw({ device, onPress, onMenuAction }: DeviceCardProps) {
       : [];
 
   return (
-    <Card onPress={handlePress}>
+    <Card onPress={handlePress} style={style}>
       <View style={styles.header}>
         <View style={styles.identifierRow}>
           <View

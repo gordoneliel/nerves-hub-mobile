@@ -17,7 +17,7 @@ const FirmwareStack = createNativeStackNavigator({
     FirmwareList: {
       screen: FirmwareScreen,
       options: {
-        title: "",
+        title: "Firmware",
       },
     },
     FirmwareDetail: {

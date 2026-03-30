@@ -3,6 +3,7 @@ import SettingsScreen from "../screens/settings-screen";
 import OrgUsersScreen from "../screens/settings/org-users-screen";
 import CACertificatesScreen from "../screens/settings/ca-certificates-screen";
 import SigningKeysScreen from "../screens/settings/signing-keys-screen";
+import AppearanceScreen from "../screens/settings/appearance-screen";
 
 const SettingsStack = createNativeStackNavigator({
   screenOptions: {
@@ -19,7 +20,7 @@ const SettingsStack = createNativeStackNavigator({
     SettingsMain: {
       screen: SettingsScreen,
       options: {
-        title: "",
+        title: "Settings",
       },
     },
     OrgUsers: {
@@ -40,6 +41,13 @@ const SettingsStack = createNativeStackNavigator({
       screen: SigningKeysScreen,
       options: {
         title: "",
+        headerTransparent: true,
+      },
+    },
+    Appearance: {
+      screen: AppearanceScreen,
+      options: {
+        title: "Appearance",
         headerTransparent: true,
       },
     },

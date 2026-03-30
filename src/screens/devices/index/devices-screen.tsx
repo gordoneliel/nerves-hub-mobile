@@ -78,7 +78,7 @@ const ListHeader = React.memo(function ListHeader({
 }: ListHeaderProps) {
   return (
     <>
-      <View style={styles.headerContent}>
+      {/*<View style={styles.headerContent}>
         <Typography
           type="header"
           fontSize={24}
@@ -91,7 +91,7 @@ const ListHeader = React.memo(function ListHeader({
         <Typography type="body" fontSize={14} color={colors.textSecondary}>
           {orgId} / {productId}
         </Typography>
-      </View>
+      </View>*/}
       {/*<View style={styles.searchWrapper}>
         <SearchInput placeholder="Search devices" />
       </View>*/}
@@ -525,6 +525,7 @@ export default function DevicesScreen() {
   const renderDevice = ({ item }: { item: Device }) => (
     <DeviceCard
       device={item}
+      style={{ marginHorizontal: spacing.lg }}
       onPress={(device) =>
         navigation.navigate("DeviceDetail", {
           deviceId: device.id!,
@@ -536,13 +537,14 @@ export default function DevicesScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
+        style={[styles.container, { backgroundColor: colors.background }]}
         data={devices}
         keyExtractor={(item) => String(item.identifier)}
         renderItem={renderDevice}
         contentContainerStyle={styles.list}
         ListHeaderComponent={listHeader}
+        contentInsetAdjustmentBehavior="automatic"
         refreshControl={
           <RefreshControl
             refreshing={
@@ -579,7 +581,6 @@ export default function DevicesScreen() {
           ) : null
         }
       />
-    </View>
   );
 }
 
@@ -592,13 +593,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   list: {
-    paddingTop: 120,
+    // paddingTop: 120,
     paddingBottom: 120,
   },
   headerContent: {
-    paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
   searchWrapper: {
     paddingHorizontal: spacing.lg,

@@ -18,7 +18,7 @@ const DeploymentsStack = createNativeStackNavigator({
     DeploymentsList: {
       screen: DeploymentsScreen,
       options: {
-        title: "",
+        title: "Deployments",
       },
     },
     DeploymentDetail: {

@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 120,
+    paddingHorizontal: spacing.lg,
   },
   headerContent: {
     paddingHorizontal: spacing.lg,
@@ -148,7 +149,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     paddingBottom: 18,
     paddingHorizontal: spacing.lg,
-    marginHorizontal: spacing.lg,
     borderCurve: "continuous",
     borderWidth: StyleSheet.hairlineWidth,
   },

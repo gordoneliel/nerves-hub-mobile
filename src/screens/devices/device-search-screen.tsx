@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 120,
+    paddingHorizontal: spacing.lg,
   },
   loadingFooter: {
     paddingVertical: spacing.lg,

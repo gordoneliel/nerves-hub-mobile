@@ -237,31 +237,28 @@ export default function DeploymentsScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <FlatList
-        style={{ flex: 1 }}
-        data={deployments}
-        keyExtractor={(item) => String(item.id ?? item.name)}
-        renderItem={renderDeployment}
-        ListHeaderComponent={renderListHeader}
-        ListEmptyComponent={
-          <EmptyView
-            title="No Deployments"
-            message="No deployment groups exist for this product."
-          />
-        }
-        contentContainerStyle={styles.list}
-        ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        refreshControl={
-          <RefreshControl
-            refreshing={deploymentsQuery.isRefetching}
-            onRefresh={() => deploymentsQuery.refetch()}
-            tintColor={colors.textTertiary}
-            progressViewOffset={120}
-          />
-        }
-      />
-    </View>
+    <FlatList
+      style={[styles.container, { backgroundColor: colors.background }]}
+      data={deployments}
+      keyExtractor={(item) => String(item.id ?? item.name)}
+      renderItem={renderDeployment}
+      contentInsetAdjustmentBehavior="automatic"
+      ListEmptyComponent={
+        <EmptyView
+          title="No Deployments"
+          message="No deployment groups exist for this product."
+        />
+      }
+      contentContainerStyle={styles.list}
+      ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
+      refreshControl={
+        <RefreshControl
+          refreshing={deploymentsQuery.isRefetching}
+          onRefresh={() => deploymentsQuery.refetch()}
+          tintColor={colors.textTertiary}
+        />
+      }
+    />
   );
 }
 
@@ -270,12 +267,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    paddingTop: 120,
+    paddingTop: spacing.md,
     paddingBottom: 120,
+    paddingHorizontal: spacing.lg,
     flexGrow: 1,
   },
   listHeader: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.xs,
   },

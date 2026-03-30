@@ -17,8 +17,7 @@ export default function ScriptsScreen() {
   const navigation = useNavigation<any>();
   const scriptsQuery = useScripts();
 
-  if (scriptsQuery.isLoading)
-    return <LoadingView message="Loading scripts…" />;
+  if (scriptsQuery.isLoading) return <LoadingView message="Loading scripts…" />;
   if (scriptsQuery.isError)
     return (
       <ErrorView
@@ -32,7 +31,12 @@ export default function ScriptsScreen() {
   const renderScript = ({ item }: { item: Script }) => (
     <Card onPress={() => navigation.navigate("RunScript", { script: item })}>
       <View style={styles.cardHeader}>
-        <Typography type="subheader" fontSize={16} fontWeight="600" flexShrink={1}>
+        <Typography
+          type="subheader"
+          fontSize={16}
+          fontWeight="600"
+          flexShrink={1}
+        >
           {item.name ?? "Untitled"}
         </Typography>
         <Tag
@@ -81,7 +85,6 @@ export default function ScriptsScreen() {
         fontWeight="600"
         lineHeight={28}
         marginBottom={4}
-        paddingHorizontal={spacing.lg}
         paddingBottom={spacing.md}
       >
         Scripts
@@ -90,35 +93,30 @@ export default function ScriptsScreen() {
   }
 
   return (
-    <View
+    <FlatList
       style={[styles.container, { backgroundColor: colors.background }]}
-    >
-      <FlatList
-        data={scripts}
-        keyExtractor={(item) => String(item.id ?? item.name ?? Math.random())}
-        renderItem={renderScript}
-        ListHeaderComponent={renderListHeader}
-        style={{ flex: 1 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={scriptsQuery.isRefetching}
-            onRefresh={() => scriptsQuery.refetch()}
-            progressViewOffset={120}
-            tintColor={colors.textTertiary}
+      data={scripts}
+      keyExtractor={(item) => String(item.id ?? item.name ?? Math.random())}
+      renderItem={renderScript}
+      contentInsetAdjustmentBehavior="automatic"
+      refreshControl={
+        <RefreshControl
+          refreshing={scriptsQuery.isRefetching}
+          onRefresh={() => scriptsQuery.refetch()}
+          tintColor={colors.textTertiary}
+        />
+      }
+      ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
+      ListEmptyComponent={
+        <View style={styles.emptyContainer}>
+          <EmptyView
+            title="No Scripts"
+            message="No support scripts have been created for this product."
           />
-        }
-        ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <EmptyView
-              title="No Scripts"
-              message="No support scripts have been created for this product."
-            />
-          </View>
-        }
-        contentContainerStyle={styles.list}
-      />
-    </View>
+        </View>
+      }
+      contentContainerStyle={[styles.list, scripts.length === 0 && styles.listEmpty]}
+    />
   );
 }
 
@@ -127,9 +125,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    flexGrow: 1,
-    paddingTop: 120,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+  },
+  listEmpty: {
+    flexGrow: 1,
   },
   cardHeader: {
     flexDirection: "row",

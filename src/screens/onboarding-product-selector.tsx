@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
   },
   cardContent: {
     flexDirection: "row",
