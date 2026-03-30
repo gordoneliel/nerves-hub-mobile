@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SettingsScreen from "../screens/settings-screen";
 import OrgUsersScreen from "../screens/settings/org-users-screen";
 import CACertificatesScreen from "../screens/settings/ca-certificates-screen";
+import SigningKeysScreen from "../screens/settings/signing-keys-screen";
 
 const SettingsStack = createNativeStackNavigator({
   screenOptions: {
@@ -30,6 +31,13 @@ const SettingsStack = createNativeStackNavigator({
     },
     CACertificates: {
       screen: CACertificatesScreen,
+      options: {
+        title: "",
+        headerTransparent: true,
+      },
+    },
+    SigningKeys: {
+      screen: SigningKeysScreen,
       options: {
         title: "",
         headerTransparent: true,

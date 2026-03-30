@@ -21,6 +21,7 @@ import { Card as CardComponent } from "../components/card";
 
 import GroupIcon from "../../assets/icons/group.svg";
 import CheckShieldIcon from "../../assets/icons/check-shield.svg";
+import KeyIcon from "../../assets/icons/key.svg";
 
 import CopyIcon from "../../assets/icons/copy.svg";
 import { trigger } from "react-native-haptic-feedback";
@@ -152,6 +153,22 @@ export default function SettingsScreen() {
                 </Typography>
                 <Typography type="body" fontSize={12} color={colors.textSecondary}>
                   View certificates for {orgId}
+                </Typography>
+              </View>
+              <Typography type="header" fontSize={22} color={colors.textTertiary}>
+                ›
+              </Typography>
+            </View>
+          </CardComponent>
+          <CardComponent onPress={() => navigation.navigate("SigningKeys")}>
+            <View style={styles.navRow}>
+              <KeyIcon width={20} height={20} color={colors.textSecondary} />
+              <View style={{ flex: 1 }}>
+                <Typography type="subheader" fontSize={16} fontWeight="600" lineHeight={22}>
+                  Signing Keys
+                </Typography>
+                <Typography type="body" fontSize={12} color={colors.textSecondary}>
+                  View signing keys for {orgId}
                 </Typography>
               </View>
               <Typography type="header" fontSize={22} color={colors.textTertiary}>
