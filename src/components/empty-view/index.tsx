@@ -10,10 +10,12 @@ export function EmptyView({
   title = "Nothing here",
   message,
   icon,
+  action,
 }: {
   title?: string;
   message?: string;
   icon?: React.ReactElement;
+  action?: React.ReactElement;
 }) {
   const themedStyles = useThemedStyles(createStyles);
 
@@ -40,6 +42,7 @@ export function EmptyView({
           {message}
         </Typography>
       )}
+      {action && <View style={themedStyles.action}>{action}</View>}
     </View>
   );
 }
@@ -64,5 +67,8 @@ const createStyles = (
     },
     message: {
       color: colors.textSecondary,
+    },
+    action: {
+      marginTop: spacing[12],
     },
   });
