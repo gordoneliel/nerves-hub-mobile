@@ -1,8 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import FirmwareScreen from "../screens/firmware/firmware-screen";
-import FirmwareDetailScreen from "../screens/firmware/firmware-detail-screen";
+import ScriptsScreen from "../screens/scripts-screen";
+import RunScriptScreen from "../screens/run-script-screen";
 
-const FirmwareStack = createNativeStackNavigator({
+const ScriptsStack = createNativeStackNavigator({
   screenOptions: {
     headerBackButtonDisplayMode: "minimal",
     headerTransparent: true,
@@ -14,20 +14,19 @@ const FirmwareStack = createNativeStackNavigator({
     },
   },
   screens: {
-    FirmwareList: {
-      screen: FirmwareScreen,
+    ScriptsList: {
+      screen: ScriptsScreen,
       options: {
         title: "",
       },
     },
-    FirmwareDetail: {
-      screen: FirmwareDetailScreen,
+    RunScript: {
+      screen: RunScriptScreen,
       options: {
-        title: "",
-        headerTransparent: true,
+        title: "Run Script",
       },
     },
   },
 });
 
-export default FirmwareStack;
+export default ScriptsStack;

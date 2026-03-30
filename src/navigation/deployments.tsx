@@ -7,6 +7,12 @@ const DeploymentsStack = createNativeStackNavigator({
   screenOptions: {
     headerBackButtonDisplayMode: "minimal",
     headerTransparent: true,
+    headerLargeTitle: true,
+    headerLargeTitleStyle: {
+      fontFamily: "PlusJakartaSans-VariableFont_wght",
+      fontSize: 26,
+      fontWeight: "600",
+    },
   },
   screens: {
     DeploymentsList: {

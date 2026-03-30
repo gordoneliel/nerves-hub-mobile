@@ -1,15 +1,20 @@
 import React from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { spacing } from "../components/tokens";
 import { useTheme } from "../theme/ThemeProvider";
 import { Typography } from "../components/typography";
 import { Card } from "../components/card";
+import { Tag } from "../components/tag";
 import { EmptyView, ErrorView, LoadingView } from "../components/ui";
 import { useScripts } from "../hooks/useApi";
 import type { Script } from "../api/generated/schemas";
 
+import SendIcon from "../../assets/icons/send.svg";
+
 export default function ScriptsScreen() {
   const { colors } = useTheme();
+  const navigation = useNavigation<any>();
   const scriptsQuery = useScripts();
 
   if (scriptsQuery.isLoading)
@@ -25,10 +30,22 @@ export default function ScriptsScreen() {
   const scripts = scriptsQuery.data?.data ?? [];
 
   const renderScript = ({ item }: { item: Script }) => (
-    <Card>
-      <Typography type="subheader" fontSize={16} fontWeight="600">
-        {item.name ?? "Untitled"}
-      </Typography>
+    <Card onPress={() => navigation.navigate("RunScript", { script: item })}>
+      <View style={styles.cardHeader}>
+        <Typography type="subheader" fontSize={16} fontWeight="600" flexShrink={1}>
+          {item.name ?? "Untitled"}
+        </Typography>
+        <Tag
+          label="Run"
+          size="sm"
+          colorScheme="white"
+          hasBorder
+          iconLeft={{
+            component: SendIcon,
+            props: { width: 10, height: 10, color: colors.accent },
+          }}
+        />
+      </View>
 
       {item.text ? (
         <Typography
@@ -82,6 +99,14 @@ export default function ScriptsScreen() {
         renderItem={renderScript}
         ListHeaderComponent={renderListHeader}
         style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={scriptsQuery.isRefetching}
+            onRefresh={() => scriptsQuery.refetch()}
+            progressViewOffset={120}
+            tintColor={colors.textTertiary}
+          />
+        }
         ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -105,6 +130,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingTop: 120,
     paddingBottom: spacing.xl,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   emptyContainer: {
     flex: 1,

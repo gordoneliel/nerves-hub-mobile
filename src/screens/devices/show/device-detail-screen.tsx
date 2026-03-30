@@ -4,6 +4,7 @@ import type { StaticScreenProps } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 
 import { spacing } from "../../../components/tokens";
+import { timeAgo } from "../../../utils/timeAgo";
 import { useTheme } from "../../../theme/ThemeProvider";
 import { Typography } from "../../../components/typography";
 import { Card, ErrorView, LoadingView } from "../../../components/ui";
@@ -343,10 +344,10 @@ export default function DeviceDetailScreen({ route }: Props) {
               value={device.firmware_metadata?.architecture}
             />
             <MetaRow
-              label="Last seen"
+              label="Connected for"
               value={
                 device.last_communication
-                  ? new Date(device.last_communication).toLocaleString()
+                  ? timeAgo(device.last_communication)
                   : null
               }
             />

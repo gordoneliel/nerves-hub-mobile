@@ -1,8 +1,6 @@
 import React, { useCallback, useLayoutEffect, useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -87,10 +85,7 @@ export default function NewDeviceScreen() {
         err?.response?.data?.errors ||
         err?.message ||
         "Failed to create device.";
-      Alert.alert(
-        "Error",
-        typeof msg === "string" ? msg : JSON.stringify(msg),
-      );
+      Alert.alert("Error", typeof msg === "string" ? msg : JSON.stringify(msg));
     } finally {
       setSubmitting(false);
     }
@@ -107,25 +102,13 @@ export default function NewDeviceScreen() {
   ]);
 
   return (
-    <KeyboardAvoidingView
+    <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      contentContainerStyle={styles.content}
+      contentInsetAdjustmentBehavior="automatic"
+      keyboardShouldPersistTaps="always"
+      keyboardDismissMode="interactive"
     >
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Typography
-          type="header"
-          fontSize={24}
-          fontWeight="600"
-          lineHeight={28}
-          paddingBottom={spacing.lg}
-        >
-          New Device
-        </Typography>
-
         <View style={styles.field}>
           <Typography
             type="caption"
@@ -219,7 +202,11 @@ export default function NewDeviceScreen() {
           <Typography type="body" fontSize={15} color={colors.textPrimary}>
             Updates enabled
           </Typography>
-          <Switch value={updatesEnabled} onValueChange={setUpdatesEnabled} trackColor={{ true: colors.accent }} />
+          <Switch
+            value={updatesEnabled}
+            onValueChange={setUpdatesEnabled}
+            trackColor={{ true: colors.accent }}
+          />
         </View>
 
         <View style={styles.actions}>
@@ -233,8 +220,7 @@ export default function NewDeviceScreen() {
             disabled={!canSubmit}
           />
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
@@ -244,8 +230,9 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingTop: 130,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
+    flexGrow: 1,
   },
   field: {
     marginBottom: spacing.lg,

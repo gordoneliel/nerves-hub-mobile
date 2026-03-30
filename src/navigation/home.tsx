@@ -9,7 +9,7 @@ import OrgProductSelector from "../screens/org-product-selector";
 import FirmwareStack from "./firmware";
 import DeploymentsStack from "./deployments";
 import SettingsStack from "./settings";
-import ScriptsScreen from "../screens/scripts-screen";
+import ScriptsStack from "./scripts";
 import DevicesStack from "./devices";
 import { colors } from "../theme/colors";
 
@@ -52,7 +52,7 @@ const HomeNavigator = createNativeBottomTabNavigator({
       },
     },
     Scripts: {
-      screen: ScriptsScreen,
+      screen: ScriptsStack,
       options: {
         tabBarIcon: ({ focused }) => ({
           sfSymbol: focused ? "applescript.fill" : "applescript",

@@ -12,7 +12,12 @@ const DevicesStack = createNativeStackNavigator({
   screenOptions: {
     headerBackButtonDisplayMode: "minimal",
     headerTransparent: true,
-    // headerShown: false
+    headerLargeTitle: true,
+    headerLargeTitleStyle: {
+      fontFamily: "PlusJakartaSans-VariableFont_wght",
+      fontSize: 26,
+      fontWeight: "600",
+    },
   },
   screens: {
     DevicesList: {
@@ -49,13 +54,6 @@ const DevicesStack = createNativeStackNavigator({
         headerTransparent: true,
       },
     },
-    NewDevice: {
-      screen: NewDeviceScreen,
-      options: {
-        title: "",
-        headerTransparent: true,
-      },
-    },
     DeviceCertificates: {
       screen: DeviceCertificatesScreen,
       options: {
@@ -76,6 +74,14 @@ const DevicesStack = createNativeStackNavigator({
           screen: EditDeviceTagsScreen,
           options: {
             title: "",
+          },
+        },
+        NewDevice: {
+          screen: NewDeviceScreen,
+          options: {
+            title: "New Device",
+            presentation: "pageSheet",
+            sheetAllowedDetents: [0.8, 1.0],
           },
         },
       },

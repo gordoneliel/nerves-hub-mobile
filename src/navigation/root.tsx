@@ -45,17 +45,23 @@ const RootStack = createNativeStackNavigator({
   groups: {
     Modal: {
       screenOptions: {
-        presentation: isLiquidGlassSupported ? "formSheet" : "transparentModal",
+        presentation: isLiquidGlassSupported ? "pageSheet" : "transparentModal",
         sheetExpandsWhenScrolledToEdge: true,
         sheetGrabberVisible: true,
-        sheetAllowedDetents: "fitToContents",
+        sheetAllowedDetents: [0.5, 1.0],
       },
       screens: {
         OrgProductModal: {
           screen: OrgProductSelector,
           options: {
             headerShown: true,
-            title: "",
+            title: "Switch Product",
+            headerLargeTitle: true,
+            headerLargeTitleStyle: {
+              fontFamily: "PlusJakartaSans-VariableFont_wght",
+              fontSize: 26,
+              fontWeight: "600",
+            },
           },
         },
       },

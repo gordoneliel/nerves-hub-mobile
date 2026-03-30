@@ -103,6 +103,7 @@ const ListHeader = React.memo(function ListHeader({
         <Dropdown
           label="Status"
           items={statusItems}
+          defaultSelectedItemId="all"
           placeholderLabel="Status"
           icon={
             <RadioTowerIcon
@@ -119,6 +120,7 @@ const ListHeader = React.memo(function ListHeader({
         <Dropdown
           label="Platform"
           items={platformItems}
+          defaultSelectedItemId="all"
           placeholderLabel="Platform"
           icon={
             <PlatformIcon width={14} height={14} color={colors.textTertiary} />
@@ -131,6 +133,7 @@ const ListHeader = React.memo(function ListHeader({
         <Dropdown
           label="Arch"
           items={architectureItems}
+          defaultSelectedItemId="all"
           placeholderLabel="Arch"
           icon={<CogIcon width={14} height={14} color={colors.textTertiary} />}
           size="xs"
@@ -141,6 +144,7 @@ const ListHeader = React.memo(function ListHeader({
         <Dropdown
           label="Deployment"
           items={deploymentItems}
+          defaultSelectedItemId="all"
           placeholderLabel="Deployment"
           icon={
             <StackIcon width={14} height={14} color={colors.textTertiary} />
@@ -392,7 +396,7 @@ export default function DevicesScreen() {
   // Derive filter options from loaded devices
   const statusItems = useMemo<DropDownItem<string>[]>(
     () => [
-      { id: "all", label: "All statuses", value: null as any },
+      { id: "all", label: "All", value: null as any },
       { id: "connected", label: "Online", value: "connected" },
       { id: "disconnected", label: "Offline", value: "disconnected" },
     ],
@@ -406,7 +410,7 @@ export default function DevicesScreen() {
         .filter(Boolean) as string[],
     );
     return [
-      { id: "all", label: "All platforms", value: null as any },
+      { id: "all", label: "All", value: null as any },
       ...[...platforms].map((p) => ({ id: p, label: p, value: p })),
     ];
   }, [allDevices]);
@@ -418,7 +422,7 @@ export default function DevicesScreen() {
         .filter(Boolean) as string[],
     );
     return [
-      { id: "all", label: "All deployments", value: null as any },
+      { id: "all", label: "All", value: null as any },
       ...[...groups].map((g) => ({ id: g, label: g, value: g })),
     ];
   }, [allDevices]);
