@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { spacing } from "../../../components/tokens";
 import { useTheme } from "../../../theme/ThemeProvider";
@@ -28,9 +28,14 @@ function isExpired(notAfter?: string) {
 
 export default function DeviceCertificatesScreen() {
   const { colors } = useTheme();
+  const navigation = useNavigation();
   const { orgId, productId } = useOrgProduct();
   const route = useRoute<any>();
   const identifier: string = route.params?.identifier ?? "";
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: `${identifier} Certificates` });
+  }, [navigation, identifier]);
 
   const query = useListDeviceCertificates(
     orgId ?? "",
@@ -94,33 +99,14 @@ export default function DeviceCertificatesScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
+        style={[styles.container, { backgroundColor: colors.background }]}
         data={certs}
         keyExtractor={(item) => item.serial ?? ""}
         renderItem={renderCert}
         contentContainerStyle={styles.list}
+        contentInsetAdjustmentBehavior="automatic"
         ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Typography
-              type="header"
-              fontSize={24}
-              fontWeight="600"
-              lineHeight={28}
-              marginBottom={spacing.xs}
-            >
-              Device Certificates
-            </Typography>
-            <Typography
-              type="body"
-              fontSize={14}
-              color={colors.textSecondary}
-            >
-              {identifier}
-            </Typography>
-          </View>
-        }
         ListEmptyComponent={
           <EmptyView
             title="No Certificates"
@@ -128,7 +114,6 @@ export default function DeviceCertificatesScreen() {
           />
         }
       />
-    </View>
   );
 }
 
@@ -137,13 +122,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    paddingTop: 130,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
     paddingHorizontal: spacing.lg,
-  },
-  header: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
   },
   row: {
     flexDirection: "row",

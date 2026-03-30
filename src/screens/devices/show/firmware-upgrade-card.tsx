@@ -106,7 +106,6 @@ export function FirmwareUpgradeCard({
         letterSpacing={1}
         paddingBottom={spacing.xs}
         paddingHorizontal={spacing.lg}
-        marginLeft={spacing.lg}
         color={colors.textTertiary}
       >
         Firmware Upgrade

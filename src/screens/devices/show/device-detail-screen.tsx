@@ -4,7 +4,6 @@ import type { StaticScreenProps } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 
 import { spacing } from "../../../components/tokens";
-import { timeAgo } from "../../../utils/timeAgo";
 import { useTheme } from "../../../theme/ThemeProvider";
 import { Typography } from "../../../components/typography";
 import { Card, ErrorView, LoadingView } from "../../../components/ui";
@@ -21,6 +20,7 @@ import { useOrgProduct } from "../../../context/OrgProductContext";
 import { Divider } from "../../../components/divider";
 import { DeploymentGroupCard } from "./deployment-group-card";
 import { FirmwareUpgradeCard } from "./firmware-upgrade-card";
+import { DeviceInfoCard } from "./device-info-card";
 
 import PowerIcon from "../../../../assets/icons/power.svg";
 import WifiIcon from "../../../../assets/icons/wifi-light.svg";
@@ -313,87 +313,57 @@ export default function DeviceDetailScreen({ route }: Props) {
             }
           />
         </ScrollView>
+
         <Divider
           horizontalMargin={spacing.lg}
           verticalMargin={{ top: 0, bottom: spacing.lg }}
         />
 
-        <View style={styles.section}>
-          <Typography
-            type="caption"
-            fontSize={11}
-            textTransform="uppercase"
-            letterSpacing={1}
-            paddingBottom={spacing.xs}
-            paddingHorizontal={spacing.lg}
-            marginLeft={spacing.lg}
-            color={colors.textTertiary}
-          >
-            Info
-          </Typography>
-          <Card>
-            <MetaRow label="Organization" value={device.org_name} />
-            <MetaRow label="Product" value={device.product_name} />
-            <MetaRow label="Version" value={device.version} />
-            <MetaRow
-              label="Platform"
-              value={device.firmware_metadata?.platform}
-            />
-            <MetaRow
-              label="Architecture"
-              value={device.firmware_metadata?.architecture}
-            />
-            <MetaRow
-              label="Latest connection"
-              value={
-                device.last_communication
-                  ? `${new Date(device.last_communication).toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} (${timeAgo(device.last_communication)})`
-                  : null
-              }
-            />
-          </Card>
+        <View style={styles.cardListWrapper}>
+          <DeviceInfoCard device={device} />
+
+          <UpdatesToggleCard
+            deviceIdentifier={identifier}
+            updatesEnabled={device.updates_enabled !== false}
+            onToggled={refetch}
+          />
+
+          <DeploymentGroupCard
+            currentDeploymentGroupId={device.deployment_group?.name}
+            deviceIdentifier={identifier}
+          />
+
+          <FirmwareUpgradeCard
+            deviceIdentifier={identifier}
+            currentVersion={device.version}
+            currentPlatform={device.firmware_metadata?.platform}
+            currentArchitecture={device.firmware_metadata?.architecture}
+          />
+
+          {device.updates_blocked_until && (
+            <View style={styles.section}>
+              <Typography
+                type="caption"
+                fontSize={11}
+                textTransform="uppercase"
+                letterSpacing={1}
+                paddingBottom={spacing.xs}
+                paddingHorizontal={spacing.lg}
+                color={colors.textTertiary}
+              >
+                Penalty Box
+              </Typography>
+              <Card>
+                <MetaRow
+                  label="Blocked until"
+                  value={new Date(
+                    device.updates_blocked_until,
+                  ).toLocaleString()}
+                />
+              </Card>
+            </View>
+          )}
         </View>
-
-        <UpdatesToggleCard
-          deviceIdentifier={identifier}
-          updatesEnabled={device.updates_enabled !== false}
-          onToggled={refetch}
-        />
-
-        <DeploymentGroupCard
-          currentDeploymentGroupId={device.deployment_group?.name}
-          deviceIdentifier={identifier}
-        />
-
-        <FirmwareUpgradeCard
-          deviceIdentifier={identifier}
-          currentVersion={device.version}
-          currentPlatform={device.firmware_metadata?.platform}
-          currentArchitecture={device.firmware_metadata?.architecture}
-        />
-
-        {device.updates_blocked_until && (
-          <View style={styles.section}>
-            <Typography
-              type="caption"
-              fontSize={11}
-              textTransform="uppercase"
-              letterSpacing={1}
-              paddingBottom={spacing.xs}
-              paddingHorizontal={spacing.lg}
-              marginLeft={spacing.lg}
-              color={colors.textTertiary}
-            >
-              Penalty Box
-            </Typography>
-            <Card>
-              <MetaRow
-                label="Blocked until"
-                value={new Date(device.updates_blocked_until).toLocaleString()}
-              />
-            </Card>
-          </View>
-        )}
       </ScrollView>
     </View>
   );
@@ -444,7 +414,6 @@ function UpdatesToggleCard({
         letterSpacing={1}
         paddingBottom={spacing.xs}
         paddingHorizontal={spacing.lg}
-        marginLeft={spacing.lg}
         color={colors.textTertiary}
       >
         Updates
@@ -538,5 +507,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: spacing.sm,
+  },
+  cardListWrapper: {
+    gap: spacing.md,
   },
 });

@@ -7,6 +7,7 @@ import { Typography } from "../../components/typography";
 import { Card } from "../../components/ui";
 import { Tag } from "../../components/tag";
 import type { StaticScreenProps } from "@react-navigation/native";
+import { SwitchFirmwareCard } from "./switch-firmware-card";
 import type { DeploymentGroup } from "../../api/generated/schemas";
 import { useOrgProduct } from "../../context/OrgProductContext";
 import { customInstance } from "../../api/mutator/custom-instance";
@@ -56,6 +57,11 @@ export default function DeploymentDetailScreen({ route }: Props) {
 
   const isActive = active;
   const tags = dg.conditions?.tags ?? [];
+  const dgAny = dg as any;
+  const currentRelease = dgAny.current_release;
+  const releasesCount = dgAny.releases_count;
+  const deltaUpdatable = dgAny.delta_updatable;
+  const archiveUuid = dgAny.archive_uuid;
 
   const handleToggle = useCallback(() => {
     const nextState = !isActive;
@@ -248,6 +254,68 @@ export default function DeploymentDetailScreen({ route }: Props) {
         </View>
       )}
 
+      {currentRelease && (
+        <View style={styles.section}>
+          <Typography
+            type="caption"
+            fontSize={11}
+            textTransform="uppercase"
+            letterSpacing={1}
+            paddingBottom={spacing.xs}
+            paddingHorizontal={spacing.lg}
+            color={colors.textTertiary}
+          >
+            Current Release
+          </Typography>
+          <Card>
+            <MetaRow
+              label="Release #"
+              value={
+                currentRelease.number != null
+                  ? `${currentRelease.number}`
+                  : null
+              }
+            />
+            <MetaRow
+              label="Firmware"
+              value={
+                currentRelease.firmware?.version
+                  ? `v${currentRelease.firmware.version}`
+                  : null
+              }
+            />
+            <MetaRow
+              label="Platform"
+              value={currentRelease.firmware?.platform}
+            />
+            <MetaRow
+              label="Architecture"
+              value={currentRelease.firmware?.architecture}
+            />
+            <MetaRow label="UUID" value={currentRelease.firmware?.uuid} />
+            <MetaRow
+              label="Released"
+              value={
+                currentRelease.inserted_at
+                  ? new Date(currentRelease.inserted_at).toLocaleDateString(
+                      undefined,
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                      },
+                    )
+                  : null
+              }
+            />
+          </Card>
+        </View>
+      )}
+
+      <SwitchFirmwareCard deploymentName={dg.name!} />
+
       <View style={styles.section}>
         <Typography
           type="caption"
@@ -264,7 +332,17 @@ export default function DeploymentDetailScreen({ route }: Props) {
           {dg.device_count != null && (
             <MetaRow label="Devices" value={`${dg.device_count}`} />
           )}
-          <MetaRow label="State" value={dg.state} />
+          {releasesCount != null && (
+            <MetaRow label="Releases" value={`${releasesCount}`} />
+          )}
+          <MetaRow label="State" value={isActive ? "Active" : "Inactive"} />
+          {deltaUpdatable != null && (
+            <MetaRow
+              label="Delta updates"
+              value={deltaUpdatable ? "Enabled" : "Disabled"}
+            />
+          )}
+          {archiveUuid && <MetaRow label="Archive UUID" value={archiveUuid} />}
           <MetaRow
             label="Created"
             value={
