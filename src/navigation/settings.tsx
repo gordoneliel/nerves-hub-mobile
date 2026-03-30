@@ -26,29 +26,25 @@ const SettingsStack = createNativeStackNavigator({
     OrgUsers: {
       screen: OrgUsersScreen,
       options: {
-        title: "",
-        headerTransparent: true,
+        title: "Organization Users",
       },
     },
     CACertificates: {
       screen: CACertificatesScreen,
       options: {
-        title: "",
-        headerTransparent: true,
+        title: "CA Certificates",
       },
     },
     SigningKeys: {
       screen: SigningKeysScreen,
       options: {
-        title: "",
-        headerTransparent: true,
+        title: "Signing Keys",
       },
     },
     Appearance: {
       screen: AppearanceScreen,
       options: {
         title: "Appearance",
-        headerTransparent: true,
       },
     },
   },

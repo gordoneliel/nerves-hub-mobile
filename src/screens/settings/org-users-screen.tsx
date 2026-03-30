@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useLayoutEffect, useState } from "react";
 import { Alert, FlatList, StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import ContextMenu from "react-native-context-menu-view";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -28,21 +29,15 @@ import UserIcon from "../../../assets/icons/user-regular.svg";
 
 const ROLES: OrgUserUpdateRequestRole[] = ["admin", "manage", "view"];
 
-function roleBadgeColor(role?: string) {
-  switch (role) {
-    case "admin":
-      return "#6366F1";
-    case "manage":
-      return "#F59E0B";
-    default:
-      return "#9CA3AF";
-  }
-}
-
 export default function OrgUsersScreen() {
   const { colors } = useTheme();
+  const navigation = useNavigation();
   const { orgId } = useOrgProduct();
   const queryClient = useQueryClient();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: `${orgId} Users` });
+  }, [navigation, orgId]);
 
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
@@ -209,65 +204,54 @@ export default function OrgUsersScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item.email ?? ""}
-        renderItem={renderUser}
-        contentContainerStyle={styles.list}
-        ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Typography
-              type="header"
-              fontSize={24}
-              fontWeight="600"
-              lineHeight={28}
-              marginBottom={spacing.xs}
-            >
-              {orgId} Users
-            </Typography>
-
-            <Typography
-              type="caption"
-              fontSize={12}
-              color={colors.textTertiary}
-              paddingBottom={spacing.sm}
-              paddingTop={spacing.lg}
-            >
-              Invite User
-            </Typography>
-
-            <View style={styles.inviteRow}>
-              <View style={{ flex: 1 }}>
-                <TextInput
-                  value={inviteEmail}
-                  onChangeText={setInviteEmail}
-                  placeholder="user@example.com"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  keyboardType="email-address"
-                />
-              </View>
-              <Button
-                label="Invite"
-                type="primary"
-                size="sm"
-                onPress={handleInvite}
-                isLoading={inviting}
-                disabled={!inviteEmail.trim()}
+    <FlatList
+      style={[styles.container, { backgroundColor: colors.background }]}
+      data={users}
+      keyExtractor={(item) => item.email ?? ""}
+      renderItem={renderUser}
+      contentContainerStyle={styles.list}
+      contentInsetAdjustmentBehavior="automatic"
+      ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
+      ListHeaderComponent={
+        <View style={styles.header}>
+          <Typography
+            type="caption"
+            fontSize={12}
+            color={colors.textTertiary}
+            paddingBottom={spacing.sm}
+          >
+            Invite User
+          </Typography>
+          <View style={styles.inviteRow}>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                value={inviteEmail}
+                onChangeText={setInviteEmail}
+                placeholder="user@example.com"
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                clearButtonMode="always"
               />
             </View>
+            <Button
+              label="Invite"
+              type="primary"
+              size="sm"
+              onPress={handleInvite}
+              isLoading={inviting}
+              disabled={!inviteEmail.trim()}
+            />
           </View>
-        }
-        ListEmptyComponent={
-          <EmptyView
-            title="No Users"
-            message="This organization has no users yet."
-          />
-        }
-      />
-    </View>
+        </View>
+      }
+      ListEmptyComponent={
+        <EmptyView
+          title="No Users"
+          message="This organization has no users yet."
+        />
+      }
+    />
   );
 }
 
@@ -276,12 +260,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    paddingTop: 130,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
     paddingHorizontal: spacing.lg,
   },
   header: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
   inviteRow: {

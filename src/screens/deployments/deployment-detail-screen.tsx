@@ -82,7 +82,10 @@ export default function DeploymentDetailScreen({ route }: Props) {
                 queryKey: getListDeploymentGroupsQueryKey(orgId, productId),
               });
             } catch {
-              Alert.alert("Error", `Failed to ${label.toLowerCase()} deployment.`);
+              Alert.alert(
+                "Error",
+                `Failed to ${label.toLowerCase()} deployment.`,
+              );
             } finally {
               setToggling(false);
             }
@@ -124,13 +127,14 @@ export default function DeploymentDetailScreen({ route }: Props) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: dg.name,
       unstable_headerRightItems: () => [
         {
           type: "button",
           label: isActive ? "Deactivate" : "Activate",
           icon: {
             type: "sfSymbol",
-            name: isActive ? "pause.circle" : "play.circle",
+            name: isActive ? "pause.fill" : "play.fill",
           },
           onPress: handleToggle,
           disabled: toggling,
@@ -148,111 +152,32 @@ export default function DeploymentDetailScreen({ route }: Props) {
   }, [navigation, isActive, handleToggle, handleDelete, toggling]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Tag
-            label={isActive ? "Active" : "Inactive"}
-            colorScheme="white"
-            hasBorder
-            hasShadow
-            size="sm"
-            adjustIconPadding
-            iconLeft={{
-              component: isActive ? CheckCircleIcon : CloseIcon,
-              props: {
-                width: isActive ? 16 : 14,
-                height: isActive ? 16 : 14,
-                color: isActive ? "#9ACD32" : "#E0E3E6",
-                fill: isActive ? "#9ACD32" : "#E0E3E6",
-              },
-            }}
-          />
-          <Typography
-            type="header"
-            fontSize={26}
-            fontWeight="600"
-            lineHeight={28}
-          >
-            {dg.name}
-          </Typography>
-        </View>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      contentContainerStyle={styles.content}
+      contentInsetAdjustmentBehavior="automatic"
+    >
+      <View style={styles.statusRow}>
+        <Tag
+          label={isActive ? "Active" : "Inactive"}
+          colorScheme="white"
+          hasBorder
+          hasShadow
+          size="sm"
+          adjustIconPadding
+          iconLeft={{
+            component: isActive ? CheckCircleIcon : CloseIcon,
+            props: {
+              width: isActive ? 16 : 14,
+              height: isActive ? 16 : 14,
+              color: isActive ? "#9ACD32" : "#E0E3E6",
+              fill: isActive ? "#9ACD32" : "#E0E3E6",
+            },
+          }}
+        />
+      </View>
 
-        {dg.firmware && (
-          <View style={styles.section}>
-            <Typography
-              type="caption"
-              fontSize={11}
-              textTransform="uppercase"
-              letterSpacing={1}
-              paddingBottom={spacing.xs}
-              paddingHorizontal={spacing.lg}
-              marginLeft={spacing.lg}
-              color={colors.textTertiary}
-            >
-              Firmware
-            </Typography>
-            <Card>
-              <MetaRow
-                label="Version"
-                value={dg.firmware.version ? `v${dg.firmware.version}` : null}
-              />
-              <MetaRow label="Platform" value={dg.firmware.platform} />
-              <MetaRow label="Architecture" value={dg.firmware.architecture} />
-              <MetaRow label="Author" value={dg.firmware.author} />
-              <MetaRow label="UUID" value={dg.firmware.uuid} />
-              <MetaRow label="FWUP Version" value={dg.firmware.fwup_version} />
-              <MetaRow label="VCS" value={dg.firmware.vcs_identifier} />
-              <MetaRow
-                label="Signed"
-                value={dg.firmware.signed ? "Yes" : "No"}
-              />
-            </Card>
-          </View>
-        )}
-
-        {(dg.conditions?.version || tags.length > 0) && (
-          <View style={styles.section}>
-            <Typography
-              type="caption"
-              fontSize={11}
-              textTransform="uppercase"
-              letterSpacing={1}
-              paddingBottom={spacing.xs}
-              paddingHorizontal={spacing.lg}
-              marginLeft={spacing.lg}
-              color={colors.textTertiary}
-            >
-              Conditions
-            </Typography>
-            <Card>
-              <MetaRow label="Version" value={dg.conditions?.version} />
-              {tags.length > 0 && (
-                <View style={styles.tagsMetaRow}>
-                  <Typography
-                    type="caption"
-                    fontSize={12}
-                    color={colors.textTertiary}
-                  >
-                    Tags
-                  </Typography>
-                  <View style={styles.tagsWrap}>
-                    {tags.map((tag) => (
-                      <Tag
-                        key={tag}
-                        label={`#${tag}`}
-                        size="sm"
-                        colorScheme="white"
-                        hasBorder
-                      />
-                    ))}
-                  </View>
-                </View>
-              )}
-            </Card>
-          </View>
-        )}
-
+      {dg.firmware && (
         <View style={styles.section}>
           <Typography
             type="caption"
@@ -263,30 +188,98 @@ export default function DeploymentDetailScreen({ route }: Props) {
             paddingHorizontal={spacing.lg}
             marginLeft={spacing.lg}
             color={colors.textTertiary}
-          >Info</Typography>
+          >
+            Firmware
+          </Typography>
           <Card>
-            {dg.device_count != null && (
-              <MetaRow label="Devices" value={`${dg.device_count}`} />
-            )}
-            <MetaRow label="State" value={dg.state} />
             <MetaRow
-              label="Created"
-              value={
-                dg.inserted_at
-                  ? new Date(dg.inserted_at).toLocaleString()
-                  : null
-              }
+              label="Version"
+              value={dg.firmware.version ? `v${dg.firmware.version}` : null}
             />
-            <MetaRow
-              label="Updated"
-              value={
-                dg.updated_at ? new Date(dg.updated_at).toLocaleString() : null
-              }
-            />
+            <MetaRow label="Platform" value={dg.firmware.platform} />
+            <MetaRow label="Architecture" value={dg.firmware.architecture} />
+            <MetaRow label="Author" value={dg.firmware.author} />
+            <MetaRow label="UUID" value={dg.firmware.uuid} />
+            <MetaRow label="FWUP Version" value={dg.firmware.fwup_version} />
+            <MetaRow label="VCS" value={dg.firmware.vcs_identifier} />
+            <MetaRow label="Signed" value={dg.firmware.signed ? "Yes" : "No"} />
           </Card>
         </View>
-      </ScrollView>
-    </View>
+      )}
+
+      {(dg.conditions?.version || tags.length > 0) && (
+        <View style={styles.section}>
+          <Typography
+            type="caption"
+            fontSize={11}
+            textTransform="uppercase"
+            letterSpacing={1}
+            paddingBottom={spacing.xs}
+            paddingHorizontal={spacing.lg}
+            color={colors.textTertiary}
+          >
+            Conditions
+          </Typography>
+          <Card>
+            <MetaRow label="Version" value={dg.conditions?.version} />
+            {tags.length > 0 && (
+              <View style={styles.tagsMetaRow}>
+                <Typography
+                  type="caption"
+                  fontSize={12}
+                  color={colors.textTertiary}
+                >
+                  Tags
+                </Typography>
+                <View style={styles.tagsWrap}>
+                  {tags.map((tag) => (
+                    <Tag
+                      key={tag}
+                      label={`#${tag}`}
+                      size="sm"
+                      colorScheme="white"
+                      hasBorder
+                    />
+                  ))}
+                </View>
+              </View>
+            )}
+          </Card>
+        </View>
+      )}
+
+      <View style={styles.section}>
+        <Typography
+          type="caption"
+          fontSize={11}
+          textTransform="uppercase"
+          letterSpacing={1}
+          paddingBottom={spacing.xs}
+          paddingHorizontal={spacing.lg}
+          color={colors.textTertiary}
+        >
+          Info
+        </Typography>
+        <Card>
+          {dg.device_count != null && (
+            <MetaRow label="Devices" value={`${dg.device_count}`} />
+          )}
+          <MetaRow label="State" value={dg.state} />
+          <MetaRow
+            label="Created"
+            value={
+              dg.inserted_at ? new Date(dg.inserted_at).toLocaleString() : null
+            }
+          />
+          <MetaRow
+            label="Updated"
+            value={
+              dg.updated_at ? new Date(dg.updated_at).toLocaleString() : null
+            }
+          />
+        </Card>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -295,21 +288,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingTop: 120,
     paddingBottom: spacing.xl,
   },
-  header: {
-    flexDirection: "column",
-    alignItems: "flex-start",
+  statusRow: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
     paddingBottom: spacing.lg,
-    gap: spacing.md,
+    alignItems: "flex-start",
+    marginBottom: spacing.lg,
   },
   section: {
     marginBottom: spacing.md,
     paddingHorizontal: spacing.lg,
-    gap: spacing.md
+    gap: spacing.md,
   },
   metaRow: {
     flexDirection: "row",

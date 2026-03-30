@@ -1,8 +1,9 @@
 import { useLayoutEffect } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { spacing } from "../../components/tokens";
 import { useNavigation } from "@react-navigation/native";
-import { useTheme } from "../../theme/ThemeProvider";
+import useThemedStyles from "../../theme/useThemedStyles";
+import type { ColorTheme } from "../../theme/colors";
+import type { Spacing } from "../../theme/spacing";
 import { Typography } from "../../components/typography";
 import { Card, EmptyView, ErrorView, LoadingView } from "../../components/ui";
 import { Tag } from "../../components/tag";
@@ -10,9 +11,10 @@ import { useDeployments } from "../../hooks/useApi";
 import type { DeploymentGroup } from "../../api/generated/schemas";
 import CheckCircleIcon from "../../../assets/icons/check-circle.svg";
 import CloseIcon from "../../../assets/icons/close-big.svg";
+import RocketIcon from "../../../assets/icons/rocket.svg";
 
 export default function DeploymentsScreen() {
-  const { colors } = useTheme();
+  const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const deploymentsQuery = useDeployments();
 
@@ -55,12 +57,12 @@ export default function DeploymentsScreen() {
           navigation.navigate("DeploymentDetail", { deployment: item })
         }
       >
-        <View style={styles.headerRow}>
+        <View style={themedStyles.headerRow}>
           <Typography
             fontSize={16}
             fontWeight="600"
             lineHeight={28}
-            color={colors.textPrimary}
+            color={themedStyles.textPrimary.color}
           >
             {item.name}
           </Typography>
@@ -83,11 +85,11 @@ export default function DeploymentsScreen() {
         </View>
 
         {item.firmware?.version && (
-          <View style={styles.firmwareRow}>
+          <View style={themedStyles.firmwareRow}>
             <Typography
               type="caption"
               fontSize={11}
-              color={colors.textTertiary}
+              color={themedStyles.textTertiary.color}
             >
               Firmware
             </Typography>
@@ -95,7 +97,7 @@ export default function DeploymentsScreen() {
               type="body"
               fontType="mono"
               fontSize={12}
-              color={colors.textSecondary}
+              color={themedStyles.textSecondary.color}
             >
               v{item.firmware.version}
             </Typography>
@@ -103,11 +105,11 @@ export default function DeploymentsScreen() {
         )}
 
         {item.firmware?.platform && (
-          <View style={styles.conditionRow}>
+          <View style={themedStyles.conditionRow}>
             <Typography
               type="caption"
               fontSize={11}
-              color={colors.textTertiary}
+              color={themedStyles.textTertiary.color}
             >
               Platform
             </Typography>
@@ -115,7 +117,7 @@ export default function DeploymentsScreen() {
               type="body"
               fontType="mono"
               fontSize={12}
-              color={colors.textSecondary}
+              color={themedStyles.textSecondary.color}
             >
               {item.firmware.platform}
             </Typography>
@@ -123,11 +125,11 @@ export default function DeploymentsScreen() {
         )}
 
         {item.firmware?.architecture && (
-          <View style={styles.conditionRow}>
+          <View style={themedStyles.conditionRow}>
             <Typography
               type="caption"
               fontSize={11}
-              color={colors.textTertiary}
+              color={themedStyles.textTertiary.color}
             >
               Architecture
             </Typography>
@@ -135,7 +137,7 @@ export default function DeploymentsScreen() {
               type="body"
               fontType="mono"
               fontSize={12}
-              color={colors.textSecondary}
+              color={themedStyles.textSecondary.color}
             >
               {item.firmware.architecture}
             </Typography>
@@ -143,11 +145,11 @@ export default function DeploymentsScreen() {
         )}
 
         {item.conditions?.version && (
-          <View style={styles.conditionRow}>
+          <View style={themedStyles.conditionRow}>
             <Typography
               type="caption"
               fontSize={11}
-              color={colors.textTertiary}
+              color={themedStyles.textTertiary.color}
             >
               Version
             </Typography>
@@ -155,19 +157,19 @@ export default function DeploymentsScreen() {
               type="body"
               fontType="mono"
               fontSize={12}
-              color={colors.textSecondary}
+              color={themedStyles.textSecondary.color}
             >
               {item.conditions.version}
             </Typography>
           </View>
         )}
 
-        <View style={styles.bottomInfoRow}>
+        <View style={themedStyles.bottomInfoRow}>
           <Typography
             type="body"
             fontSize={12}
-            marginTop={spacing.sm}
-            color={colors.textTertiary}
+            marginTop={8}
+            color={themedStyles.textTertiary.color}
           >
             {item.device_count ?? 0} device
             {(item.device_count ?? 0) !== 1 ? "s" : ""}
@@ -176,8 +178,8 @@ export default function DeploymentsScreen() {
           <Typography
             type="body"
             fontSize={12}
-            marginTop={spacing.sm}
-            color={colors.textTertiary}
+            marginTop={8}
+            color={themedStyles.textTertiary.color}
           >
             {item.releases_count ?? 0} release
             {(item.releases_count ?? 0) !== 1 ? "s" : ""}
@@ -185,7 +187,7 @@ export default function DeploymentsScreen() {
         </View>
 
         {tags.length > 0 && (
-          <View style={styles.tagsRow}>
+          <View style={themedStyles.tagsRow}>
             {tags.map((tag) => (
               <Tag
                 key={tag}
@@ -201,112 +203,96 @@ export default function DeploymentsScreen() {
     );
   };
 
-  function renderListHeader() {
-    return (
-      <View style={styles.listHeader}>
-        <View style={styles.titleRow}>
-          <Typography
-            type="header"
-            fontSize={24}
-            fontWeight="600"
-            lineHeight={28}
-            marginBottom={4}
-          >
-            Deployments
-          </Typography>
-          {deployments.length > 0 && (
-            <View
-              style={{
-                backgroundColor: colors.backgroundTertiary,
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: 8,
-              }}
-            >
-              <Typography type="body" fontSize={15} color={colors.textTertiary}>
-                {deployments.length}
-              </Typography>
-            </View>
-          )}
-        </View>
-        <Typography type="body" fontSize={13} color={colors.textTertiary}>
-          Manage firmware rollout to groups of devices
-        </Typography>
-      </View>
-    );
-  }
+  const isEmpty = deployments.length <= 0;
 
   return (
     <FlatList
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={themedStyles.container}
       data={deployments}
       keyExtractor={(item) => String(item.id ?? item.name)}
       renderItem={renderDeployment}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
       ListEmptyComponent={
         <EmptyView
+          icon={
+            <RocketIcon
+              width={32}
+              height={32}
+              color={themedStyles.textTertiary.color}
+            />
+          }
           title="No Deployments"
           message="No deployment groups exist for this product."
         />
       }
-      contentContainerStyle={styles.list}
+      contentContainerStyle={
+        isEmpty ? themedStyles.listEmpty : themedStyles.list
+      }
       ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
       refreshControl={
         <RefreshControl
           refreshing={deploymentsQuery.isRefetching}
           onRefresh={() => deploymentsQuery.refetch()}
-          tintColor={colors.textTertiary}
+          tintColor={themedStyles.textTertiary.color}
         />
       }
     />
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  list: {
-    paddingTop: spacing.md,
-    paddingBottom: 120,
-    paddingHorizontal: spacing.lg,
-    flexGrow: 1,
-  },
-  listHeader: {
-    paddingBottom: spacing.xl,
-    gap: spacing.xs,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  firmwareRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  conditionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  tagsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    gap: spacing.xs,
-    marginTop: spacing.sm,
-  },
-  bottomInfoRow: {
-    flexDirection: "row",
-    gap: 6,
-  },
-});
+const createStyles = (colors: ColorTheme, spacing: Spacing) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    list: {
+      paddingTop: spacing[12],
+      paddingBottom: 120,
+      paddingHorizontal: spacing[18],
+    },
+    listEmpty: {
+      // alignItems: "center",
+      paddingTop: spacing[24],
+      paddingHorizontal: spacing[24],
+    },
+    headerRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    firmwareRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[6],
+      marginTop: spacing[6],
+    },
+    conditionRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[6],
+      marginTop: spacing[4],
+    },
+    tagsRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      alignItems: "center",
+      gap: spacing[4],
+      marginTop: spacing[6],
+    },
+    bottomInfoRow: {
+      flexDirection: "row",
+      gap: 6,
+    },
+    textPrimary: {
+      color: colors.textPrimary,
+    },
+    textSecondary: {
+      color: colors.textSecondary,
+    },
+    textTertiary: {
+      color: colors.textTertiary,
+    },
+  });

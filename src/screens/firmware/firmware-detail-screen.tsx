@@ -1,10 +1,8 @@
 import React, { useLayoutEffect } from "react";
 import {
-  ActivityIndicator,
   Alert,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { spacing } from "../../components/tokens";
@@ -17,7 +15,6 @@ import { useNavigation } from "@react-navigation/native";
 import type { Firmware } from "../../api/generated/schemas";
 import { useDeleteFirmware } from "../../api/generated/firmwares/firmwares";
 import { useOrgProduct } from "../../context/OrgProductContext";
-import TrashIcon from "../../../assets/icons/trash.svg";
 
 type Props = StaticScreenProps<{ firmware: Firmware }>;
 
@@ -78,40 +75,39 @@ export default function FirmwareDetailScreen({ route }: Props) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () =>
-        deleteFirmware.isPending ? (
-          <ActivityIndicator size="small" color={colors.textSecondary} />
-        ) : (
-          <TouchableOpacity onPress={handleDelete} hitSlop={8}>
-            <TrashIcon width={22} height={22} color={colors.danger} />
-          </TouchableOpacity>
-        ),
+      title: `v${fw.version ?? "?"}`,
+      unstable_headerRightItems: () => [
+        {
+          type: "button",
+          icon: {
+            type: "sfSymbol",
+            name: "trash",
+          },
+          onPress: handleDelete,
+        },
+      ],
     });
   }, [navigation, colors, orgId, productId, fw.uuid, deleteFirmware.isPending]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Typography
-            type="header"
-            fontSize={26}
-            fontWeight="600"
-            lineHeight={28}
-            flexShrink={1}
-          >
-            v{fw.version ?? "?"}
-          </Typography>
-          {fw.signed && (
-            <Tag
-              label="Signed"
-              size="sm"
-              colorScheme="white"
-              hasBorder
-              hasShadow
-            />
-          )}
-        </View>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
+      >
+        {(fw.signed || fw.description) && (
+          <View style={styles.badgeRow}>
+            {fw.signed && (
+              <Tag
+                label="Signed"
+                size="sm"
+                colorScheme="white"
+                hasBorder
+                hasShadow
+              />
+            )}
+          </View>
+        )}
 
         {fw.description ? (
           <Typography
@@ -186,7 +182,6 @@ export default function FirmwareDetailScreen({ route }: Props) {
           </View>
         )}
       </ScrollView>
-    </View>
   );
 }
 
@@ -212,17 +207,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingTop: 120,
     paddingBottom: spacing.xl,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  badgeRow: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.lg,
-    gap: spacing.sm,
+    paddingBottom: spacing.md,
   },
   section: {
     marginBottom: spacing.md,

@@ -79,33 +79,14 @@ export default function CACertificatesScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
+        style={[styles.container, { backgroundColor: colors.background }]}
         data={certs}
         keyExtractor={(item) => String(item.serial ?? "")}
         renderItem={renderCert}
         contentContainerStyle={styles.list}
+        contentInsetAdjustmentBehavior="automatic"
         ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Typography
-              type="header"
-              fontSize={24}
-              fontWeight="600"
-              lineHeight={28}
-              marginBottom={spacing.xs}
-            >
-              CA Certificates
-            </Typography>
-            <Typography
-              type="body"
-              fontSize={14}
-              color={colors.textSecondary}
-            >
-              {orgId}
-            </Typography>
-          </View>
-        }
         ListEmptyComponent={
           <EmptyView
             title="No CA Certificates"
@@ -113,7 +94,6 @@ export default function CACertificatesScreen() {
           />
         }
       />
-    </View>
   );
 }
 
@@ -122,7 +102,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    paddingTop: 130,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
     paddingHorizontal: spacing.lg,
   },

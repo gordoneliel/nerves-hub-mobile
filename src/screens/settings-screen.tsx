@@ -198,11 +198,25 @@ export default function SettingsScreen() {
           <View style={styles.navRow}>
             <CogIcon width={20} height={20} color={colors.textSecondary} />
             <View style={{ flex: 1 }}>
-              <Typography type="subheader" fontSize={16} fontWeight="600" lineHeight={22}>
+              <Typography
+                type="subheader"
+                fontSize={16}
+                fontWeight="600"
+                lineHeight={22}
+              >
                 Appearance
               </Typography>
-              <Typography type="body" fontSize={12} color={colors.textSecondary}>
-                {mode === "system" ? "System" : mode === "dark" ? "Dark" : "Light"} theme
+              <Typography
+                type="body"
+                fontSize={12}
+                color={colors.textSecondary}
+              >
+                {mode === "system"
+                  ? "System"
+                  : mode === "dark"
+                    ? "Dark"
+                    : "Light"}{" "}
+                theme
               </Typography>
             </View>
             <Typography type="header" fontSize={22} color={colors.textTertiary}>

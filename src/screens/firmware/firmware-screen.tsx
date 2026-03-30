@@ -1,16 +1,18 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { spacing } from "../../components/tokens";
-import { useTheme } from "../../theme/ThemeProvider";
+import useThemedStyles from "../../theme/useThemedStyles";
+import type { ColorTheme } from "../../theme/colors";
+import type { Spacing } from "../../theme/spacing";
 import { Typography } from "../../components/typography";
 import { Card, EmptyView, ErrorView, LoadingView } from "../../components/ui";
 import { useFirmware } from "../../hooks/useApi";
 import type { Firmware } from "../../api/generated/schemas";
 
+import PackageIcon from "../../../assets/icons/package.svg";
+
 export default function FirmwareScreen() {
-  const { colors } = useTheme();
+  const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const firmwareQuery = useFirmware();
 
@@ -30,28 +32,29 @@ export default function FirmwareScreen() {
     return db - da;
   });
 
+  const isEmpty = firmwares.length <= 0;
+
   const renderFirmware = ({ item }: { item: Firmware }) => (
     <Card
       onPress={() => navigation.navigate("FirmwareDetail", { firmware: item })}
     >
-      <View style={styles.headerRow}>
+      <View style={themedStyles.headerRow}>
         <Typography
           fontSize={16}
           fontWeight="600"
           lineHeight={28}
-          color={colors.textPrimary}
+          color={themedStyles.textPrimary.color}
         >
           {item.version ?? "?"}
         </Typography>
-        <View style={styles.badges}>
+        <View style={themedStyles.badges}>
           {item.signed && (
-            <View
-              style={[
-                styles.signedBadge,
-                { backgroundColor: colors.successSubtle },
-              ]}
-            >
-              <Typography type="caption" fontSize={11} color={colors.success}>
+            <View style={themedStyles.signedBadge}>
+              <Typography
+                type="caption"
+                fontSize={11}
+                color={themedStyles.success.color}
+              >
                 Signed
               </Typography>
             </View>
@@ -63,14 +66,14 @@ export default function FirmwareScreen() {
         <Typography
           type="body"
           fontSize={12}
-          marginTop={spacing.xs}
-          color={colors.textSecondary}
+          marginTop={4}
+          color={themedStyles.textSecondary.color}
         >
           {item.description}
         </Typography>
       ) : null}
 
-      <View style={styles.metaGrid}>
+      <View style={themedStyles.metaGrid}>
         {item.platform && <MetaItem label="Platform" value={item.platform} />}
         {item.architecture && (
           <MetaItem label="Arch" value={item.architecture} />
@@ -83,8 +86,8 @@ export default function FirmwareScreen() {
           type="caption"
           fontType="mono"
           fontSize={10}
-          marginTop={spacing.sm}
-          color={colors.textTertiary}
+          marginTop={8}
+          color={themedStyles.textTertiary.color}
         >
           {item.uuid}
         </Typography>
@@ -94,8 +97,8 @@ export default function FirmwareScreen() {
         <Typography
           type="caption"
           fontSize={11}
-          marginTop={spacing.xs}
-          color={colors.textTertiary}
+          marginTop={4}
+          color={themedStyles.textTertiary.color}
         >
           {new Date(item.inserted_at).toLocaleDateString()}
         </Typography>
@@ -103,61 +106,37 @@ export default function FirmwareScreen() {
     </Card>
   );
 
-  function renderListHeader() {
-    return (
-      <View style={styles.listHeader}>
-        <View style={styles.titleRow}>
-          <Typography
-            type="header"
-            fontSize={24}
-            fontWeight="600"
-            lineHeight={28}
-            marginBottom={4}
-          >
-            Firmware
-          </Typography>
-          {firmwares.length > 0 && (
-            <View
-              style={{
-                backgroundColor: colors.backgroundTertiary,
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: 8,
-              }}
-            >
-              <Typography type="body" fontSize={15} color={colors.textTertiary}>
-                {firmwares.length}
-              </Typography>
-            </View>
-          )}
-        </View>
-        <Typography type="body" fontSize={13} color={colors.textTertiary}>
-          Uploaded firmware images for this product
-        </Typography>
-      </View>
-    );
-  }
-
   return (
     <FlatList
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={themedStyles.container}
       data={firmwares}
       keyExtractor={(item) => item.uuid ?? String(Math.random())}
       renderItem={renderFirmware}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
       ListEmptyComponent={
         <EmptyView
+          icon={
+            <PackageIcon
+              width={32}
+              height={32}
+              color={themedStyles.textTertiary.color}
+            />
+          }
           title="No Firmware"
           message="No firmware has been uploaded for this product."
         />
       }
-      contentContainerStyle={styles.list}
+      contentContainerStyle={
+        isEmpty ? themedStyles.listEmpty : themedStyles.list
+      }
       ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
       refreshControl={
         <RefreshControl
           refreshing={firmwareQuery.isRefetching}
           onRefresh={() => firmwareQuery.refetch()}
-          tintColor={colors.textTertiary}
+          tintColor={themedStyles.textTertiary.color}
         />
       }
     />
@@ -165,10 +144,14 @@ export default function FirmwareScreen() {
 }
 
 function MetaItem({ label, value }: { label: string; value: string }) {
-  const { colors } = useTheme();
+  const themedStyles = useThemedStyles(createMetaStyles);
   return (
-    <View style={styles.metaItem}>
-      <Typography type="caption" fontSize={11} color={colors.textTertiary}>
+    <View style={themedStyles.metaItem}>
+      <Typography
+        type="caption"
+        fontSize={11}
+        color={themedStyles.textTertiary.color}
+      >
         {label}
       </Typography>
       <Typography
@@ -176,7 +159,7 @@ function MetaItem({ label, value }: { label: string; value: string }) {
         fontType="mono"
         fontWeight="500"
         fontSize={12}
-        color={colors.textSecondary}
+        color={themedStyles.textSecondary.color}
       >
         {value}
       </Typography>
@@ -184,45 +167,66 @@ function MetaItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  list: {
-    paddingTop: spacing.md,
-    paddingBottom: 120,
-    paddingHorizontal: spacing.lg,
-  },
-  listHeader: {
-    paddingBottom: spacing.xl,
-    gap: spacing.xs,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  badges: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  signedBadge: {
-    borderRadius: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-  },
-  metaGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.lg,
-    marginTop: spacing.sm,
-  },
-  metaItem: {
-    gap: 2,
-  },
-});
+const createStyles = (colors: ColorTheme, spacing: Spacing) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    list: {
+      paddingTop: spacing[12],
+      paddingBottom: 120,
+      paddingHorizontal: spacing[18],
+    },
+    listEmpty: {
+      // alignItems: "center",
+      paddingTop: spacing[24],
+      paddingHorizontal: spacing[24],
+    },
+    headerRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    badges: {
+      flexDirection: "row",
+      gap: spacing[6],
+    },
+    signedBadge: {
+      borderRadius: 4,
+      paddingHorizontal: spacing[6],
+      paddingVertical: 2,
+      backgroundColor: colors.successSubtle,
+    },
+    metaGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: spacing[18],
+      marginTop: spacing[6],
+    },
+    textPrimary: {
+      color: colors.textPrimary,
+    },
+    textSecondary: {
+      color: colors.textSecondary,
+    },
+    textTertiary: {
+      color: colors.textTertiary,
+    },
+    success: {
+      color: colors.success,
+    },
+  });
+
+const createMetaStyles = (colors: ColorTheme) =>
+  StyleSheet.create({
+    metaItem: {
+      gap: 2,
+    },
+    textTertiary: {
+      color: colors.textTertiary,
+    },
+    textSecondary: {
+      color: colors.textSecondary,
+    },
+  });

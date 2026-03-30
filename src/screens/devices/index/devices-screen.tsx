@@ -537,50 +537,50 @@ export default function DevicesScreen() {
   );
 
   return (
-      <FlatList
-        style={[styles.container, { backgroundColor: colors.background }]}
-        data={devices}
-        keyExtractor={(item) => String(item.identifier)}
-        renderItem={renderDevice}
-        contentContainerStyle={styles.list}
-        ListHeaderComponent={listHeader}
-        contentInsetAdjustmentBehavior="automatic"
-        refreshControl={
-          <RefreshControl
-            refreshing={
-              devicesQuery.isRefetching && !devicesQuery.isFetchingNextPage
-            }
-            onRefresh={() => devicesQuery.refetch()}
-            progressViewOffset={120}
-            tintColor={colors.textTertiary}
-          />
-        }
-        ListEmptyComponent={
-          <EmptyView
-            title="No Devices"
-            message={
-              search
-                ? "No devices match your search."
-                : "No devices found for this product."
-            }
-          />
-        }
-        onEndReached={() => {
-          if (devicesQuery.hasNextPage && !devicesQuery.isFetchingNextPage) {
-            devicesQuery.fetchNextPage();
+    <FlatList
+      style={[styles.container, { backgroundColor: colors.background }]}
+      data={devices}
+      keyExtractor={(item) => String(item.identifier)}
+      renderItem={renderDevice}
+      contentContainerStyle={styles.list}
+      ListHeaderComponent={listHeader}
+      contentInsetAdjustmentBehavior="automatic"
+      refreshControl={
+        <RefreshControl
+          refreshing={
+            devicesQuery.isRefetching && !devicesQuery.isFetchingNextPage
           }
-        }}
-        onEndReachedThreshold={0.5}
-        ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        ListFooterComponent={
-          devicesQuery.isFetchingNextPage ? (
-            <ActivityIndicator
-              style={styles.loadingFooter}
-              color={colors.accent}
-            />
-          ) : null
+          onRefresh={() => devicesQuery.refetch()}
+          progressViewOffset={120}
+          tintColor={colors.textTertiary}
+        />
+      }
+      ListEmptyComponent={
+        <EmptyView
+          title="No Devices"
+          message={
+            search
+              ? "No devices match your search."
+              : "No devices found for this product."
+          }
+        />
+      }
+      onEndReached={() => {
+        if (devicesQuery.hasNextPage && !devicesQuery.isFetchingNextPage) {
+          devicesQuery.fetchNextPage();
         }
-      />
+      }}
+      onEndReachedThreshold={0.5}
+      ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
+      ListFooterComponent={
+        devicesQuery.isFetchingNextPage ? (
+          <ActivityIndicator
+            style={styles.loadingFooter}
+            color={colors.accent}
+          />
+        ) : null
+      }
+    />
   );
 }
 
@@ -593,8 +593,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   list: {
-    // paddingTop: 120,
-    paddingBottom: 120,
+    paddingBottom: 40,
   },
   headerContent: {
     paddingTop: spacing.lg,

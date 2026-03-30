@@ -18,7 +18,7 @@ import { colors } from "../theme/colors";
 const HomeNavigator = createNativeBottomTabNavigator({
   screenOptions: {
     lazy: false,
-    headerBackButtonDisplayMode: 'minimal',
+    headerBackButtonDisplayMode: "minimal",
   },
   sidebarAdaptable: false,
   scrollEdgeAppearance: "opaque",
@@ -65,7 +65,7 @@ const HomeNavigator = createNativeBottomTabNavigator({
         tabBarIcon: ({ focused }) => ({
           sfSymbol: focused ? "gearshape.fill" : "gearshape",
         }),
-        role: "search"
+        role: "search",
       },
     },
   },

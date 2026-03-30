@@ -68,33 +68,14 @@ export default function SigningKeysScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
+        style={[styles.container, { backgroundColor: colors.background }]}
         data={keys}
         keyExtractor={(item) => item.name ?? ""}
         renderItem={renderKey}
         contentContainerStyle={styles.list}
+        contentInsetAdjustmentBehavior="automatic"
         ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Typography
-              type="header"
-              fontSize={24}
-              fontWeight="600"
-              lineHeight={28}
-              marginBottom={spacing.xs}
-            >
-              Signing Keys
-            </Typography>
-            <Typography
-              type="body"
-              fontSize={14}
-              color={colors.textSecondary}
-            >
-              {orgId}
-            </Typography>
-          </View>
-        }
         ListEmptyComponent={
           <EmptyView
             title="No Signing Keys"
@@ -102,7 +83,6 @@ export default function SigningKeysScreen() {
           />
         }
       />
-    </View>
   );
 }
 
@@ -111,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    paddingTop: 130,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
     paddingHorizontal: spacing.lg,
   },

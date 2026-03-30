@@ -73,32 +73,7 @@ export function ErrorView({
 
 // ── Empty ────────────────────────────────────────────────────────
 
-export function EmptyView({
-  title = "Nothing here",
-  message,
-}: {
-  title?: string;
-  message?: string;
-}) {
-  const { colors } = useTheme();
-  return (
-    <View style={[styles.center, { paddingVertical: 24, backgroundColor: colors.background }]}>
-      <Typography type="subheader" fontSize={20} fontWeight="600">
-        {title}
-      </Typography>
-      {message && (
-        <Typography
-          type="body"
-          fontSize={12}
-          marginTop={spacing.sm}
-          color={colors.textSecondary}
-        >
-          {message}
-        </Typography>
-      )}
-    </View>
-  );
-}
+export { EmptyView } from "./empty-view";
 
 // ── Online Badge ─────────────────────────────────────────────────
 
