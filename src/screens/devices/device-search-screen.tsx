@@ -50,16 +50,19 @@ export default function DeviceSearchScreen() {
           d.description?.toLowerCase().includes(q) ||
           (Array.isArray(d.tags)
             ? d.tags.some((t: string) => t.toLowerCase().includes(q))
-            : String(d.tags ?? "").toLowerCase().includes(q))
+            : String(d.tags ?? "")
+                .toLowerCase()
+                .includes(q))
         );
       })
     : allDevices;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
+        style={[styles.container, { backgroundColor: colors.background }]}
         data={devices}
         keyExtractor={(item) => String(item.identifier)}
+        contentInsetAdjustmentBehavior="automatic"
         renderItem={({ item }: { item: Device }) => (
           <DeviceCard
             device={item}
@@ -71,23 +74,13 @@ export default function DeviceSearchScreen() {
           />
         )}
         ListHeaderComponent={
-          <View style={styles.header}>
-            <Typography
-              type="header"
-              fontSize={26}
-              fontWeight="600"
-              lineHeight={28}
-            >
-              Search
-            </Typography>
-            <View style={styles.searchWrapper}>
-              <SearchInput
-                ref={searchRef}
-                placeholder="Search devices"
-                onChangeText={handleChangeText}
-                clearButtonMode="while-editing"
-              />
-            </View>
+          <View style={styles.searchWrapper}>
+            <SearchInput
+              ref={searchRef}
+              placeholder="Search devices"
+              onChangeText={handleChangeText}
+              clearButtonMode="while-editing"
+            />
           </View>
         }
         ListEmptyComponent={
@@ -123,7 +116,6 @@ export default function DeviceSearchScreen() {
         }
         keyboardShouldPersistTaps="handled"
       />
-    </View>
   );
 }
 
@@ -131,13 +123,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    paddingTop: 140,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
-  },
   searchWrapper: {
-    marginTop: spacing.md,
+    paddingBottom: spacing.md,
   },
   list: {
     paddingBottom: 120,

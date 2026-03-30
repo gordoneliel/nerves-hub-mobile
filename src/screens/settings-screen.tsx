@@ -24,7 +24,9 @@ import KeyIcon from "../../assets/icons/key.svg";
 import CogIcon from "../../assets/icons/cog.svg";
 import StackIcon from "../../assets/icons/stack.svg";
 
+import UserIcon from "../../assets/icons/user-regular.svg";
 import CopyIcon from "../../assets/icons/copy.svg";
+import { NervesHubLogo } from "../components/NervesHubLogo";
 import { trigger } from "react-native-haptic-feedback";
 
 function SectionLabel({ title }: { title: string }) {
@@ -58,6 +60,32 @@ export default function SettingsScreen() {
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
     >
+      <View style={styles.section}>
+        {/* <SectionLabel title="Account" /> */}
+        <Card>
+          <View style={styles.navRow}>
+            <UserIcon width={20} height={20} color={colors.textSecondary} />
+            <View style={{ flex: 1 }}>
+              <Typography
+                type="subheader"
+                fontSize={16}
+                fontWeight="600"
+                lineHeight={22}
+              >
+                {user?.name ?? "—"}
+              </Typography>
+              <Typography
+                type="body"
+                fontSize={12}
+                color={colors.textSecondary}
+              >
+                {user?.email ?? "—"}
+              </Typography>
+            </View>
+          </View>
+        </Card>
+      </View>
+
       <View style={styles.section}>
         <SectionLabel title="Current Product" />
         <CardComponent onPress={() => navigation.navigate("OrgProductModal")}>
@@ -102,41 +130,22 @@ export default function SettingsScreen() {
               }
             }}
           >
-            <Typography
-              type="body"
-              fontType="mono"
-              fontSize={13}
-              color={colors.textSecondary}
-              flexShrink={1}
-            >
-              {instanceUrl ?? "—"}
-            </Typography>
+            <View style={styles.instanceLabel}>
+              <NervesHubLogo size={14} />
+              <Typography
+                type="body"
+                fontType="mono"
+                fontSize={13}
+                color={colors.textSecondary}
+                flexShrink={1}
+              >
+                {instanceUrl ?? "—"}
+              </Typography>
+            </View>
             {instanceUrl && (
               <CopyIcon width={18} height={18} color={colors.textTertiary} />
             )}
           </TouchableOpacity>
-        </Card>
-      </View>
-
-      <View style={styles.section}>
-        <SectionLabel title="Account" />
-        <Card>
-          <Typography
-            type="subheader"
-            fontSize={18}
-            fontWeight="600"
-            lineHeight={24}
-          >
-            {user?.name ?? "—"}
-          </Typography>
-          <Typography
-            type="body"
-            fontSize={12}
-            marginTop={spacing.xs}
-            color={colors.textSecondary}
-          >
-            {user?.email ?? "—"}
-          </Typography>
         </Card>
       </View>
 
@@ -293,6 +302,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: spacing.sm,
+  },
+  instanceLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    flexShrink: 1,
   },
   switchButton: {
     alignSelf: "flex-start",

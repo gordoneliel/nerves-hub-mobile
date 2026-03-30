@@ -3,11 +3,12 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import useThemedStyles from "../../theme/useThemedStyles";
 import type { ColorTheme } from "../../theme/colors";
-import type { Spacing } from "../../theme/spacing";
+import { spacing, type Spacing } from "../../theme/spacing";
 import { Typography } from "../../components/typography";
 import { Card, EmptyView, ErrorView, LoadingView } from "../../components/ui";
 import { Tag } from "../../components/tag";
 import { useDeployments } from "../../hooks/useApi";
+import { useOrgProduct } from "../../context/OrgProductContext";
 import { useRefresh } from "../../hooks/useRefresh";
 import type { DeploymentGroup } from "../../api/generated/schemas";
 import CheckCircleIcon from "../../../assets/icons/check-circle.svg";
@@ -17,8 +18,11 @@ import RocketIcon from "../../../assets/icons/rocket.svg";
 export default function DeploymentsScreen() {
   const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
+  const { orgId, productId } = useOrgProduct();
   const deploymentsQuery = useDeployments();
-  const { refreshing, onRefresh } = useRefresh(() => deploymentsQuery.refetch());
+  const { refreshing, onRefresh } = useRefresh(() =>
+    deploymentsQuery.refetch(),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -216,6 +220,16 @@ export default function DeploymentsScreen() {
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
+      ListHeaderComponent={
+        <Typography
+          type="body"
+          fontSize={13}
+          color={themedStyles.textSecondary.color}
+          paddingBottom={spacing[18]}
+        >
+          {orgId} / {productId}
+        </Typography>
+      }
       ListEmptyComponent={
         <EmptyView
           icon={
@@ -246,7 +260,6 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
       backgroundColor: colors.background,
     },
     list: {
-      paddingTop: spacing[12],
       paddingBottom: 120,
       paddingHorizontal: spacing[18],
     },

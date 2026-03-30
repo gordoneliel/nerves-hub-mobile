@@ -79,23 +79,15 @@ const ListHeader = React.memo(function ListHeader({
 }: ListHeaderProps) {
   return (
     <>
-      {/*<View style={styles.headerContent}>
-        <Typography
-          type="header"
-          fontSize={24}
-          fontWeight="600"
-          lineHeight={28}
-          marginBottom={4}
-        >
-          Devices
-        </Typography>
-        <Typography type="body" fontSize={14} color={colors.textSecondary}>
-          {orgId} / {productId}
-        </Typography>
-      </View>*/}
-      {/*<View style={styles.searchWrapper}>
-        <SearchInput placeholder="Search devices" />
-      </View>*/}
+      <Typography
+        type="body"
+        fontSize={13}
+        color={colors.textSecondary}
+        paddingHorizontal={spacing.lg}
+        paddingBottom={spacing.sm}
+      >
+        {orgId} / {productId}
+      </Typography>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

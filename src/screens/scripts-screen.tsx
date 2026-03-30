@@ -3,12 +3,13 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import useThemedStyles from "../theme/useThemedStyles";
 import type { ColorTheme } from "../theme/colors";
-import type { Spacing } from "../theme/spacing";
+import { spacing, type Spacing } from "../theme/spacing";
 import { Typography } from "../components/typography";
 import { Card } from "../components/card";
 import { Tag } from "../components/tag";
 import { EmptyView, ErrorView, LoadingView } from "../components/ui";
 import { useScripts } from "../hooks/useApi";
+import { useOrgProduct } from "../context/OrgProductContext";
 import { useRefresh } from "../hooks/useRefresh";
 import type { Script } from "../api/generated/schemas";
 
@@ -18,6 +19,7 @@ import ScriptIcon from "../../assets/icons/script.svg";
 export default function ScriptsScreen() {
   const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
+  const { orgId, productId } = useOrgProduct();
   const scriptsQuery = useScripts();
   const { refreshing, onRefresh } = useRefresh(() => scriptsQuery.refetch());
 
@@ -90,6 +92,16 @@ export default function ScriptsScreen() {
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
+      ListHeaderComponent={
+        <Typography
+          type="body"
+          fontSize={13}
+          color={themedStyles.textSecondary.color}
+          paddingBottom={spacing[18]}
+        >
+          {orgId} / {productId}
+        </Typography>
+      }
       refreshing={refreshing}
       onRefresh={onRefresh}
       ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
@@ -120,14 +132,12 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
       backgroundColor: colors.background,
     },
     list: {
-      paddingTop: spacing[12],
       paddingBottom: 120,
       paddingHorizontal: spacing[18],
-      flexGrow: 1,
     },
     listEmpty: {
       // alignItems: "center",
-      paddingTop: spacing[24],
+      // paddingTop: spacing[24],
       paddingHorizontal: spacing[24],
     },
     cardHeader: {

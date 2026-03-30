@@ -45,8 +45,7 @@ const DevicesStack = createNativeStackNavigator({
     DeviceSearch: {
       screen: DeviceSearchScreen,
       options: {
-        title: "",
-        headerTransparent: true,
+        title: "Search",
       },
     },
     DeviceConsole: {
