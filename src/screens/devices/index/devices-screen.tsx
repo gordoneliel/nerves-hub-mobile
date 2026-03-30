@@ -107,8 +107,8 @@ const ListHeader = React.memo(function ListHeader({
           placeholderLabel="Status"
           icon={
             <RadioTowerIcon
-              width={16}
-              height={16}
+              width={18}
+              height={18}
               color={colors.textTertiary}
             />
           }
@@ -123,7 +123,7 @@ const ListHeader = React.memo(function ListHeader({
           defaultSelectedItemId="all"
           placeholderLabel="Platform"
           icon={
-            <PlatformIcon width={14} height={14} color={colors.textTertiary} />
+            <PlatformIcon width={16} height={16} color={colors.textTertiary} />
           }
           size="xs"
           fullWidth={false}
@@ -135,7 +135,7 @@ const ListHeader = React.memo(function ListHeader({
           items={architectureItems}
           defaultSelectedItemId="all"
           placeholderLabel="Arch"
-          icon={<CogIcon width={14} height={14} color={colors.textTertiary} />}
+          icon={<CogIcon width={16} height={16} color={colors.textTertiary} />}
           size="xs"
           fullWidth={false}
           pill
@@ -147,7 +147,7 @@ const ListHeader = React.memo(function ListHeader({
           defaultSelectedItemId="all"
           placeholderLabel="Deployment"
           icon={
-            <StackIcon width={14} height={14} color={colors.textTertiary} />
+            <StackIcon width={18} height={18} color={colors.textTertiary} />
           }
           size="xs"
           fullWidth={false}
@@ -255,12 +255,27 @@ export default function DevicesScreen() {
           type: "button",
           icon: {
             type: "sfSymbol",
-            name: "repeat",
+            name: "magnifyingglass",
           },
-          onPress: navigateToOrgProductSwitcher,
+          onPress: () => {
+            navigation.navigate("DeviceSearch");
+          },
         },
+        // {
+        //   type: "button",
+        //   icon: {
+        //     type: "sfSymbol",
+        //     name: "repeat",
+        //   },
+        //   onPress: navigateToOrgProductSwitcher,
+        // },
       ],
       unstable_headerRightItems: () => [
+        // {
+        //   type: "button",
+        //   label: "Edit",
+        //   onPress: navigateToPinnedDevices,
+        // },
         {
           type: "button",
           icon: {
@@ -271,29 +286,9 @@ export default function DevicesScreen() {
             navigation.navigate("NewDevice");
           },
         },
-        {
-          type: "button",
-          icon: {
-            type: "sfSymbol",
-            name: "magnifyingglass",
-          },
-          onPress: () => {
-            navigation.navigate("DeviceSearch");
-          },
-        },
-        // {
-        //   type: "button",
-        //   label: "Pinned",
-        //   icon: {
-        //     type: "sfSymbol",
-        //     name: "star",
-        //     fill: "red",
-        //   },
-        //   onPress: navigateToPinnedDevices,
-        // },
       ],
     });
-  }, [navigation, HeaderLeft, HeaderRight]);
+  }, [navigation]);
 
   const reboot = useRebootDevice();
   const reconnect = useReconnectDevice();

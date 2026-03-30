@@ -2,8 +2,9 @@ import React, { memo, useCallback } from "react";
 import { View, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 import ContextMenu from "react-native-context-menu-view";
 
-import { spacing } from "../../../components/tokens";
-import { useTheme } from "../../../theme/ThemeProvider";
+import useThemedStyles from "../../../theme/useThemedStyles";
+import type { ColorTheme } from "../../../theme/colors";
+import type { Spacing } from "../../../theme/spacing";
 import { Typography } from "../../../components/typography";
 import { Tag } from "../../../components/tag";
 import { Card } from "../../../components/card";
@@ -12,12 +13,16 @@ import { Button } from "../../../components/button";
 import type { Device } from "../../../api/generated/schemas";
 
 import EllipsisIcon from "../../../../assets/icons/ellipsis.svg";
-import HashIcon from "../../../../assets/icons/hashtag.svg";
 import CheckShieldIcon from "../../../../assets/icons/check-shield.svg";
 import TargetIcon from "../../../../assets/icons/cog.svg";
 import PlatformIcon from "../../../../assets/icons/platform.svg";
 
-export type DeviceMenuAction = "reboot" | "reconnect" | "identify" | "tags" | "delete";
+export type DeviceMenuAction =
+  | "reboot"
+  | "reconnect"
+  | "identify"
+  | "tags"
+  | "delete";
 
 export type DeviceCardProps = {
   device: Device;
@@ -57,8 +62,13 @@ export const DeviceCard = memo(DeviceCardRaw, (prev, next) => {
   );
 });
 
-function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps) {
-  const { colors: themeColors } = useTheme();
+function DeviceCardRaw({
+  device,
+  style,
+  onPress,
+  onMenuAction,
+}: DeviceCardProps) {
+  const themedStyles = useThemedStyles(createStyles);
 
   const handlePress = useCallback(() => {
     onPress?.(device);
@@ -83,18 +93,15 @@ function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps
 
   return (
     <Card onPress={handlePress} style={style}>
-      <View style={styles.header}>
-        <View style={styles.identifierRow}>
-          <View
-            style={[
-              styles.identifierIcon,
-              { backgroundColor: themeColors.backgroundTertiary },
-            ]}
-          >
-            <HashIcon
-              width={14}
-              height={14}
-              color={themeColors.textSecondary}
+      <View style={themedStyles.header}>
+        <View style={themedStyles.identifierRow}>
+          <View style={themedStyles.identifierIcon}>
+            <PulsatingDotWithRipple
+              isDisabled={device.connection_status !== "connected"}
+              color={
+                device.connection_status === "connected" ? "#9ACD32" : "#E0E3E6"
+              }
+              size={6}
             />
           </View>
           <Typography
@@ -102,7 +109,7 @@ function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps
             fontSize={14}
             fontWeight="600"
             lineHeight={24}
-            color={themeColors.textPrimary}
+            color={themedStyles.textPrimary.color}
           >
             {String(device.identifier)}
           </Typography>
@@ -125,14 +132,14 @@ function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps
               <EllipsisIcon
                 width={18}
                 height={18}
-                color={themeColors.textTertiary}
+                color={themedStyles.textTertiary.color}
               />
             }
           />
         </ContextMenu>
       </View>
 
-      <View style={styles.details}>
+      <View style={themedStyles.details}>
         {device.version && (
           <DetailRow
             label="Version"
@@ -141,24 +148,11 @@ function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps
               <CheckShieldIcon
                 width={16}
                 height={16}
-                color={themeColors.textTertiary}
+                color={themedStyles.textTertiary.color}
               />
             }
           />
         )}
-        {/*{device.deployment_group?.name && (
-          <DetailRow
-            label="Deployment"
-            value={device.deployment_group.name}
-            icon={
-              <TargetIcon
-                width={16}
-                height={16}
-                color={themeColors.textTertiary}
-              />
-            }
-          />
-        )}*/}
         {device.firmware_metadata?.platform && (
           <DetailRow
             label="Platform"
@@ -167,31 +161,26 @@ function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps
               <PlatformIcon
                 width={16}
                 height={16}
-                color={themeColors.textTertiary}
+                color={themedStyles.textTertiary.color}
               />
             }
           />
         )}
       </View>
 
-      <View style={styles.tagsRow}>
+      <View style={themedStyles.tagsRow}>
         <Tag
-          label={
-            device.connection_status === "connected" ? "Online" : "Offline"
-          }
+          label={device.product_name ?? ""}
           size="sm"
           colorScheme="white"
-          hasShadow
           hasBorder
+          hasShadow
           iconLeft={{
-            component: PulsatingDotWithRipple,
+            component: PlatformIcon,
             props: {
-              isDisabled: device.connection_status !== "connected",
-              size: 7,
-              color:
-                device.connection_status === "connected"
-                  ? "#9ACD32"
-                  : "#E0E3E6",
+              width: 14,
+              height: 14,
+              color: themedStyles.textSecondary.color,
             },
           }}
         />
@@ -208,7 +197,7 @@ function DeviceCardRaw({ device, style, onPress, onMenuAction }: DeviceCardProps
               props: {
                 width: 14,
                 height: 14,
-                color: themeColors.textSecondary,
+                color: themedStyles.textSecondary.color,
               },
             }}
           />
@@ -231,18 +220,15 @@ function DetailRow({
   value: string;
   icon?: React.ReactNode;
 }) {
-  const { colors: themeColors } = useTheme();
+  const themedStyles = useThemedStyles(createDetailStyles);
   return (
-    <View style={styles.detailItem}>
+    <View style={themedStyles.detailItem}>
       {icon}
-      <View style={styles.detailText}>
-        {/*<Typography fontSize={12} fontWeight={500} color={themeColors.textSecondary}>
-          {label}
-        </Typography>*/}
+      <View style={themedStyles.detailText}>
         <Typography
           fontSize={13}
           fontWeight={500}
-          color={themeColors.textSecondary}
+          color={themedStyles.textSecondary.color}
           lineHeight={18}
         >
           {value}
@@ -252,42 +238,62 @@ function DetailRow({
   );
 }
 
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  identifierRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginBottom: 6,
-  },
-  identifierIcon: {
-    padding: 5,
-    borderRadius: 8,
-    borderCurve: "continuous",
-  },
-  details: {
-    flexDirection: "column",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-    marginTop: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  detailItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  detailText: {
-    gap: 4,
-  },
-  tagsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-    marginTop: 3,
-  },
-});
+const createStyles = (colors: ColorTheme, spacing: Spacing) =>
+  StyleSheet.create({
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    identifierRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[4],
+      marginBottom: spacing[6],
+    },
+    identifierIcon: {
+      padding: 5,
+      borderRadius: 8,
+      borderCurve: "continuous",
+      borderWidth: 0.2,
+      borderColor: colors.borderLight,
+      backgroundColor: colors.backgroundSecondary,
+    },
+    details: {
+      flexDirection: "column",
+      flexWrap: "wrap",
+      gap: spacing[4],
+      marginTop: spacing[4],
+      marginBottom: spacing[6],
+    },
+    tagsRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: spacing[4],
+      marginTop: 3,
+    },
+    textPrimary: {
+      color: colors.textPrimary,
+    },
+    textSecondary: {
+      color: colors.textSecondary,
+    },
+    textTertiary: {
+      color: colors.textTertiary,
+    },
+  });
+
+const createDetailStyles = (colors: ColorTheme) =>
+  StyleSheet.create({
+    detailItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    detailText: {
+      gap: 4,
+    },
+    textSecondary: {
+      color: colors.textSecondary,
+    },
+  });

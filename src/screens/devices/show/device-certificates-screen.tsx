@@ -51,8 +51,7 @@ export default function DeviceCertificatesScreen() {
 
   const certs = query.data?.data ?? [];
 
-  if (query.isLoading)
-    return <LoadingView message="Loading certificates..." />;
+  if (query.isLoading) return <LoadingView message="Loading certificates..." />;
   if (query.isError)
     return (
       <ErrorView
@@ -99,21 +98,21 @@ export default function DeviceCertificatesScreen() {
   };
 
   return (
-      <FlatList
-        style={[styles.container, { backgroundColor: colors.background }]}
-        data={certs}
-        keyExtractor={(item) => item.serial ?? ""}
-        renderItem={renderCert}
-        contentContainerStyle={styles.list}
-        contentInsetAdjustmentBehavior="automatic"
-        ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
-        ListEmptyComponent={
-          <EmptyView
-            title="No Certificates"
-            message="This device has no certificates."
-          />
-        }
-      />
+    <FlatList
+      style={[styles.container, { backgroundColor: colors.background }]}
+      data={certs}
+      keyExtractor={(item) => item.serial ?? ""}
+      renderItem={renderCert}
+      contentContainerStyle={styles.list}
+      contentInsetAdjustmentBehavior="automatic"
+      ItemSeparatorComponent={() => <View style={{ height: 3 }} />}
+      ListEmptyComponent={
+        <EmptyView
+          title="No Certificates"
+          message="This device has no certificates."
+        />
+      }
+    />
   );
 }
 

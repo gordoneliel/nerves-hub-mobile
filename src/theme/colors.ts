@@ -145,7 +145,7 @@ export type ColorTheme = {
 export const COLORS_LIGHT: ColorTheme = {
   background: "#F4F5F6",
   backgroundSecondary: "rgba(255, 255, 255, 0.95)",
-  backgroundTertiary: "rgba(240, 240, 240, 0.9)",
+  backgroundTertiary: "rgba(238, 240, 242, 0.9)",
   surface: "#F6F8FA",
   surfaceHover: "#EAEEF2",
   border: "#D0D7DE",

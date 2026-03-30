@@ -3,8 +3,9 @@ import { Alert, ScrollView, StyleSheet, Switch, View } from "react-native";
 import type { StaticScreenProps } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 
-import { spacing } from "../../../components/tokens";
-import { useTheme } from "../../../theme/ThemeProvider";
+import useThemedStyles from "../../../theme/useThemedStyles";
+import type { ColorTheme } from "../../../theme/colors";
+import type { Spacing } from "../../../theme/spacing";
 import { Typography } from "../../../components/typography";
 import { Card, ErrorView, LoadingView } from "../../../components/ui";
 import { Tag } from "../../../components/tag";
@@ -27,19 +28,20 @@ import WifiIcon from "../../../../assets/icons/wifi-light.svg";
 import TargetIcon from "../../../../assets/icons/target.svg";
 import ConsoleIcon from "../../../../assets/icons/console.svg";
 import CheckShieldIcon from "../../../../assets/icons/check-shield.svg";
-import PlatformIcon from "../../../../assets/icons/platform.svg";
 import StackIcon from "../../../../assets/icons/stack.svg";
-import CogIcon from "../../../../assets/icons/cog.svg";
-import CloseIcon from "../../../../assets/icons/close-big.svg";
 
 type Props = StaticScreenProps<{ identifier: string; deviceId: number }>;
 
 function MetaRow({ label, value }: { label: string; value?: string | null }) {
-  const { colors } = useTheme();
+  const themedStyles = useThemedStyles(createStyles);
   if (!value) return null;
   return (
-    <View style={styles.metaRow}>
-      <Typography type="caption" fontSize={12} color={colors.textTertiary}>
+    <View style={themedStyles.metaRow}>
+      <Typography
+        type="caption"
+        fontSize={12}
+        color={themedStyles.textTertiary.color}
+      >
         {label}
       </Typography>
       <Typography
@@ -49,7 +51,7 @@ function MetaRow({ label, value }: { label: string; value?: string | null }) {
         fontWeight="500"
         flexShrink={1}
         textAlign="right"
-        color={colors.textPrimary}
+        color={themedStyles.textPrimary.color}
       >
         {value}
       </Typography>
@@ -59,7 +61,7 @@ function MetaRow({ label, value }: { label: string; value?: string | null }) {
 
 export default function DeviceDetailScreen({ route }: Props) {
   const { identifier, deviceId } = route.params;
-  const { colors } = useTheme();
+  const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const { orgId, productId } = useOrgProduct();
   const { data, isLoading, isError, refetch } = useDevice(identifier);
@@ -102,7 +104,6 @@ export default function DeviceDetailScreen({ route }: Props) {
     );
 
   const handleNavigateToConsole = () => {
-    // navigation.navigate("DeviceConsole", { id: deviceId });
     Alert.alert(
       "Coming Soon",
       "Device console is still in the works! We will update the app when its reaady.",
@@ -114,15 +115,6 @@ export default function DeviceDetailScreen({ route }: Props) {
       "Coming Soon",
       "Identify devices is still in the works! We will update the app when its reaady.",
     );
-
-    // confirmAction("Identify", () =>
-    //   customInstance({
-    //     url: `/orgs/${orgId}/products/${productId}/devices/${identifier}/identify`,
-    //     method: "POST",
-    //   })
-    //     .then(() => Alert.alert("Success", "Identify command sent."))
-    //     .catch(() => Alert.alert("Error", "Failed to identify device.")),
-    // );
   };
 
   if (isLoading) return <LoadingView message="Loading device…" />;
@@ -131,49 +123,30 @@ export default function DeviceDetailScreen({ route }: Props) {
       <ErrorView message="Failed to load device" onRetry={() => refetch()} />
     );
 
-  const tags = Array.isArray(device.tags)
-    ? device.tags
-    : typeof device.tags === "string"
-      ? device.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean)
-      : [];
-
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Tag
-            label={
-              device.connection_status === "connected" ? "Online" : "Offline"
-            }
-            colorScheme="white"
-            hasBorder
-            hasShadow
-            size="sm"
-            iconLeft={{
-              component: PulsatingDotWithRipple,
-              props: {
-                size: 6,
-                color:
-                  device.connection_status === "connected"
-                    ? "#9ACD32"
-                    : "#E0E3E6",
-              },
-            }}
-          />
+    <View style={themedStyles.container}>
+      <ScrollView contentContainerStyle={themedStyles.content}>
+        <View style={themedStyles.header}>
+          <View style={themedStyles.identifierIcon}>
+            <PulsatingDotWithRipple
+              isDisabled={device.connection_status !== "connected"}
+              color={
+                device.connection_status === "connected" ? "#9ACD32" : "#E0E3E6"
+              }
+              size={6}
+            />
+          </View>
           <Typography
             type="header"
             fontSize={26}
             fontWeight="600"
-            lineHeight={28}
+            lineHeight={30}
           >
             {String(device.identifier)}
           </Typography>
         </View>
 
-        <View style={styles.badgeRow}>
+        <View style={themedStyles.badgeRow}>
           {device.firmware_metadata?.product && (
             <Tag
               label={device.firmware_metadata.product}
@@ -182,7 +155,11 @@ export default function DeviceDetailScreen({ route }: Props) {
               hasBorder
               iconLeft={{
                 component: StackIcon,
-                props: { width: 12, height: 12, color: colors.textTertiary },
+                props: {
+                  width: 12,
+                  height: 12,
+                  color: themedStyles.textTertiary.color,
+                },
               }}
             />
           )}
@@ -195,73 +172,37 @@ export default function DeviceDetailScreen({ route }: Props) {
               hasBorder
               iconLeft={{
                 component: CheckShieldIcon,
-                props: { width: 12, height: 12, color: colors.textTertiary },
+                props: {
+                  width: 12,
+                  height: 12,
+                  color: themedStyles.textTertiary.color,
+                },
               }}
             />
           )}
-
-          {/*{device.firmware_metadata?.platform && (
-            <Tag
-              label={device.firmware_metadata.platform}
-              size="sm"
-              colorScheme="white"
-              hasBorder
-              iconLeft={{
-                component: PlatformIcon,
-                props: { width: 12, height: 12, color: colors.textTertiary },
-              }}
-            />
-          )}*/}
-
-          {/*{device.firmware_metadata?.architecture && (
-            <Tag
-              label={device.firmware_metadata.architecture}
-              size="sm"
-              colorScheme="white"
-              hasBorder
-              iconLeft={{
-                component: CogIcon,
-                props: { width: 12, height: 12, color: colors.textTertiary },
-              }}
-            />
-          )}*/}
-
-          {/*{device.updates_enabled === false && (
-            <Tag
-              label="Updates disabled"
-              size="sm"
-              colorScheme="white"
-              hasBorder
-              iconLeft={{
-                component: CloseIcon,
-                props: { width: 10, height: 10, color: colors.textTertiary },
-              }}
-            />
-          )}*/}
         </View>
 
         <ScrollView
-          style={styles.actionsRow}
+          style={themedStyles.actionsRow}
           alwaysBounceVertical={false}
           showsHorizontalScrollIndicator={false}
           horizontal
-          contentContainerStyle={styles.actionButton}
+          contentContainerStyle={themedStyles.actionButton}
         >
           <Button
             label="Console"
             type="tertiary"
             size="sm"
             onPress={handleNavigateToConsole}
-            style={styles.actionButton}
+            style={themedStyles.actionButton}
             iconLeft={
               <ConsoleIcon
                 width={17}
                 height={17}
-                color={colors.textSecondary}
+                color={themedStyles.textSecondary.color}
               />
             }
           />
-
           <Button
             label={reboot.isPending ? "Rebooting…" : "Reboot"}
             type="tertiary"
@@ -269,9 +210,13 @@ export default function DeviceDetailScreen({ route }: Props) {
             onPress={handleReboot}
             disabled={reboot.isPending}
             isLoading={reboot.isPending}
-            style={styles.actionButton}
+            style={themedStyles.actionButton}
             iconLeft={
-              <PowerIcon width={18} height={18} color={colors.textSecondary} />
+              <PowerIcon
+                width={18}
+                height={18}
+                color={themedStyles.textSecondary.color}
+              />
             }
           />
           <Button
@@ -281,9 +226,13 @@ export default function DeviceDetailScreen({ route }: Props) {
             onPress={handleReconnect}
             disabled={reconnect.isPending}
             isLoading={reconnect.isPending}
-            style={styles.actionButton}
+            style={themedStyles.actionButton}
             iconLeft={
-              <WifiIcon width={16} height={16} color={colors.textSecondary} />
+              <WifiIcon
+                width={16}
+                height={16}
+                color={themedStyles.textSecondary.color}
+              />
             }
           />
           <Button
@@ -291,9 +240,13 @@ export default function DeviceDetailScreen({ route }: Props) {
             type="tertiary"
             size="sm"
             onPress={handleIdentify}
-            style={styles.actionButton}
+            style={themedStyles.actionButton}
             iconLeft={
-              <TargetIcon width={17} height={17} color={colors.textSecondary} />
+              <TargetIcon
+                width={17}
+                height={17}
+                color={themedStyles.textSecondary.color}
+              />
             }
           />
           <Button
@@ -303,23 +256,23 @@ export default function DeviceDetailScreen({ route }: Props) {
             onPress={() =>
               navigation.navigate("DeviceCertificates", { identifier })
             }
-            style={styles.actionButton}
+            style={themedStyles.actionButton}
             iconLeft={
               <CheckShieldIcon
                 width={17}
                 height={17}
-                color={colors.textSecondary}
+                color={themedStyles.textSecondary.color}
               />
             }
           />
         </ScrollView>
 
         <Divider
-          horizontalMargin={spacing.lg}
-          verticalMargin={{ top: 0, bottom: spacing.lg }}
+          horizontalMargin={18}
+          verticalMargin={{ top: 0, bottom: 18 }}
         />
 
-        <View style={styles.cardListWrapper}>
+        <View style={themedStyles.cardListWrapper}>
           <DeviceInfoCard device={device} />
 
           <UpdatesToggleCard
@@ -341,15 +294,15 @@ export default function DeviceDetailScreen({ route }: Props) {
           />
 
           {device.updates_blocked_until && (
-            <View style={styles.section}>
+            <View style={themedStyles.section}>
               <Typography
                 type="caption"
                 fontSize={11}
                 textTransform="uppercase"
                 letterSpacing={1}
-                paddingBottom={spacing.xs}
-                paddingHorizontal={spacing.lg}
-                color={colors.textTertiary}
+                paddingBottom={4}
+                paddingHorizontal={18}
+                color={themedStyles.textTertiary.color}
               >
                 Penalty Box
               </Typography>
@@ -378,7 +331,7 @@ function UpdatesToggleCard({
   updatesEnabled: boolean;
   onToggled: () => void;
 }) {
-  const { colors } = useTheme();
+  const themedStyles = useThemedStyles(createStyles);
   const { orgId, productId } = useOrgProduct();
   const [enabled, setEnabled] = useState(updatesEnabled);
   const [toggling, setToggling] = useState(false);
@@ -406,33 +359,33 @@ function UpdatesToggleCard({
   );
 
   return (
-    <View style={styles.section}>
+    <View style={themedStyles.section}>
       <Typography
         type="caption"
         fontSize={11}
         textTransform="uppercase"
         letterSpacing={1}
-        paddingBottom={spacing.xs}
-        paddingHorizontal={spacing.lg}
-        color={colors.textTertiary}
+        paddingBottom={4}
+        paddingHorizontal={18}
+        color={themedStyles.textTertiary.color}
       >
         Updates
       </Typography>
       <Card>
-        <View style={styles.toggleRow}>
+        <View style={themedStyles.toggleRow}>
           <View style={{ flex: 1 }}>
             <Typography
               type="body"
               fontSize={15}
               fontWeight="600"
-              color={colors.textPrimary}
+              color={themedStyles.textPrimary.color}
             >
               Firmware updates
             </Typography>
             <Typography
               type="body"
               fontSize={12}
-              color={colors.textSecondary}
+              color={themedStyles.textSecondary.color}
               marginTop={2}
             >
               {enabled
@@ -444,7 +397,7 @@ function UpdatesToggleCard({
             value={enabled}
             onValueChange={handleToggle}
             disabled={toggling}
-            trackColor={{ true: colors.accent }}
+            trackColor={{ true: themedStyles.accent.color }}
           />
         </View>
       </Card>
@@ -452,63 +405,79 @@ function UpdatesToggleCard({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    paddingTop: 120,
-    paddingBottom: 120,
-  },
-  header: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  badgeRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  section: {
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.lg,
-    flex: 1,
-    gap: spacing.sm,
-  },
-  metaRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: spacing.xs,
-  },
-  tagsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-  },
-  actionsRow: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingTop: 4,
-    paddingBottom: 24,
-  },
-  actionButton: {
-    gap: 6,
-  },
-  toggleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: spacing.sm,
-  },
-  cardListWrapper: {
-    gap: spacing.md,
-  },
-});
+const createStyles = (colors: ColorTheme, spacing: Spacing) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      paddingTop: 120,
+      paddingBottom: 120,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: spacing[18],
+      paddingTop: spacing[18],
+      paddingBottom: spacing[12],
+      gap: spacing[6],
+    },
+    identifierIcon: {
+      padding: 6,
+      borderRadius: 8,
+      borderCurve: "continuous",
+      borderWidth: 0.2,
+      borderColor: colors.borderLight,
+    },
+    badgeRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: spacing[4],
+      paddingHorizontal: spacing[18],
+      marginBottom: spacing[24],
+    },
+    section: {
+      marginBottom: spacing[12],
+      paddingHorizontal: spacing[18],
+      flex: 1,
+      gap: spacing[6],
+    },
+    metaRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: spacing[4],
+    },
+    actionsRow: {
+      flexDirection: "row",
+      gap: spacing[6],
+      paddingHorizontal: spacing[18],
+      paddingTop: 4,
+      paddingBottom: 24,
+    },
+    actionButton: {
+      gap: 6,
+    },
+    toggleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: spacing[6],
+    },
+    cardListWrapper: {
+      gap: spacing[12],
+    },
+    textPrimary: {
+      color: colors.textPrimary,
+    },
+    textSecondary: {
+      color: colors.textSecondary,
+    },
+    textTertiary: {
+      color: colors.textTertiary,
+    },
+    accent: {
+      color: colors.accent,
+    },
+  });

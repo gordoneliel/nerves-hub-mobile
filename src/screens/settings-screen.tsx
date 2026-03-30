@@ -22,6 +22,7 @@ import GroupIcon from "../../assets/icons/group.svg";
 import CheckShieldIcon from "../../assets/icons/check-shield.svg";
 import KeyIcon from "../../assets/icons/key.svg";
 import CogIcon from "../../assets/icons/cog.svg";
+import StackIcon from "../../assets/icons/stack.svg";
 
 import CopyIcon from "../../assets/icons/copy.svg";
 import { trigger } from "react-native-haptic-feedback";
@@ -57,6 +58,36 @@ export default function SettingsScreen() {
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
     >
+      <View style={styles.section}>
+        <SectionLabel title="Current Product" />
+        <CardComponent onPress={() => navigation.navigate("OrgProductModal")}>
+          <View style={styles.navRow}>
+            <StackIcon width={20} height={20} color={colors.accent} />
+            <View style={{ flex: 1 }}>
+              <Typography
+                type="subheader"
+                fontSize={16}
+                fontWeight="600"
+                lineHeight={22}
+                color={colors.textPrimary}
+              >
+                {productId ?? "—"}
+              </Typography>
+              <Typography
+                type="body"
+                fontSize={12}
+                color={colors.textSecondary}
+              >
+                {orgId ?? "—"}
+              </Typography>
+            </View>
+            <Typography type="header" fontSize={22} color={colors.textTertiary}>
+              ›
+            </Typography>
+          </View>
+        </CardComponent>
+      </View>
+
       <View style={styles.section}>
         <SectionLabel title="Instance" />
         <Card>
