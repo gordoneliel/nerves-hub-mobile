@@ -13,8 +13,20 @@
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		446327BA516144DF9E121317 /* PlusJakartaSans-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9F6F85323D4E4E7492C41499 /* PlusJakartaSans-VariableFont_wght.ttf */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		F117484D2D0400000044C1D9 /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F117484A2D0400000044C1D9 /* ScreenshotTests.swift */; };
+		F117484E2D0400000044C1D9 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F117484B2D0400000044C1D9 /* SnapshotHelper.swift */; };
 		F8C13C9DBF024812B1314CC1 /* Sora-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2ECB6994B934322B7694554 /* Sora-VariableFont_wght.ttf */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F11748542D0400000044C1D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = NervesHub;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		10703D0014CE5D24A300D51A /* Pods-NervesHub.debug-development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NervesHub.debug-development.xcconfig"; path = "Target Support Files/Pods-NervesHub/Pods-NervesHub.debug-development.xcconfig"; sourceTree = "<group>"; };
@@ -35,6 +47,9 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = NervesHub/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* NervesHub-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NervesHub-Bridging-Header.h"; path = "NervesHub/NervesHub-Bridging-Header.h"; sourceTree = "<group>"; };
+		F117484A2D0400000044C1D9 /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
+		F117484B2D0400000044C1D9 /* SnapshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
+		F117484C2D0400000044C1D9 /* NervesHubUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NervesHubUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +58,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				23FF3D792068F22909394ADC /* libPods-NervesHub.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F11748512D0400000044C1D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07FAE1A68108700A75B9A /* NervesHub */,
+				F117484F2D0400000044C1D9 /* NervesHubUITests */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -120,8 +143,18 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* NervesHub.app */,
+				F117484C2D0400000044C1D9 /* NervesHubUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F117484F2D0400000044C1D9 /* NervesHubUITests */ = {
+			isa = PBXGroup;
+			children = (
+				F117484A2D0400000044C1D9 /* ScreenshotTests.swift */,
+				F117484B2D0400000044C1D9 /* SnapshotHelper.swift */,
+			);
+			path = NervesHubUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,6 +181,23 @@
 			productReference = 13B07F961A680F5B00A75B9A /* NervesHub.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F11748522D0400000044C1D9 /* NervesHubUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F11748572D0400000044C1D9 /* Build configuration list for PBXNativeTarget "NervesHubUITests" */;
+			buildPhases = (
+				F11748502D0400000044C1D9 /* Sources */,
+				F11748512D0400000044C1D9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F11748532D0400000044C1D9 /* PBXTargetDependency */,
+			);
+			name = NervesHubUITests;
+			productName = NervesHubUITests;
+			productReference = F117484C2D0400000044C1D9 /* NervesHubUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -159,6 +209,11 @@
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
 						ProvisioningStyle = Automatic;
+					};
+					F11748522D0400000044C1D9 = {
+						CreatedOnToolsVersion = 15.0;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 				};
 			};
@@ -176,6 +231,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* NervesHub */,
+				F11748522D0400000044C1D9 /* NervesHubUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -292,7 +348,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F11748502D0400000044C1D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F117484D2D0400000044C1D9 /* ScreenshotTests.swift in Sources */,
+				F117484E2D0400000044C1D9 /* SnapshotHelper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F11748532D0400000044C1D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* NervesHub */;
+			targetProxy = F11748542D0400000044C1D9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -495,6 +568,46 @@
 			};
 			name = Production;
 		};
+		F11748552D0400000044C1D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = F7AL96RPTB;
+				INFOPLIST_FILE = NervesHubUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.nerveshub.development.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = NervesHub;
+			};
+			name = Debug;
+		};
+		F11748562D0400000044C1D9 /* Production */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = F7AL96RPTB;
+				INFOPLIST_FILE = NervesHubUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.nerveshub.development.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = NervesHub;
+			};
+			name = Production;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -512,6 +625,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Production */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Production;
+		};
+		F11748572D0400000044C1D9 /* Build configuration list for PBXNativeTarget "NervesHubUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F11748552D0400000044C1D9 /* Debug */,
+				F11748562D0400000044C1D9 /* Production */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Production;

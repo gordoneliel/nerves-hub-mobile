@@ -32,7 +32,7 @@ export type DeviceCardProps = {
   onMenuAction?: (device: Device, action: DeviceMenuAction) => void;
 };
 
-const MENU_ACTIONS: {
+export const MENU_ACTIONS: {
   title: string;
   systemIcon: string;
   key: DeviceMenuAction;
@@ -203,8 +203,22 @@ function DeviceCardRaw({
           />
         )}
 
-        {tags.map((tag) => (
-          <Tag key={tag} label={tag} colorScheme="white" size="sm" hasBorder />
+        {(Array.isArray(device.tags)
+          ? device.tags
+          : typeof device.tags === "string"
+            ? device.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean)
+            : []
+        ).map((tag) => (
+          <Tag
+            key={tag}
+            label={`# ${tag}`}
+            colorScheme="white"
+            hasBorder
+            size="sm"
+          />
         ))}
       </View>
     </Card>

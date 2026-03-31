@@ -10,6 +10,11 @@ class AppDelegate: RCTAppDelegate {
   ) -> Bool {
     self.moduleName = "NervesHub"
     self.dependencyProvider = RCTAppDependencyProvider()
+
+    if ProcessInfo.processInfo.arguments.contains("-FASTLANE_SNAPSHOT") {
+      self.initialProps = ["isSnapshot": true]
+    }
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 

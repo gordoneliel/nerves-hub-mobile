@@ -9,6 +9,7 @@ import {
   useTheme,
 } from "./src/theme/ThemeProvider";
 import Navigation from "./src/navigation/root";
+import { enableDemoMode } from "./src/utils/demoMode";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,7 +51,10 @@ function AppInner() {
   );
 }
 
-export default function App() {
+export default function App({ isSnapshot }: { isSnapshot?: boolean }) {
+  if (isSnapshot) {
+    enableDemoMode();
+  }
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>

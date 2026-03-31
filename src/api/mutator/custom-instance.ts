@@ -1,4 +1,6 @@
 import Axios, { AxiosRequestConfig } from "axios";
+import { isDemoMode } from "../../utils/demoMode";
+import { getDemoResponse } from "../../utils/demoData";
 
 // Lazy-initialized instance — set at login time via `configureAxios()`
 let AXIOS_INSTANCE = Axios.create();
@@ -28,6 +30,12 @@ export const resetAxios = () => {
  * instead of a raw Axios call.
  */
 export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
+  if (isDemoMode() && config.url) {
+    const demo = getDemoResponse(config.url);
+    if (demo !== undefined) {
+      return Promise.resolve(demo as T);
+    }
+  }
   return AXIOS_INSTANCE(config).then(({ data }) => data);
 };
 

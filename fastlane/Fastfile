@@ -1,0 +1,42 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Capture App Store screenshots"
+  lane :screenshots do
+    capture_ios_screenshots(
+      workspace: "ios/NervesHub.xcworkspace",
+      scheme: "NervesHub Development",
+      devices: [
+        "iPhone 16 Pro Max",
+        "iPhone 16 Pro",
+        "iPhone SE (3rd generation)",
+        "iPad Pro 13-inch (M4)",
+      ],
+      languages: ["en-US"],
+      output_directory: "./fastlane/screenshots",
+      clear_previous_screenshots: true,
+      override_status_bar: true,
+      dark_mode: false,
+      stop_after_first_error: false,
+      skip_open_summary: false,
+    )
+  end
+
+  desc "Capture dark mode screenshots"
+  lane :screenshots_dark do
+    capture_ios_screenshots(
+      workspace: "ios/NervesHub.xcworkspace",
+      scheme: "NervesHub Development",
+      devices: [
+        "iPhone 16 Pro Max",
+        "iPhone 16 Pro",
+      ],
+      languages: ["en-US"],
+      output_directory: "./fastlane/screenshots/dark",
+      clear_previous_screenshots: true,
+      override_status_bar: true,
+      dark_mode: true,
+      stop_after_first_error: false,
+    )
+  end
+end

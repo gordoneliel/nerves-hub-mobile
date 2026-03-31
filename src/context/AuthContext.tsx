@@ -13,6 +13,7 @@ import {
 } from "../api/mutator/custom-instance";
 import { deleteToken, getToken, setToken } from "../utils/secureStorage";
 import { storage, STORAGE_KEYS } from "../utils/storage";
+import { isDemoMode } from "../utils/demoMode";
 import type { AuthResponse } from "../api/generated/schemas";
 
 interface AuthState {
@@ -45,6 +46,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Read token from Keychain on boot
   useEffect(() => {
+    if (isDemoMode()) {
+      const demoUrl = "https://demo.nerveshub.org";
+      configureAxios(demoUrl, "demo-token");
+      setState({ ready: true, instanceUrl: demoUrl, token: "demo-token" });
+      return;
+    }
     (async () => {
       const token = await getToken();
       if (token && initialInstanceUrl) {

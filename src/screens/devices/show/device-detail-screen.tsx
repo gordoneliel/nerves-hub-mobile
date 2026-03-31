@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useLayoutEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, View } from "react-native";
 import type { StaticScreenProps } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
@@ -29,6 +29,7 @@ import TargetIcon from "../../../../assets/icons/target.svg";
 import ConsoleIcon from "../../../../assets/icons/console.svg";
 import CheckShieldIcon from "../../../../assets/icons/check-shield.svg";
 import StackIcon from "../../../../assets/icons/stack.svg";
+import PlatformIcon from "../../../../assets/icons/platform.svg";
 
 type Props = StaticScreenProps<{ identifier: string; deviceId: number }>;
 
@@ -117,6 +118,103 @@ export default function DeviceDetailScreen({ route }: Props) {
     );
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      `Delete ${identifier}`,
+      "Are you sure? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () =>
+            customInstance({
+              url: `/orgs/${orgId}/products/${productId}/devices/${identifier}`,
+              method: "DELETE",
+            })
+              .then(() => navigation.goBack())
+              .catch(() => Alert.alert("Error", "Failed to delete device.")),
+        },
+      ],
+    );
+  };
+
+  const handleEditTags = useCallback(() => {
+    const tagList = Array.isArray(device?.tags)
+      ? device.tags
+      : typeof device?.tags === "string"
+        ? device.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
+    navigation.navigate("EditDeviceTags", {
+      identifier,
+      currentTags: tagList,
+    });
+  }, [device, identifier, navigation]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      unstable_headerRightItems: () => [
+        {
+          type: "menu" as const,
+          icon: {
+            type: "sfSymbol" as const,
+            name: "ellipsis",
+          },
+          menu: {
+            items: [
+              {
+                type: "action" as const,
+                label: "Reboot",
+                icon: { type: "sfSymbol" as const, name: "arrow.clockwise" },
+                state: "off" as const,
+                onPress: handleReboot,
+              },
+              {
+                type: "action" as const,
+                label: "Reconnect",
+                icon: { type: "sfSymbol" as const, name: "wifi" },
+                state: "off" as const,
+                onPress: handleReconnect,
+              },
+              {
+                type: "action" as const,
+                label: "Identify",
+                icon: { type: "sfSymbol" as const, name: "scope" },
+                state: "off" as const,
+                onPress: handleIdentify,
+              },
+              {
+                type: "action" as const,
+                label: "Edit Tags",
+                icon: { type: "sfSymbol" as const, name: "tag" },
+                state: "off" as const,
+                onPress: handleEditTags,
+              },
+              {
+                type: "action" as const,
+                label: "Delete",
+                icon: { type: "sfSymbol" as const, name: "trash" },
+                state: "off" as const,
+                destructive: true,
+                onPress: handleDelete,
+              },
+            ],
+          },
+        },
+      ],
+    });
+  }, [
+    navigation,
+    handleReboot,
+    handleReconnect,
+    handleIdentify,
+    handleEditTags,
+    handleDelete,
+  ]);
+
   if (isLoading) return <LoadingView message="Loading device…" />;
   if (isError || !device)
     return (
@@ -146,7 +244,11 @@ export default function DeviceDetailScreen({ route }: Props) {
           </Typography>
         </View>
 
-        <View style={themedStyles.badgeRow}>
+        <ScrollView
+          horizontal
+          style={themedStyles.badgeRow}
+          contentContainerStyle={themedStyles.actionButton}
+        >
           {device.firmware_metadata?.product && (
             <Tag
               label={device.firmware_metadata.product}
@@ -156,8 +258,25 @@ export default function DeviceDetailScreen({ route }: Props) {
               iconLeft={{
                 component: StackIcon,
                 props: {
-                  width: 12,
-                  height: 12,
+                  width: 14,
+                  height: 14,
+                  color: themedStyles.textTertiary.color,
+                },
+              }}
+            />
+          )}
+
+          {device.firmware_metadata?.platform && (
+            <Tag
+              label={device.firmware_metadata.platform}
+              size="sm"
+              colorScheme="white"
+              hasBorder
+              iconLeft={{
+                component: PlatformIcon,
+                props: {
+                  width: 14,
+                  height: 14,
                   color: themedStyles.textTertiary.color,
                 },
               }}
@@ -173,14 +292,41 @@ export default function DeviceDetailScreen({ route }: Props) {
               iconLeft={{
                 component: CheckShieldIcon,
                 props: {
-                  width: 12,
-                  height: 12,
+                  width: 14,
+                  height: 14,
                   color: themedStyles.textTertiary.color,
                 },
               }}
             />
           )}
-        </View>
+        </ScrollView>
+
+        {/* Tags */}
+        <ScrollView
+          style={themedStyles.tagsScrollView}
+          alwaysBounceVertical={false}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          contentContainerStyle={themedStyles.actionButton}
+        >
+          {(Array.isArray(device.tags)
+            ? device.tags
+            : typeof device.tags === "string"
+              ? device.tags
+                  .split(",")
+                  .map((t) => t.trim())
+                  .filter(Boolean)
+              : []
+          ).map((tag) => (
+            <Tag
+              key={tag}
+              label={`# ${tag}`}
+              colorScheme="white"
+              hasBorder
+              size="sm"
+            />
+          ))}
+        </ScrollView>
 
         <ScrollView
           style={themedStyles.actionsRow}
@@ -203,52 +349,7 @@ export default function DeviceDetailScreen({ route }: Props) {
               />
             }
           />
-          <Button
-            label={reboot.isPending ? "Rebooting…" : "Reboot"}
-            type="tertiary"
-            size="sm"
-            onPress={handleReboot}
-            disabled={reboot.isPending}
-            isLoading={reboot.isPending}
-            style={themedStyles.actionButton}
-            iconLeft={
-              <PowerIcon
-                width={18}
-                height={18}
-                color={themedStyles.textSecondary.color}
-              />
-            }
-          />
-          <Button
-            label={reconnect.isPending ? "Reconnecting…" : "Reconnect"}
-            type="tertiary"
-            size="sm"
-            onPress={handleReconnect}
-            disabled={reconnect.isPending}
-            isLoading={reconnect.isPending}
-            style={themedStyles.actionButton}
-            iconLeft={
-              <WifiIcon
-                width={16}
-                height={16}
-                color={themedStyles.textSecondary.color}
-              />
-            }
-          />
-          <Button
-            label="Identify"
-            type="tertiary"
-            size="sm"
-            onPress={handleIdentify}
-            style={themedStyles.actionButton}
-            iconLeft={
-              <TargetIcon
-                width={17}
-                height={17}
-                color={themedStyles.textSecondary.color}
-              />
-            }
-          />
+
           <Button
             label="Certificates"
             type="tertiary"
@@ -273,8 +374,6 @@ export default function DeviceDetailScreen({ route }: Props) {
         />
 
         <View style={themedStyles.cardListWrapper}>
-          <DeviceInfoCard device={device} />
-
           <UpdatesToggleCard
             deviceIdentifier={identifier}
             updatesEnabled={device.updates_enabled !== false}
@@ -316,6 +415,8 @@ export default function DeviceDetailScreen({ route }: Props) {
               </Card>
             </View>
           )}
+
+          <DeviceInfoCard device={device} />
         </View>
       </ScrollView>
     </View>
@@ -435,7 +536,7 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
       flexWrap: "wrap",
       gap: spacing[4],
       paddingHorizontal: spacing[18],
-      marginBottom: spacing[24],
+      marginBottom: spacing[4],
     },
     section: {
       marginBottom: spacing[12],
@@ -453,11 +554,17 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
       flexDirection: "row",
       gap: spacing[6],
       paddingHorizontal: spacing[18],
-      paddingTop: 4,
-      paddingBottom: 24,
+      paddingTop: spacing[4],
+      paddingBottom: spacing[24],
+    },
+    tagsScrollView: {
+      flexDirection: "row",
+      gap: spacing[6],
+      paddingHorizontal: spacing[18],
+      marginBottom: spacing[24],
     },
     actionButton: {
-      gap: 6,
+      gap: spacing[4],
     },
     toggleRow: {
       flexDirection: "row",

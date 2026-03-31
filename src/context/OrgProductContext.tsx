@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import { storage, STORAGE_KEYS } from "../utils/storage";
+import { isDemoMode } from "../utils/demoMode";
 
 interface OrgProductState {
   orgId: string | null;
@@ -32,6 +33,10 @@ export function OrgProductProvider({
 
   // Rehydrate from MMKV on mount
   useEffect(() => {
+    if (isDemoMode()) {
+      setState({ orgId: "acme", productId: "smart-sensor" });
+      return;
+    }
     const orgId = storage.getString(STORAGE_KEYS.ORG) ?? null;
     const productId = storage.getString(STORAGE_KEYS.PRODUCT) ?? null;
     setState({ orgId, productId });
