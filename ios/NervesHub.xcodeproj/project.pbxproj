@@ -377,7 +377,7 @@
 				CODE_SIGN_ENTITLEMENTS = NervesHub/NervesHub.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = F7AL96RPTB;
 				ENABLE_BITCODE = NO;
 				ENVFILE = .env.development;
@@ -419,7 +419,7 @@
 				CODE_SIGN_ENTITLEMENTS = NervesHub/NervesHub.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = F7AL96RPTB;
 				ENVFILE = .env.production;
 				INFOPLIST_FILE = NervesHub/Info.plist;
