@@ -7,7 +7,8 @@ import { spacing, type Spacing } from "../theme/spacing";
 import { Typography } from "../components/typography";
 import { Card } from "../components/card";
 import { Tag } from "../components/tag";
-import { EmptyView, ErrorView, LoadingView } from "../components/ui";
+import { EmptyView, ErrorView } from "../components/ui";
+import { ScriptsLoading } from "./scripts-loading";
 import { useScripts } from "../hooks/useApi";
 import { useOrgProduct } from "../context/OrgProductContext";
 import { useRefresh } from "../hooks/useRefresh";
@@ -23,7 +24,7 @@ export default function ScriptsScreen() {
   const scriptsQuery = useScripts();
   const { refreshing, onRefresh } = useRefresh(() => scriptsQuery.refetch());
 
-  if (scriptsQuery.isLoading) return <LoadingView message="Loading scripts…" />;
+  if (scriptsQuery.isLoading) return <ScriptsLoading />;
   if (scriptsQuery.isError)
     return (
       <ErrorView

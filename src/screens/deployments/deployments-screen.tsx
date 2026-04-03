@@ -5,7 +5,8 @@ import useThemedStyles from "../../theme/useThemedStyles";
 import type { ColorTheme } from "../../theme/colors";
 import { spacing, type Spacing } from "../../theme/spacing";
 import { Typography } from "../../components/typography";
-import { Card, EmptyView, ErrorView, LoadingView } from "../../components/ui";
+import { Card, EmptyView, ErrorView } from "../../components/ui";
+import { DeploymentsLoading } from "./deployments-loading";
 import { Tag } from "../../components/tag";
 import { useDeployments } from "../../hooks/useApi";
 import { useOrgProduct } from "../../context/OrgProductContext";
@@ -37,7 +38,7 @@ export default function DeploymentsScreen() {
   }, [navigation]);
 
   if (deploymentsQuery.isLoading)
-    return <LoadingView message="Loading deployments…" />;
+    return <DeploymentsLoading />;
 
   if (deploymentsQuery.isError)
     return (

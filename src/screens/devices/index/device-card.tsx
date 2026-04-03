@@ -142,7 +142,6 @@ function DeviceCardRaw({
       <View style={themedStyles.details}>
         {device.version && (
           <DetailRow
-            label="Version"
             value={device.version}
             icon={
               <CheckShieldIcon
@@ -155,7 +154,6 @@ function DeviceCardRaw({
         )}
         {device.firmware_metadata?.platform && (
           <DetailRow
-            label="Platform"
             value={device.firmware_metadata.platform}
             icon={
               <PlatformIcon
@@ -225,29 +223,20 @@ function DeviceCardRaw({
   );
 }
 
-function DetailRow({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string;
-  icon?: React.ReactNode;
-}) {
+function DetailRow({ value, icon }: { value: string; icon?: React.ReactNode }) {
   const themedStyles = useThemedStyles(createDetailStyles);
+
   return (
     <View style={themedStyles.detailItem}>
-      {icon}
-      <View style={themedStyles.detailText}>
-        <Typography
-          fontSize={13}
-          fontWeight={500}
-          color={themedStyles.textSecondary.color}
-          lineHeight={18}
-        >
-          {value}
-        </Typography>
-      </View>
+      <View style={{ backgroundColor: "" }}>{icon}</View>
+      <Typography
+        fontSize={13}
+        fontWeight={500}
+        color={themedStyles.textSecondary.color}
+        lineHeight={18}
+      >
+        {value}
+      </Typography>
     </View>
   );
 }
@@ -279,7 +268,7 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
       flexWrap: "wrap",
       gap: spacing[4],
       marginTop: spacing[4],
-      marginBottom: spacing[6],
+      marginBottom: spacing[12],
     },
     tagsRow: {
       flexDirection: "row",
@@ -304,9 +293,6 @@ const createDetailStyles = (colors: ColorTheme) =>
       flexDirection: "row",
       alignItems: "center",
       gap: 6,
-    },
-    detailText: {
-      gap: 4,
     },
     textSecondary: {
       color: colors.textSecondary,

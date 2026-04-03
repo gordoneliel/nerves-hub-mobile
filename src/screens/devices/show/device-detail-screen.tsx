@@ -22,6 +22,7 @@ import { Divider } from "../../../components/divider";
 import { DeploymentGroupCard } from "./deployment-group-card";
 import { FirmwareUpgradeCard } from "./firmware-upgrade-card";
 import { DeviceInfoCard } from "./device-info-card";
+import { DeviceDetailLoading } from "./device-detail-loading";
 
 import PowerIcon from "../../../../assets/icons/power.svg";
 import WifiIcon from "../../../../assets/icons/wifi-light.svg";
@@ -215,7 +216,7 @@ export default function DeviceDetailScreen({ route }: Props) {
     handleDelete,
   ]);
 
-  if (isLoading) return <LoadingView message="Loading device…" />;
+  if (isLoading) return <DeviceDetailLoading />;
   if (isError || !device)
     return (
       <ErrorView message="Failed to load device" onRetry={() => refetch()} />

@@ -7,8 +7,8 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import { spacing, radius } from "../../../components/tokens";
-import { useTheme } from "../../../theme/ThemeProvider";
+import { spacing, radius } from "../../components/tokens";
+import { useTheme } from "../../theme/ThemeProvider";
 
 function Bone({
   width,
@@ -65,38 +65,45 @@ function SkeletonCard() {
         },
       ]}
     >
-      {/* Header: dot + identifier + ellipsis */}
-      <View style={styles.header}>
-        <View style={styles.identifierRow}>
-          <Bone width={22} height={22} borderRadius={8} />
-          <Bone width={140} height={14} borderRadius={4} />
-        </View>
-        <Bone width={28} height={28} borderRadius={8} />
+      {/* Header: name + active/inactive tag */}
+      <View style={styles.headerRow}>
+        <Bone width={120} height={16} borderRadius={4} />
+        <Bone width={70} height={22} borderRadius={11} />
       </View>
 
-      {/* Detail rows: version + platform */}
-      <View style={styles.details}>
-        <View style={styles.detailRow}>
-          <Bone width={16} height={16} borderRadius={4} />
-          <Bone width={60} height={13} borderRadius={4} />
-        </View>
-        <View style={styles.detailRow}>
-          <Bone width={16} height={16} borderRadius={4} />
-          <Bone width={40} height={13} borderRadius={4} />
-        </View>
+      {/* Firmware version */}
+      <View style={styles.metaRow}>
+        <Bone width={55} height={11} borderRadius={3} />
+        <Bone width={50} height={12} borderRadius={4} />
       </View>
 
-      {/* Tags row */}
+      {/* Platform */}
+      <View style={styles.metaRow}>
+        <Bone width={55} height={11} borderRadius={3} />
+        <Bone width={35} height={12} borderRadius={4} />
+      </View>
+
+      {/* Architecture */}
+      <View style={styles.metaRow}>
+        <Bone width={75} height={11} borderRadius={3} />
+        <Bone width={30} height={12} borderRadius={4} />
+      </View>
+
+      {/* Bottom info: device count + releases */}
+      <View style={styles.bottomRow}>
+        <Bone width={70} height={12} borderRadius={4} />
+        <Bone width={60} height={12} borderRadius={4} />
+      </View>
+
+      {/* Tags */}
       <View style={styles.tagsRow}>
-        <Bone width={80} height={22} borderRadius={11} />
-        <Bone width={64} height={22} borderRadius={11} />
-        <Bone width={52} height={22} borderRadius={11} />
+        <Bone width={60} height={22} borderRadius={11} />
       </View>
     </View>
   );
 }
 
-export function DevicesLoading() {
+export function DeploymentsLoading() {
   const { colors } = useTheme();
 
   return (
@@ -107,29 +114,16 @@ export function DevicesLoading() {
       scrollEnabled={false}
     >
       {/* Org / Product label */}
-      <Bone
-        width={100}
-        height={13}
-        borderRadius={4}
-        style={{ marginHorizontal: spacing.lg, marginBottom: spacing.sm }}
-      />
-
-      {/* Filter chips */}
-      <View style={styles.filtersRow}>
-        <Bone width={70} height={30} borderRadius={15} />
-        <Bone width={80} height={30} borderRadius={15} />
-        <Bone width={60} height={30} borderRadius={15} />
-        <Bone width={90} height={30} borderRadius={15} />
-      </View>
+      <Bone width={100} height={13} borderRadius={4} />
 
       {/* Cards */}
-      <SkeletonCard />
-      <View style={{ height: 3 }} />
-      <SkeletonCard />
-      <View style={{ height: 3 }} />
-      <SkeletonCard />
-      <View style={{ height: 3 }} />
-      <SkeletonCard />
+      <View style={{ marginTop: spacing.lg }}>
+        <SkeletonCard />
+        <View style={{ height: 3 }} />
+        <SkeletonCard />
+        <View style={{ height: 3 }} />
+        <SkeletonCard />
+      </View>
     </ScrollView>
   );
 }
@@ -139,49 +133,36 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingBottom: 40,
-  },
-  filtersRow: {
-    flexDirection: "row",
-    gap: spacing.xs,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xl,
-    marginTop: spacing.sm,
+    paddingBottom: 120,
+    paddingHorizontal: spacing[18],
   },
   card: {
     borderRadius: radius.xxl,
     paddingTop: spacing.lg,
     paddingBottom: 18,
     paddingHorizontal: spacing.lg,
-    marginHorizontal: spacing.lg,
     borderCurve: "continuous",
     borderWidth: StyleSheet.hairlineWidth,
   },
-  header: {
+  headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  identifierRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginBottom: 6,
-  },
-  details: {
-    flexDirection: "column",
-    gap: 4,
-    marginTop: 4,
-    marginBottom: 6,
-  },
-  detailRow: {
+  metaRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    marginTop: 6,
+  },
+  bottomRow: {
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 8,
   },
   tagsRow: {
     flexDirection: "row",
     gap: 4,
-    marginTop: 3,
+    marginTop: 6,
   },
 });

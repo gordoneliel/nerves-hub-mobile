@@ -5,7 +5,8 @@ import useThemedStyles from "../../theme/useThemedStyles";
 import type { ColorTheme } from "../../theme/colors";
 import { spacing, type Spacing } from "../../theme/spacing";
 import { Typography } from "../../components/typography";
-import { Card, EmptyView, ErrorView, LoadingView } from "../../components/ui";
+import { Card, EmptyView, ErrorView } from "../../components/ui";
+import { FirmwareLoading } from "./firmware-loading";
 import { useFirmware } from "../../hooks/useApi";
 import { useOrgProduct } from "../../context/OrgProductContext";
 import { useRefresh } from "../../hooks/useRefresh";
@@ -21,7 +22,7 @@ export default function FirmwareScreen() {
   const { refreshing, onRefresh } = useRefresh(() => firmwareQuery.refetch());
 
   if (firmwareQuery.isLoading)
-    return <LoadingView message="Loading firmware…" />;
+    return <FirmwareLoading />;
   if (firmwareQuery.isError)
     return (
       <ErrorView
