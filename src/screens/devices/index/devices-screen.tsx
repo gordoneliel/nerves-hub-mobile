@@ -26,7 +26,7 @@ import { useTheme } from "../../../theme/ThemeProvider";
 import { Typography } from "../../../components/typography";
 import { EmptyView, ErrorView, LoadingView } from "../../../components/ui";
 import { useOrgProduct } from "../../../context/OrgProductContext";
-import { useInfiniteDevices } from "../../../hooks/useApi";
+import { useInfiniteDevices, useAllOrgProducts } from "../../../hooks/useApi";
 import { useDevicesChannel } from "../../../hooks/useDevicesChannel";
 import { useRefresh } from "../../../hooks/useRefresh";
 import {
@@ -155,8 +155,9 @@ const ListHeader = React.memo(function ListHeader({
 export default function DevicesScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
-  const { orgId, productId } = useOrgProduct();
+  const { orgId, productId, selectOrgAndProduct } = useOrgProduct();
   const devicesQuery = useInfiniteDevices();
+  const allOrgProducts = useAllOrgProducts();
   const { refreshing, onRefresh } = useRefresh(() => devicesQuery.refetch());
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [platformFilter, setPlatformFilter] = useState<string | null>(null);
@@ -172,106 +173,66 @@ export default function DevicesScreen() {
     navigation.navigate("OrgProductModal");
   }
 
-  const HeaderLeft = useMemo(() => {
-    if (isLiquidGlassSupported) {
-      return () => (
-        <TouchableOpacity onPress={navigateToOrgProductSwitcher}>
-          <SwitchIcon
-            pointerEvents="none"
-            width={22}
-            height={22}
-            color={colors.textPrimary}
-          />
-        </TouchableOpacity>
-      );
-    }
-
-    return () => (
-      <Button
-        type="icon"
-        size="xs"
-        iconLeft={
-          <SwitchIcon width={18} height={18} color={colors.textPrimary} />
-        }
-        onPress={navigateToOrgProductSwitcher}
-      />
-    );
-  }, [navigateToOrgProductSwitcher]);
-
-  function navigateToPinnedDevices() {
-    navigation.navigate("PinnedDevices");
-  }
-
-  const HeaderRight = useMemo(() => {
-    if (isLiquidGlassSupported) {
-      return () => (
-        <LiquidGlassContainerView style={styles.barItemGroup}>
-          <TouchableOpacity onPress={navigateToPinnedDevices}>
-            <SearchIcon
-              pointerEvents="none"
-              width={22}
-              height={22}
-              color={colors.textPrimary}
-            />
-          </TouchableOpacity>
-          ]
-        </LiquidGlassContainerView>
-      );
-    }
-
-    return () => (
-      <Button
-        type="icon"
-        size="xs"
-        iconLeft={
-          <StarOutlineIcon width={18} height={18} color={colors.textPrimary} />
-        }
-        onPress={navigateToPinnedDevices}
-      />
-    );
-  }, [navigateToPinnedDevices]);
+  const orgProductMenuItems = useMemo(() => {
+    return allOrgProducts.data.map((orgGroup) => ({
+      type: "submenu" as const,
+      label: orgGroup.org,
+      icon: { type: "sfSymbol" as const, name: "building.2" as const },
+      inline: true,
+      items: orgGroup.products.map((product) => ({
+        type: "action" as const,
+        label: product.name,
+        icon: { type: "sfSymbol" as const, name: "shippingbox" as const },
+        state:
+          orgId === orgGroup.org && productId === product.name
+            ? ("on" as const)
+            : ("off" as const),
+        onPress: () => selectOrgAndProduct(orgGroup.org, product.name),
+      })),
+    }));
+  }, [allOrgProducts.data, orgId, productId, selectOrgAndProduct]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       unstable_headerLeftItems: () => [
         {
-          type: "button",
+          type: "menu" as const,
           icon: {
-            type: "sfSymbol",
-            name: "magnifyingglass",
+            type: "sfSymbol" as const,
+            name: "shippingbox",
           },
-          onPress: () => {
-            navigation.navigate("DeviceSearch");
+          changesSelectionAsPrimaryAction: false,
+          menu: {
+            items: orgProductMenuItems,
           },
         },
-        // {
-        //   type: "button",
-        //   icon: {
-        //     type: "sfSymbol",
-        //     name: "repeat",
-        //   },
-        //   onPress: navigateToOrgProductSwitcher,
-        // },
       ],
       unstable_headerRightItems: () => [
-        // {
-        //   type: "button",
-        //   label: "Edit",
-        //   onPress: navigateToPinnedDevices,
-        // },
         {
           type: "button",
           icon: {
             type: "sfSymbol",
             name: "plus",
           },
+          sharesBackground: false,
           onPress: () => {
             navigation.navigate("NewDevice");
           },
         },
+        {
+          type: "button",
+          icon: {
+            type: "sfSymbol",
+            name: "magnifyingglass",
+          },
+          sharesBackground: false,
+          onPress: () => {
+            navigation.navigate("DeviceSearch");
+          },
+        },
       ],
     });
-  }, [navigation]);
+  }, [navigation, orgProductMenuItems]);
 
   const reboot = useRebootDevice();
   const reconnect = useReconnectDevice();
@@ -526,10 +487,12 @@ export default function DevicesScreen() {
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListEmptyComponent={
-        <EmptyView
-          title="No Devices"
-          message={"No devices found for this product."}
-        />
+        <View style={styles.emptyViewWrapper}>
+          <EmptyView
+            title="No Devices"
+            message={"No devices found for this product."}
+          />
+        </View>
       }
       onEndReached={() => {
         if (devicesQuery.hasNextPage && !devicesQuery.isFetchingNextPage) {
@@ -560,6 +523,9 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 40,
+  },
+  emptyViewWrapper: {
+    marginHorizontal: spacing.lg,
   },
   headerContent: {
     paddingTop: spacing.lg,

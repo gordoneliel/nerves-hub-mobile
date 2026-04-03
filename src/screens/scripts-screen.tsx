@@ -98,7 +98,6 @@ export default function ScriptsScreen() {
           fontSize={13}
           color={themedStyles.textSecondary.color}
           paddingBottom={spacing[18]}
-          marginLeft={-6}
         >
           {orgId} / {productId}
         </Typography>

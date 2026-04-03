@@ -80,9 +80,10 @@ const DevicesStack = createNativeStackNavigator({
         NewDevice: {
           screen: NewDeviceScreen,
           options: {
-            title: "New Device",
-            presentation: "pageSheet",
-            sheetAllowedDetents: [0.8, 1.0],
+            title: "",
+            presentation: "formSheet",
+            sheetAllowedDetents: "fitToContents",
+            contentStyle: { backgroundColor: "transparent" },
           },
         },
       },

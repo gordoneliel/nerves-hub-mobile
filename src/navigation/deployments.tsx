@@ -41,6 +41,9 @@ const DeploymentsStack = createNativeStackNavigator({
           screen: NewDeploymentScreen,
           options: {
             title: "",
+            presentation: "formSheet",
+            sheetAllowedDetents: "fitToContents",
+            contentStyle: { backgroundColor: "transparent" },
           },
         },
       },

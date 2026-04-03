@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputContainer: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,
   },
   list: {
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
+    paddingVertical: spacing.xl,
   },
   cardContent: {
     flexDirection: "row",

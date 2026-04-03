@@ -23,6 +23,7 @@
     "axios": "^1.13.6",
     "phoenix": "^1.7.17",
     "react": "19.2.0",
+    "react-hook-form": "^7.72.1",
     "react-native": "0.83.2",
     "react-native-bottom-tabs": "^1.1.0",
     "react-native-config": "^1.6.1",

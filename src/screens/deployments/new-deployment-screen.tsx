@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm, Controller } from "react-hook-form";
 
 import { spacing } from "../../components/tokens";
 import { useTheme } from "../../theme/ThemeProvider";
@@ -27,23 +28,40 @@ import type { Firmware } from "../../api/generated/schemas";
 
 import CloseIcon from "../../../assets/icons/close-big.svg";
 
+interface NewDeploymentForm {
+  name: string;
+  firmware: string;
+  platform: string;
+  architecture: string;
+  version: string;
+  tags: string[];
+  isActive: boolean;
+}
+
 export default function NewDeploymentScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation();
-
   const { orgId, productId } = useOrgProduct();
   const queryClient = useQueryClient();
   const firmwareQuery = useFirmware();
 
-  const [name, setName] = useState("");
-  const [selectedFirmwareUuid, setSelectedFirmwareUuid] = useState<string | null>(null);
-  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
-  const [selectedArchitecture, setSelectedArchitecture] = useState<string | null>(null);
-  const [version, setVersion] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm<NewDeploymentForm>({
+    defaultValues: {
+      name: "",
+      firmware: "",
+      platform: "",
+      architecture: "",
+      version: "",
+      tags: [],
+      isActive: false,
+    },
+  });
+
   const [tagInput, setTagInput] = useState("");
-  const [isActive, setIsActive] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -61,77 +79,84 @@ export default function NewDeploymentScreen() {
     const firmwares = firmwareQuery.data?.data ?? [];
     return firmwares.map((fw: Firmware) => ({
       id: String(fw.uuid),
-      label: `v${fw.version ?? "?"} — ${fw.platform ?? ""} ${fw.architecture ?? ""}`.trim(),
+      label:
+        `v${fw.version ?? "?"} — ${fw.platform ?? ""} ${fw.architecture ?? ""}`.trim(),
       value: fw.uuid!,
     }));
   }, [firmwareQuery.data]);
 
   const platformItems: DropDownItem<string>[] = useMemo(() => {
     const firmwares = firmwareQuery.data?.data ?? [];
-    const unique = [...new Set(firmwares.map((fw: Firmware) => fw.platform).filter(Boolean))] as string[];
+    const unique = [
+      ...new Set(firmwares.map((fw: Firmware) => fw.platform).filter(Boolean)),
+    ] as string[];
     return unique.map((p) => ({ id: p, label: p, value: p }));
   }, [firmwareQuery.data]);
 
   const architectureItems: DropDownItem<string>[] = useMemo(() => {
     const firmwares = firmwareQuery.data?.data ?? [];
-    const unique = [...new Set(firmwares.map((fw: Firmware) => fw.architecture).filter(Boolean))] as string[];
+    const unique = [
+      ...new Set(
+        firmwares.map((fw: Firmware) => fw.architecture).filter(Boolean),
+      ),
+    ] as string[];
     return unique.map((a) => ({ id: a, label: a, value: a }));
   }, [firmwareQuery.data]);
 
-  const addTag = useCallback(() => {
-    const trimmed = tagInput.trim();
-    if (!trimmed || tags.includes(trimmed)) return;
-    setTags((prev) => [...prev, trimmed]);
-    setTagInput("");
-  }, [tagInput, tags]);
 
-  const removeTag = useCallback((tag: string) => {
-    setTags((prev) => prev.filter((t) => t !== tag));
-  }, []);
-
-  const canSubmit = !!name.trim() && !!selectedFirmwareUuid;
-
-  const handleCreate = useCallback(async () => {
-    if (!orgId || !productId || !canSubmit) return;
-    setSubmitting(true);
-    try {
-      await customInstance({
-        url: `/orgs/${orgId}/products/${productId}/deployments`,
-        method: "POST",
-        data: {
-          name: name.trim(),
-          firmware: selectedFirmwareUuid,
-          conditions: {
-            ...(version.trim() ? { version: version.trim() } : {}),
-            ...(tags.length > 0 ? { tags } : {}),
-            ...(selectedPlatform ? { platform: selectedPlatform } : {}),
-            ...(selectedArchitecture ? { architecture: selectedArchitecture } : {}),
+  const onSubmit = useCallback(
+    async (data: NewDeploymentForm) => {
+      if (!orgId || !productId) return;
+      try {
+        await customInstance({
+          url: `/orgs/${orgId}/products/${productId}/deployments`,
+          method: "POST",
+          data: {
+            name: data.name.trim(),
+            firmware: data.firmware,
+            conditions: {
+              ...(data.version.trim()
+                ? { version: data.version.trim() }
+                : {}),
+              ...(data.tags.length > 0 ? { tags: data.tags } : {}),
+              ...(data.platform ? { platform: data.platform } : {}),
+              ...(data.architecture
+                ? { architecture: data.architecture }
+                : {}),
+            },
+            is_active: data.isActive,
           },
-          is_active: isActive,
-        },
-      });
-      queryClient.invalidateQueries({
-        queryKey: getListDeploymentGroupsQueryKey(orgId, productId),
-      });
-      Alert.alert("Success", `Deployment "${name.trim()}" created.`);
-      navigation.goBack();
-    } catch (err: any) {
-      const msg = err?.response?.data?.errors || err?.message || "Failed to create deployment.";
-      Alert.alert("Error", typeof msg === "string" ? msg : JSON.stringify(msg));
-    } finally {
-      setSubmitting(false);
-    }
-  }, [orgId, productId, name, selectedFirmwareUuid, selectedPlatform, selectedArchitecture, isActive, version, tags, canSubmit, queryClient, navigation]);
+        });
+        queryClient.invalidateQueries({
+          queryKey: getListDeploymentGroupsQueryKey(orgId, productId),
+        });
+        Alert.alert("Success", `Deployment "${data.name.trim()}" created.`);
+        navigation.goBack();
+      } catch (err: any) {
+        const msg =
+          err?.response?.data?.errors ||
+          err?.message ||
+          "Failed to create deployment.";
+        Alert.alert(
+          "Error",
+          typeof msg === "string" ? msg : JSON.stringify(msg),
+        );
+      }
+    },
+    [orgId, productId, queryClient, navigation],
+  );
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        alwaysBounceVertical
       >
         <Typography
           type="header"
@@ -145,120 +170,232 @@ export default function NewDeploymentScreen() {
 
         {/* Name */}
         <View style={styles.field}>
-          <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>
+          <Typography
+            type="caption"
+            fontSize={12}
+            color={colors.textTertiary}
+            paddingBottom={spacing.xs}
+          >
             Name
           </Typography>
-          <TextInput
-            value={name}
-            onChangeText={setName}
-            placeholder="e.g. production, staging"
-            autoCapitalize="none"
-            autoCorrect={false}
+          <Controller
+            control={control}
+            name="name"
+            rules={{ required: "Name is required" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="e.g. production, staging"
+                autoCapitalize="none"
+                autoCorrect={false}
+                hasError={!!errors.name}
+              />
+            )}
           />
+          {errors.name && (
+            <Typography
+              type="caption"
+              fontSize={12}
+              color={colors.danger}
+              paddingTop={spacing.xs}
+            >
+              {errors.name.message}
+            </Typography>
+          )}
         </View>
 
         {/* Platform & Architecture */}
         <View style={styles.row}>
           <View style={styles.rowField}>
-            <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>
+            <Typography
+              type="caption"
+              fontSize={12}
+              color={colors.textTertiary}
+              paddingBottom={spacing.xs}
+            >
               Platform
             </Typography>
-            <Dropdown
-              items={platformItems}
-              isLoading={firmwareQuery.isLoading}
-              placeholderLabel="Platform…"
-              size="md"
-              fullItemsWidth
-              onSelect={(item) => setSelectedPlatform(item.value ?? null)}
+            <Controller
+              control={control}
+              name="platform"
+              render={({ field: { onChange } }) => (
+                <Dropdown
+                  items={platformItems}
+                  isLoading={firmwareQuery.isLoading}
+                  placeholderLabel="Platform…"
+                  size="md"
+                  fullItemsWidth
+                  onSelect={(item) => onChange(item.value ?? "")}
+                />
+              )}
             />
           </View>
           <View style={styles.rowField}>
-            <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>
+            <Typography
+              type="caption"
+              fontSize={12}
+              color={colors.textTertiary}
+              paddingBottom={spacing.xs}
+            >
               Architecture
             </Typography>
-            <Dropdown
-              items={architectureItems}
-              isLoading={firmwareQuery.isLoading}
-              placeholderLabel="Architecture…"
-              size="md"
-              fullItemsWidth
-              onSelect={(item) => setSelectedArchitecture(item.value ?? null)}
+            <Controller
+              control={control}
+              name="architecture"
+              render={({ field: { onChange } }) => (
+                <Dropdown
+                  items={architectureItems}
+                  isLoading={firmwareQuery.isLoading}
+                  placeholderLabel="Architecture…"
+                  size="md"
+                  fullItemsWidth
+                  onSelect={(item) => onChange(item.value ?? "")}
+                />
+              )}
             />
           </View>
         </View>
 
         {/* Firmware */}
         <View style={styles.field}>
-          <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>
+          <Typography
+            type="caption"
+            fontSize={12}
+            color={colors.textTertiary}
+            paddingBottom={spacing.xs}
+          >
             Firmware
           </Typography>
-          <Dropdown
-            items={firmwareItems}
-            isLoading={firmwareQuery.isLoading}
-            placeholderLabel="Select firmware…"
-            size="md"
-            fullItemsWidth
-            onSelect={(item) => setSelectedFirmwareUuid(item.value ?? null)}
+          <Controller
+            control={control}
+            name="firmware"
+            rules={{ required: "Firmware is required" }}
+            render={({ field: { onChange } }) => (
+              <Dropdown
+                items={firmwareItems}
+                isLoading={firmwareQuery.isLoading}
+                placeholderLabel="Select firmware…"
+                size="md"
+                fullItemsWidth
+                onSelect={(item) => onChange(item.value ?? "")}
+              />
+            )}
           />
+          {errors.firmware && (
+            <Typography
+              type="caption"
+              fontSize={12}
+              color={colors.danger}
+              paddingTop={spacing.xs}
+            >
+              {errors.firmware.message}
+            </Typography>
+          )}
         </View>
 
         {/* Version Condition */}
         <View style={styles.field}>
-          <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>
+          <Typography
+            type="caption"
+            fontSize={12}
+            color={colors.textTertiary}
+            paddingBottom={spacing.xs}
+          >
             Version Condition (optional)
           </Typography>
-          <TextInput
-            value={version}
-            onChangeText={setVersion}
-            placeholder="e.g. >= 1.0.0"
-            autoCapitalize="none"
-            autoCorrect={false}
+          <Controller
+            control={control}
+            name="version"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="e.g. >= 1.0.0"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            )}
           />
         </View>
 
         {/* Tags */}
         <View style={styles.field}>
-          <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>
+          <Typography
+            type="caption"
+            fontSize={12}
+            color={colors.textTertiary}
+            paddingBottom={spacing.xs}
+          >
             Tags (optional)
           </Typography>
-          <View style={styles.tagInputRow}>
-            <View style={{ flex: 1 }}>
-              <TextInput
-                value={tagInput}
-                onChangeText={setTagInput}
-                placeholder="Add a tag…"
-                autoCapitalize="none"
-                autoCorrect={false}
-                onSubmitEditing={addTag}
-                returnKeyType="done"
-              />
-            </View>
-            <Button
-              label="Add"
-              type="tertiary"
-              size="sm"
-              onPress={addTag}
-              disabled={!tagInput.trim() || tags.includes(tagInput.trim())}
-            />
-          </View>
-          {tags.length > 0 && (
-            <View style={styles.tagsPreview}>
-              {tags.map((tag) => (
-                <Pressable key={tag} onPress={() => removeTag(tag)}>
-                  <Tag
-                    label={tag}
-                    size="sm"
-                    colorScheme="white"
-                    hasBorder
-                    iconRight={{
-                      component: CloseIcon,
-                      props: { width: 10, height: 10, color: colors.textTertiary },
-                    }}
-                  />
-                </Pressable>
-              ))}
-            </View>
-          )}
+          <Controller
+            control={control}
+            name="tags"
+            render={({ field: { onChange, value: tags } }) => {
+              const addTag = () => {
+                const trimmed = tagInput.trim();
+                if (!trimmed || tags.includes(trimmed)) return;
+                onChange([...tags, trimmed]);
+                setTagInput("");
+              };
+              return (
+                <>
+                  <View style={styles.tagInputRow}>
+                    <View style={{ flex: 1 }}>
+                      <TextInput
+                        value={tagInput}
+                        onChangeText={setTagInput}
+                        placeholder="Add a tag…"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        onSubmitEditing={addTag}
+                        returnKeyType="done"
+                      />
+                    </View>
+                    <Button
+                      label="Add"
+                      type="tertiary"
+                      size="sm"
+                      onPress={addTag}
+                      disabled={
+                        !tagInput.trim() || tags.includes(tagInput.trim())
+                      }
+                    />
+                  </View>
+                  {tags.length > 0 && (
+                    <View style={styles.tagsPreview}>
+                      {tags.map((tag) => (
+                        <Pressable
+                          key={tag}
+                          onPress={() =>
+                            onChange(tags.filter((t) => t !== tag))
+                          }
+                        >
+                          <Tag
+                            label={tag}
+                            size="sm"
+                            colorScheme="white"
+                            hasBorder
+                            iconRight={{
+                              component: CloseIcon,
+                              props: {
+                                width: 10,
+                                height: 10,
+                                color: colors.textTertiary,
+                              },
+                            }}
+                          />
+                        </Pressable>
+                      ))}
+                    </View>
+                  )}
+                </>
+              );
+            }}
+          />
         </View>
 
         {/* Active toggle */}
@@ -266,7 +403,17 @@ export default function NewDeploymentScreen() {
           <Typography type="body" fontSize={15} color={colors.textPrimary}>
             Activate immediately
           </Typography>
-          <Switch value={isActive} onValueChange={setIsActive} trackColor={{ true: colors.accent }} />
+          <Controller
+            control={control}
+            name="isActive"
+            render={({ field: { onChange, value } }) => (
+              <Switch
+                value={value}
+                onValueChange={onChange}
+                trackColor={{ true: colors.accent }}
+              />
+            )}
+          />
         </View>
 
         {/* Submit */}
@@ -276,9 +423,8 @@ export default function NewDeploymentScreen() {
             type="primary"
             size="lg"
             fullWidth
-            onPress={handleCreate}
-            isLoading={submitting}
-            disabled={!canSubmit}
+            onPress={handleSubmit(onSubmit)}
+            isLoading={isSubmitting}
           />
         </View>
       </ScrollView>
