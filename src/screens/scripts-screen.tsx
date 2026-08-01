@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import useThemedStyles from "../theme/useThemedStyles";
@@ -12,7 +12,7 @@ import { ScriptsLoading } from "./scripts-loading";
 import { useScripts } from "../hooks/useApi";
 import { useOrgProduct } from "../context/OrgProductContext";
 import { useRefresh } from "../hooks/useRefresh";
-import type { Script } from "../api/generated/schemas";
+import type { SupportScriptMinimal } from "../api/generated/schemas";
 
 import SendIcon from "../../assets/icons/send.svg";
 import ScriptIcon from "../../assets/icons/script.svg";
@@ -23,6 +23,18 @@ export default function ScriptsScreen() {
   const { orgId, productId } = useOrgProduct();
   const scriptsQuery = useScripts();
   const { refreshing, onRefresh } = useRefresh(() => scriptsQuery.refetch());
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      unstable_headerRightItems: () => [
+        {
+          type: "button",
+          icon: { type: "sfSymbol", name: "plus" },
+          onPress: () => navigation.navigate("ScriptEditor", {}),
+        },
+      ],
+    });
+  }, [navigation]);
 
   if (scriptsQuery.isLoading) return <ScriptsLoading />;
   if (scriptsQuery.isError)
@@ -35,8 +47,8 @@ export default function ScriptsScreen() {
 
   const scripts = scriptsQuery.data?.data ?? [];
 
-  const renderScript = ({ item }: { item: Script }) => (
-    <Card onPress={() => navigation.navigate("RunScript", { script: item })}>
+  const renderScript = ({ item }: { item: SupportScriptMinimal }) => (
+    <Card onPress={() => navigation.navigate("RunScript", { scriptId: item.id })}>
       <View style={themedStyles.cardHeader}>
         <Typography
           type="subheader"
@@ -58,29 +70,18 @@ export default function ScriptsScreen() {
         />
       </View>
 
-      {item.text ? (
+      {item.tags ? (
         <Typography
           type="body"
           fontType="mono"
           fontSize={12}
           marginTop={4}
           color={themedStyles.textSecondary.color}
-          numberOfLines={4}
+          numberOfLines={2}
         >
-          {item.text}
+          {item.tags}
         </Typography>
       ) : null}
-
-      {item.inserted_at && (
-        <Typography
-          type="caption"
-          fontSize={11}
-          marginTop={4}
-          color={themedStyles.textTertiary.color}
-        >
-          {new Date(item.inserted_at).toLocaleDateString()}
-        </Typography>
-      )}
     </Card>
   );
 

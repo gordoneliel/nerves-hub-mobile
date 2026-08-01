@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import React, { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { spacing } from "../components/tokens";
 import { useTheme } from "../theme/ThemeProvider";
@@ -10,19 +10,39 @@ import { Dropdown, type DropDownItem } from "../components/dropdown";
 import { EmptyView, LoadingView } from "../components/ui";
 import { useOrgProduct } from "../context/OrgProductContext";
 import { useInfiniteDevices } from "../hooks/useApi";
-import { customInstance } from "../api/mutator/custom-instance";
-import type { StaticScreenProps } from "@react-navigation/native";
-import type { Script } from "../api/generated/schemas";
+import { useNavigation, type StaticScreenProps } from "@react-navigation/native";
+import { useGetScript } from "../api/generated/scripts/scripts";
+import { useSendScriptToDevice } from "../api/generated/devices/devices";
 
 import SendIcon from "../../assets/icons/send.svg";
 import ConsoleIcon from "../../assets/icons/console.svg";
 
-type Props = StaticScreenProps<{ script: Script }>;
+type Props = StaticScreenProps<{ scriptId: string }>;
 
 export default function RunScriptScreen({ route }: Props) {
   const { colors } = useTheme();
+  const navigation = useNavigation<any>();
   const { orgId, productId } = useOrgProduct();
-  const script = route.params.script;
+  const scriptQuery = useGetScript(
+    orgId ?? "",
+    productId ?? "",
+    route.params.scriptId,
+    { query: { enabled: !!orgId && !!productId } },
+  );
+  const script = scriptQuery.data?.data;
+  const runScript = useSendScriptToDevice();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      unstable_headerRightItems: () => [
+        {
+          type: "button",
+          label: "Edit",
+          onPress: () => navigation.navigate("ScriptEditor", { scriptId: route.params.scriptId }),
+        },
+      ],
+    });
+  }, [navigation, route.params.scriptId]);
 
   const devicesQuery = useInfiniteDevices();
   const allDevices =
@@ -31,7 +51,6 @@ export default function RunScriptScreen({ route }: Props) {
   const [selectedIdentifier, setSelectedIdentifier] = useState<string | null>(
     null,
   );
-  const [running, setRunning] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,16 +67,16 @@ export default function RunScriptScreen({ route }: Props) {
   );
 
   const handleRun = useCallback(async () => {
-    if (!orgId || !productId || !selectedIdentifier || !script.name) return;
-    setRunning(true);
+    if (!orgId || !productId || !selectedIdentifier || !script?.id) return;
     setOutput(null);
     setError(null);
     try {
-      const result = await customInstance<string>({
-        url: `/orgs/${orgId}/products/${productId}/devices/${selectedIdentifier}/scripts/${script.id ?? script.name}`,
-        method: "POST",
-        responseType: "text",
-        transformResponse: [(data: any) => data],
+      const result = await runScript.mutateAsync({
+        orgName: orgId,
+        productName: productId,
+        identifier: selectedIdentifier,
+        nameOrId: script.id,
+        params: { timeout: 30_000 },
       });
       setOutput(typeof result === "string" ? result : String(result));
     } catch (err: any) {
@@ -68,9 +87,11 @@ export default function RunScriptScreen({ route }: Props) {
         "Failed to execute script.";
       setError(typeof msg === "string" ? msg : JSON.stringify(msg));
     } finally {
-      setRunning(false);
     }
-  }, [orgId, productId, selectedIdentifier, script]);
+  }, [orgId, productId, selectedIdentifier, script, runScript]);
+
+  if (scriptQuery.isLoading) return <LoadingView message="Loading script..." />;
+  if (!script) return <EmptyView title="Script Unavailable" message="This script could not be loaded." />;
 
   return (
     <ScrollView
@@ -141,8 +162,8 @@ export default function RunScriptScreen({ route }: Props) {
               type="primary"
               size="sm"
               onPress={handleRun}
-              isLoading={running}
-              disabled={!selectedIdentifier || running}
+              isLoading={runScript.isPending}
+              disabled={!selectedIdentifier || runScript.isPending}
               iconLeft={<SendIcon width={14} height={14} color="#fff" />}
             />
           </View>

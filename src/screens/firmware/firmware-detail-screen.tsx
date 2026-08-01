@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -9,12 +9,13 @@ import { spacing } from "../../components/tokens";
 import { useTheme } from "../../theme/ThemeProvider";
 import { Typography } from "../../components/typography";
 import { Card } from "../../components/ui";
-import { Tag } from "../../components/tag";
 import type { StaticScreenProps } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import type { Firmware } from "../../api/generated/schemas";
 import { useDeleteFirmware } from "../../api/generated/firmwares/firmwares";
 import { useOrgProduct } from "../../context/OrgProductContext";
+import ReactNativeBlobUtil from "react-native-blob-util";
+import { useAuth } from "../../context/AuthContext";
 
 type Props = StaticScreenProps<{ firmware: Firmware }>;
 
@@ -46,7 +47,29 @@ export default function FirmwareDetailScreen({ route }: Props) {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
   const { orgId, productId } = useOrgProduct();
+  const { instanceUrl, token } = useAuth();
   const deleteFirmware = useDeleteFirmware();
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    if (!instanceUrl || !token || !orgId || !productId || !fw.uuid) return;
+    setDownloading(true);
+    try {
+      const result = await ReactNativeBlobUtil.config({
+        fileCache: true,
+        appendExt: "fw",
+      }).fetch(
+        "GET",
+        `${instanceUrl}/api/orgs/${encodeURIComponent(orgId)}/products/${encodeURIComponent(productId)}/firmwares/${encodeURIComponent(fw.uuid)}/download`,
+        { Authorization: `token ${token}` },
+      );
+      await ReactNativeBlobUtil.ios.openDocument(result.path());
+    } catch {
+      Alert.alert("Download Failed", "The firmware file could not be downloaded.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -79,6 +102,12 @@ export default function FirmwareDetailScreen({ route }: Props) {
       unstable_headerRightItems: () => [
         {
           type: "button",
+          icon: { type: "sfSymbol", name: "arrow.down.circle" },
+          onPress: handleDownload,
+          disabled: downloading,
+        },
+        {
+          type: "button",
           icon: {
             type: "sfSymbol",
             name: "trash",
@@ -87,7 +116,7 @@ export default function FirmwareDetailScreen({ route }: Props) {
         },
       ],
     });
-  }, [navigation, colors, orgId, productId, fw.uuid, deleteFirmware.isPending]);
+  }, [navigation, colors, orgId, productId, fw.uuid, deleteFirmware.isPending, downloading, token, instanceUrl]);
 
   return (
       <ScrollView
@@ -95,92 +124,24 @@ export default function FirmwareDetailScreen({ route }: Props) {
         contentContainerStyle={styles.content}
         contentInsetAdjustmentBehavior="automatic"
       >
-        {(fw.signed || fw.description) && (
-          <View style={styles.badgeRow}>
-            {fw.signed && (
-              <Tag
-                label="Signed"
-                size="sm"
-                colorScheme="white"
-                hasBorder
-                hasShadow
-              />
-            )}
-          </View>
-        )}
-
-        {fw.description ? (
-          <Typography
-            type="body"
-            fontSize={13}
-            color={colors.textSecondary}
-            paddingHorizontal={spacing.lg}
-            marginBottom={spacing.md}
-          >
-            {fw.description}
-          </Typography>
-        ) : null}
-
         <View style={styles.section}>
           <SectionLabel title="Details" />
           <Card>
             <MetaRow label="Platform" value={fw.platform} />
             <MetaRow label="Architecture" value={fw.architecture} />
             <MetaRow label="Author" value={fw.author} />
-            <MetaRow label="FWUP Version" value={fw.fwup_version} />
-            <MetaRow label="Signed" value={fw.signed ? "Yes" : "No"} />
           </Card>
         </View>
 
-        {(fw.uuid || fw.vcs_identifier) && (
+        {fw.uuid && (
           <View style={styles.section}>
             <SectionLabel title="Identifiers" />
             <Card>
               <MetaRow label="UUID" value={fw.uuid} />
-              <MetaRow label="VCS" value={fw.vcs_identifier} />
             </Card>
           </View>
         )}
 
-        {fw.misc && (
-          <View style={styles.section}>
-            <SectionLabel title="Misc" />
-            <Card>
-              <Typography
-                type="body"
-                fontType="mono"
-                fontSize={12}
-                color={colors.textSecondary}
-              >
-                {fw.misc}
-              </Typography>
-            </Card>
-          </View>
-        )}
-
-        {(fw.inserted_at || fw.updated_at) && (
-          <View style={styles.section}>
-            <SectionLabel title="Timestamps" />
-            <Card>
-              <MetaRow
-                label="Created"
-                value={
-                  fw.inserted_at
-                    ? new Date(fw.inserted_at).toLocaleString()
-                    : null
-                }
-              />
-              <MetaRow
-                label="Updated"
-                value={
-                  fw.updated_at
-                    ? new Date(fw.updated_at).toLocaleString()
-                    : null
-                }
-              />
-            </Card>
-          </View>
-        )}
       </ScrollView>
   );
 }
@@ -208,10 +169,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingBottom: spacing.xl,
-  },
-  badgeRow: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
   },
   section: {
     marginBottom: spacing.md,

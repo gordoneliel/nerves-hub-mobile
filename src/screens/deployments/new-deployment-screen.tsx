@@ -22,8 +22,7 @@ import { Tag } from "../../components/tag";
 import { Dropdown, type DropDownItem } from "../../components/dropdown";
 import { useOrgProduct } from "../../context/OrgProductContext";
 import { useFirmware } from "../../hooks/useApi";
-import { customInstance } from "../../api/mutator/custom-instance";
-import { getListDeploymentGroupsQueryKey } from "../../api/generated/deployment-groups/deployment-groups";
+import { createDeploymentGroup, getListDeploymentGroupsQueryKey } from "../../api/generated/deployment-groups/deployment-groups";
 import type { Firmware } from "../../api/generated/schemas";
 
 import CloseIcon from "../../../assets/icons/close-big.svg";
@@ -35,6 +34,8 @@ interface NewDeploymentForm {
   architecture: string;
   version: string;
   tags: string[];
+  tagOperator: "and" | "or";
+  notes: string;
   isActive: boolean;
 }
 
@@ -57,6 +58,8 @@ export default function NewDeploymentScreen() {
       architecture: "",
       version: "",
       tags: [],
+      tagOperator: "and",
+      notes: "",
       isActive: false,
     },
   });
@@ -108,10 +111,7 @@ export default function NewDeploymentScreen() {
     async (data: NewDeploymentForm) => {
       if (!orgId || !productId) return;
       try {
-        await customInstance({
-          url: `/orgs/${orgId}/products/${productId}/deployments`,
-          method: "POST",
-          data: {
+        await createDeploymentGroup(orgId, productId, {
             name: data.name.trim(),
             firmware: data.firmware,
             conditions: {
@@ -119,13 +119,10 @@ export default function NewDeploymentScreen() {
                 ? { version: data.version.trim() }
                 : {}),
               ...(data.tags.length > 0 ? { tags: data.tags } : {}),
-              ...(data.platform ? { platform: data.platform } : {}),
-              ...(data.architecture
-                ? { architecture: data.architecture }
-                : {}),
+              tag_operator: data.tagOperator,
             },
-            is_active: data.isActive,
-          },
+            state: data.isActive ? "on" : "off",
+            ...(data.notes.trim() ? { notes: data.notes.trim() } : {}),
         });
         queryClient.invalidateQueries({
           queryKey: getListDeploymentGroupsQueryKey(orgId, productId),
@@ -396,6 +393,21 @@ export default function NewDeploymentScreen() {
               );
             }}
           />
+        </View>
+
+        {/* Active toggle */}
+        <View style={styles.field}>
+          <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>Tag matching</Typography>
+          <Controller control={control} name="tagOperator" render={({ field: { onChange } }) => (
+            <Dropdown items={[{ id: "and", label: "Match all tags", value: "and" }, { id: "or", label: "Match any tag", value: "or" }]} defaultSelectedItemId="and" size="md" fullItemsWidth onSelect={(item) => onChange(item.value ?? "and")} />
+          )} />
+        </View>
+
+        <View style={styles.field}>
+          <Typography type="caption" fontSize={12} color={colors.textTertiary} paddingBottom={spacing.xs}>Notes (optional)</Typography>
+          <Controller control={control} name="notes" render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput value={value} onChangeText={onChange} onBlur={onBlur} placeholder="Why this deployment exists" multiline />
+          )} />
         </View>
 
         {/* Active toggle */}

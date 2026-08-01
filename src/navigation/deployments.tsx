@@ -2,18 +2,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DeploymentsScreen from "../screens/deployments/deployments-screen";
 import DeploymentDetailScreen from "../screens/deployments/deployment-detail-screen";
 import NewDeploymentScreen from "../screens/deployments/new-deployment-screen";
+import { sharedStackScreenOptions } from "./screen-options";
 
 const DeploymentsStack = createNativeStackNavigator({
-  screenOptions: {
-    headerBackButtonDisplayMode: "minimal",
-    headerTransparent: true,
-    headerLargeTitle: true,
-    headerLargeTitleStyle: {
-      fontFamily: "PlusJakartaSans-VariableFont_wght",
-      fontSize: 26,
-      fontWeight: "600",
-    },
-  },
+  screenOptions: sharedStackScreenOptions,
   screens: {
     DeploymentsList: {
       screen: DeploymentsScreen,
@@ -25,7 +17,6 @@ const DeploymentsStack = createNativeStackNavigator({
       screen: DeploymentDetailScreen,
       options: {
         title: "",
-        headerTransparent: true,
       },
     },
   },

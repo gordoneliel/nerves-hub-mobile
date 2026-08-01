@@ -1,177 +1,46 @@
 import React, {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useMemo,
-  useState,
 } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
-  RefreshControl,
-  ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import {
-  isLiquidGlassSupported,
-  LiquidGlassContainerView,
-} from "@callstack/liquid-glass";
 
 import { spacing } from "../../../components/tokens";
 import { useTheme } from "../../../theme/ThemeProvider";
 import { Typography } from "../../../components/typography";
-import { EmptyView, ErrorView, LoadingView } from "../../../components/ui";
+import { EmptyView, ErrorView } from "../../../components/ui";
 import { useOrgProduct } from "../../../context/OrgProductContext";
 import { useInfiniteDevices, useAllOrgProducts } from "../../../hooks/useApi";
-import { useDevicesChannel } from "../../../hooks/useDevicesChannel";
 import { useRefresh } from "../../../hooks/useRefresh";
 import {
   useRebootDevice,
   useReconnectDevice,
+  useClearDevicePenalty,
+  deleteDevice,
 } from "../../../api/generated/devices/devices";
-import { customInstance } from "../../../api/mutator/custom-instance";
 import type { Device } from "../../../api/generated/schemas";
-import { Button } from "../../../components/button";
-// import { SearchInput } from "../../../components/search-input";
-import { Dropdown, type DropDownItem } from "../../../components/dropdown";
-import { ARCHITECTURES } from "../../../utils/architectures";
+import { storage, STORAGE_KEYS } from "../../../utils/storage";
 import { DeviceCard, type DeviceMenuAction } from "./device-card";
 import { DevicesLoading } from "./devices-loading";
-
-import SwitchIcon from "../../../../assets/icons/products.svg";
-import StarOutlineIcon from "../../../../assets/icons/star-outline.svg";
-import SearchIcon from "../../../../assets/icons/search.svg";
-import RadioTowerIcon from "../../../../assets/icons/radio-tower.svg";
-import PlatformIcon from "../../../../assets/icons/platform.svg";
-import CogIcon from "../../../../assets/icons/cog.svg";
-import StackIcon from "../../../../assets/icons/stack.svg";
-
-type ListHeaderProps = {
-  orgId: string | null;
-  productId: string | null;
-  colors: any;
-  statusItems: DropDownItem<string>[];
-  platformItems: DropDownItem<string>[];
-  deploymentItems: DropDownItem<string>[];
-  architectureItems: DropDownItem<string>[];
-  onStatusFilter: (value: string | null) => void;
-  onPlatformFilter: (value: string | null) => void;
-  onDeploymentFilter: (value: string | null) => void;
-  onArchitectureFilter: (value: string | null) => void;
-};
-
-const ListHeader = React.memo(function ListHeader({
-  orgId,
-  productId,
-  colors,
-  statusItems,
-  platformItems,
-  deploymentItems,
-  architectureItems,
-  onStatusFilter,
-  onPlatformFilter,
-  onDeploymentFilter,
-  onArchitectureFilter,
-}: ListHeaderProps) {
-  return (
-    <>
-      <Typography
-        type="body"
-        fontSize={13}
-        color={colors.textSecondary}
-        paddingHorizontal={spacing.lg}
-        paddingBottom={spacing.sm}
-      >
-        {orgId} / {productId}
-      </Typography>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filtersRow}
-      >
-        <Dropdown
-          label="Status"
-          items={statusItems}
-          defaultSelectedItemId="all"
-          placeholderLabel="Status"
-          icon={
-            <RadioTowerIcon
-              width={18}
-              height={18}
-              color={colors.textTertiary}
-            />
-          }
-          size="xs"
-          fullWidth={false}
-          pill
-          onSelect={(item) => onStatusFilter(item.value || null)}
-        />
-        <Dropdown
-          label="Platform"
-          items={platformItems}
-          defaultSelectedItemId="all"
-          placeholderLabel="Platform"
-          icon={
-            <PlatformIcon width={16} height={16} color={colors.textTertiary} />
-          }
-          size="xs"
-          fullWidth={false}
-          pill
-          onSelect={(item) => onPlatformFilter(item.value || null)}
-        />
-        <Dropdown
-          label="Arch"
-          items={architectureItems}
-          defaultSelectedItemId="all"
-          placeholderLabel="Arch"
-          icon={<CogIcon width={16} height={16} color={colors.textTertiary} />}
-          size="xs"
-          fullWidth={false}
-          pill
-          onSelect={(item) => onArchitectureFilter(item.value || null)}
-        />
-        <Dropdown
-          label="Deployment"
-          items={deploymentItems}
-          defaultSelectedItemId="all"
-          placeholderLabel="Deployment"
-          icon={
-            <StackIcon width={18} height={18} color={colors.textTertiary} />
-          }
-          size="xs"
-          fullWidth={false}
-          pill
-          onSelect={(item) => onDeploymentFilter(item.value || null)}
-        />
-      </ScrollView>
-    </>
-  );
-});
+import { useDeviceListControls } from "../../../features/device-filters/device-list-controls";
+import { useDeviceHeaderControls } from "../../../features/device-filters/use-device-header-controls";
 
 export default function DevicesScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
   const { orgId, productId, selectOrgAndProduct } = useOrgProduct();
-  const devicesQuery = useInfiniteDevices();
+  const { filters, sort, activeFilterCount } = useDeviceListControls();
+  const { sortItem, filterItem } = useDeviceHeaderControls(navigation);
+  const devicesQuery = useInfiniteDevices(filters, sort);
   const allOrgProducts = useAllOrgProducts();
   const { refreshing, onRefresh } = useRefresh(() => devicesQuery.refetch());
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [platformFilter, setPlatformFilter] = useState<string | null>(null);
-  const [deploymentFilter, setDeploymentFilter] = useState<string | null>(null);
-  const [architectureFilter, setArchitectureFilter] = useState<string | null>(
-    null,
-  );
-
-  // Real-time updates
-  useDevicesChannel();
-
-  function navigateToOrgProductSwitcher() {
-    navigation.navigate("OrgProductModal");
-  }
 
   const orgProductMenuItems = useMemo(() => {
     return allOrgProducts.data.map((orgGroup) => ({
@@ -208,8 +77,11 @@ export default function DevicesScreen() {
         },
       ],
       unstable_headerRightItems: () => [
+        sortItem,
+        filterItem,
         {
           type: "button",
+          label: "Add Device",
           icon: {
             type: "sfSymbol",
             name: "plus",
@@ -221,6 +93,7 @@ export default function DevicesScreen() {
         },
         {
           type: "button",
+          label: "Search Devices",
           icon: {
             type: "sfSymbol",
             name: "magnifyingglass",
@@ -232,10 +105,11 @@ export default function DevicesScreen() {
         },
       ],
     });
-  }, [navigation, orgProductMenuItems]);
+  }, [navigation, orgProductMenuItems, sortItem, filterItem]);
 
   const reboot = useRebootDevice();
   const reconnect = useReconnectDevice();
+  const clearPenalty = useClearDevicePenalty();
 
   const handleMenuAction = useCallback(
     (device: Device, action: DeviceMenuAction) => {
@@ -275,25 +149,44 @@ export default function DevicesScreen() {
             ),
           );
           break;
-        case "identify":
-          confirm(`Identify ${identifier}`, () =>
-            customInstance({
-              url: `/orgs/${orgId}/products/${productId}/devices/${identifier}/identify`,
-              method: "POST",
-            })
-              .then(() => Alert.alert("Success", "Identify command sent."))
-              .catch(() => Alert.alert("Error", "Failed to identify device.")),
+        case "clearPenalty":
+          Alert.alert(
+            "Clear Update Penalty",
+            `Remove the temporary firmware update block for ${identifier}?`,
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Clear",
+                onPress: () =>
+                  clearPenalty.mutate(
+                    { orgName: orgId!, productName: productId!, identifier },
+                    {
+                      onSuccess: () => {
+                        Alert.alert(
+                          "Success",
+                          "The update penalty was cleared.",
+                        );
+                        devicesQuery.refetch();
+                      },
+                      onError: () =>
+                        Alert.alert(
+                          "Error",
+                          "Failed to clear the update penalty.",
+                        ),
+                    },
+                  ),
+              },
+            ],
           );
           break;
+        case "pin": {
+          const key = `${orgId}/${productId}/${identifier}`;
+          storage.addItem(STORAGE_KEYS.PINNED_DEVICES, key);
+          Alert.alert("Pinned", `${identifier} was added to Pinned Devices.`);
+          break;
+        }
         case "tags": {
-          const tagList = Array.isArray(device.tags)
-            ? device.tags
-            : typeof device.tags === "string"
-              ? device.tags
-                  .split(",")
-                  .map((t) => t.trim())
-                  .filter(Boolean)
-              : [];
+          const tagList = device.tags ?? [];
           navigation.navigate("EditDeviceTags", {
             identifier,
             currentTags: tagList,
@@ -310,10 +203,7 @@ export default function DevicesScreen() {
                 text: "Delete",
                 style: "destructive",
                 onPress: () =>
-                  customInstance({
-                    url: `/orgs/${orgId}/products/${productId}/devices/${identifier}`,
-                    method: "DELETE",
-                  })
+                  deleteDevice(orgId!, productId!, identifier)
                     .then(() => {
                       devicesQuery.refetch();
                     })
@@ -326,130 +216,33 @@ export default function DevicesScreen() {
           break;
       }
     },
-    [orgId, productId, reboot, reconnect, navigation, devicesQuery],
-  );
-
-  const allDevices =
-    devicesQuery.data?.pages.flatMap((p) => p.data ?? []) ?? [];
-
-  // Derive filter options from loaded devices
-  const statusItems = useMemo<DropDownItem<string>[]>(
-    () => [
-      { id: "all", label: "All", value: null as any },
-      { id: "connected", label: "Online", value: "connected" },
-      { id: "disconnected", label: "Offline", value: "disconnected" },
-    ],
-    [],
-  );
-
-  const platformItems = useMemo<DropDownItem<string>[]>(() => {
-    const platforms = new Set(
-      allDevices
-        .map((d) => d.firmware_metadata?.platform)
-        .filter(Boolean) as string[],
-    );
-    return [
-      { id: "all", label: "All", value: null as any },
-      ...[...platforms].map((p) => ({ id: p, label: p, value: p })),
-    ];
-  }, [allDevices]);
-
-  const deploymentItems = useMemo<DropDownItem<string>[]>(() => {
-    const groups = new Set(
-      allDevices
-        .map((d) => d.deployment_group?.name)
-        .filter(Boolean) as string[],
-    );
-    return [
-      { id: "all", label: "All", value: null as any },
-      ...[...groups].map((g) => ({ id: g, label: g, value: g })),
-    ];
-  }, [allDevices]);
-
-  const architectureItems = useMemo<DropDownItem<string>[]>(
-    () => [
-      { id: "all", label: "All", value: null as any },
-      ...ARCHITECTURES.map((a) => ({ id: a, label: a, value: a })),
-    ],
-    [],
-  );
-
-  // Apply client-side filters
-  const devices = useMemo(() => {
-    let filtered = allDevices;
-    if (statusFilter) {
-      filtered = filtered.filter((d) => d.connection_status === statusFilter);
-    }
-    if (platformFilter) {
-      filtered = filtered.filter(
-        (d) => d.firmware_metadata?.platform === platformFilter,
-      );
-    }
-    if (deploymentFilter) {
-      filtered = filtered.filter(
-        (d) => d.deployment_group?.name === deploymentFilter,
-      );
-    }
-    if (architectureFilter) {
-      filtered = filtered.filter(
-        (d) => d.firmware_metadata?.architecture === architectureFilter,
-      );
-    }
-    return filtered;
-  }, [
-    allDevices,
-    statusFilter,
-    platformFilter,
-    deploymentFilter,
-    architectureFilter,
-  ]);
-
-  const handleStatusFilter = useCallback(
-    (v: string | null) => setStatusFilter(v),
-    [],
-  );
-  const handlePlatformFilter = useCallback(
-    (v: string | null) => setPlatformFilter(v),
-    [],
-  );
-  const handleDeploymentFilter = useCallback(
-    (v: string | null) => setDeploymentFilter(v),
-    [],
-  );
-  const handleArchitectureFilter = useCallback(
-    (v: string | null) => setArchitectureFilter(v),
-    [],
-  );
-
-  const listHeader = useMemo(
-    () => (
-      <ListHeader
-        orgId={orgId}
-        productId={productId}
-        colors={colors}
-        statusItems={statusItems}
-        platformItems={platformItems}
-        deploymentItems={deploymentItems}
-        architectureItems={architectureItems}
-        onStatusFilter={handleStatusFilter}
-        onPlatformFilter={handlePlatformFilter}
-        onDeploymentFilter={handleDeploymentFilter}
-        onArchitectureFilter={handleArchitectureFilter}
-      />
-    ),
     [
       orgId,
       productId,
-      colors,
-      statusItems,
-      platformItems,
-      deploymentItems,
-      architectureItems,
-      handleStatusFilter,
-      handlePlatformFilter,
-      handleDeploymentFilter,
-      handleArchitectureFilter,
+      reboot,
+      reconnect,
+      clearPenalty,
+      navigation,
+      devicesQuery,
     ],
+  );
+
+  const devices =
+    devicesQuery.data?.pages.flatMap((p) => p.data ?? []) ?? [];
+
+  const listHeader = useMemo(
+    () => (
+      <Typography
+        type="body"
+        fontSize={13}
+        color={colors.textSecondary}
+        paddingHorizontal={spacing.lg}
+        paddingBottom={spacing.md}
+      >
+        {orgId} / {productId}
+      </Typography>
+    ),
+    [orgId, productId, colors],
   );
 
   if (devicesQuery.isLoading) return <DevicesLoading />;
@@ -467,7 +260,6 @@ export default function DevicesScreen() {
       style={{ marginHorizontal: spacing.lg }}
       onPress={(device) =>
         navigation.navigate("DeviceDetail", {
-          deviceId: device.id!,
           identifier: String(device.identifier!),
         })
       }
@@ -490,7 +282,11 @@ export default function DevicesScreen() {
         <View style={styles.emptyViewWrapper}>
           <EmptyView
             title="No Devices"
-            message={"No devices found for this product."}
+            message={
+              activeFilterCount > 0
+                ? "No devices match the applied filters."
+                : "No devices found for this product."
+            }
           />
         </View>
       }
@@ -535,12 +331,6 @@ const styles = StyleSheet.create({
   searchWrapper: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.sm,
-  },
-  filtersRow: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xl,
-    gap: spacing.xs,
-    marginTop: spacing.sm,
   },
   loadingFooter: {
     paddingVertical: spacing.lg,

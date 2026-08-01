@@ -244,7 +244,6 @@ export function SegmentedControlExample() {
             ]}
             selectedIndex={1}
             onSelectionChange={() => {}}
-            containerStyle={styles.customContainer}
             backgroundColor="#FEF7FF"
             selectedBackgroundColor="#A855F7"
             textColor="#A855F7"

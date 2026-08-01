@@ -1,18 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ScriptsScreen from "../screens/scripts-screen";
 import RunScriptScreen from "../screens/run-script-screen";
+import ScriptEditorScreen from "../screens/script-editor-screen";
+import { sharedStackScreenOptions } from "./screen-options";
 
 const ScriptsStack = createNativeStackNavigator({
-  screenOptions: {
-    headerBackButtonDisplayMode: "minimal",
-    headerTransparent: true,
-    headerLargeTitle: true,
-    headerLargeTitleStyle: {
-      fontFamily: "PlusJakartaSans-VariableFont_wght",
-      fontSize: 26,
-      fontWeight: "600",
-    },
-  },
+  screenOptions: sharedStackScreenOptions,
   screens: {
     ScriptsList: {
       screen: ScriptsScreen,
@@ -25,6 +18,10 @@ const ScriptsStack = createNativeStackNavigator({
       options: {
         title: "Run Script",
       },
+    },
+    ScriptEditor: {
+      screen: ScriptEditorScreen,
+      options: { title: "Script" },
     },
   },
 });

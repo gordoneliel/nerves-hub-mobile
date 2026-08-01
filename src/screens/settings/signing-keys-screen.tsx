@@ -10,15 +10,6 @@ import { useOrgProduct } from "../../context/OrgProductContext";
 import { useListSigningKeys } from "../../api/generated/signing-keys/signing-keys";
 import type { SigningKey } from "../../api/generated/schemas";
 
-function formatDate(iso?: string) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
 export default function SigningKeysScreen() {
   const { colors } = useTheme();
   const { orgId } = useOrgProduct();
@@ -56,14 +47,6 @@ export default function SigningKeysScreen() {
           {item.key}
         </Typography>
       )}
-      <Typography
-        type="caption"
-        fontSize={11}
-        color={colors.textTertiary}
-        marginTop={spacing.xs}
-      >
-        Created {formatDate(item.inserted_at)}
-      </Typography>
     </Card>
   );
 

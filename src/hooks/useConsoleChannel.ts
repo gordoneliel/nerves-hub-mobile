@@ -5,13 +5,14 @@ import { useAuth } from "../context/AuthContext";
 type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
 
 interface ConsoleChannelOptions {
-  deviceId: string | number;
+  /** The device identifier (e.g. serial), not the numeric DB id. */
+  identifier: string;
   onOutput?: (data: string) => void;
   onMetadata?: (metadata: Record<string, unknown>) => void;
 }
 
 export function useConsoleChannel({
-  deviceId,
+  identifier,
   onOutput,
   onMetadata,
 }: ConsoleChannelOptions) {
@@ -26,13 +27,15 @@ export function useConsoleChannel({
   onMetadataRef.current = onMetadata;
 
   useEffect(() => {
-    if (!instanceUrl || !deviceId || !token) return;
+    if (!instanceUrl || !identifier || !token) return;
 
     let cancelled = false;
     setStatus("connecting");
 
+    // API-token auth uses the dedicated APISocket at /api/socket (the web UI's
+    // /socket verifies a Phoenix.Token session instead). See nerves_hub_web #2741.
     const wsUrl = instanceUrl.replace(/^http/, "ws");
-    const socket = new Socket(`${wsUrl}/socket`, {
+    const socket = new Socket(`${wsUrl}/api/socket`, {
       params: { token },
     });
 
@@ -47,7 +50,7 @@ export function useConsoleChannel({
     socket.connect();
     socketRef.current = socket;
 
-    const topic = `user:console:${deviceId}`;
+    const topic = `user:console:identifier-${identifier}`;
     const channel = socket.channel(topic, {});
     channelRef.current = channel;
 
@@ -80,7 +83,7 @@ export function useConsoleChannel({
       channelRef.current = null;
       socketRef.current = null;
     };
-  }, [instanceUrl, deviceId, token]);
+  }, [instanceUrl, identifier, token]);
 
   const sendInput = useCallback((data: string) => {
     channelRef.current?.push("dn", { data });

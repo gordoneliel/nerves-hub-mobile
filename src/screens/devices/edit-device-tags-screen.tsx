@@ -69,7 +69,7 @@ export default function EditDeviceTagsScreen({ route }: Props) {
         orgName: orgId,
         productName: productId,
         identifier,
-        data: { tags: tags  },
+        data: { tags },
       },
       {
         onSuccess: () => {

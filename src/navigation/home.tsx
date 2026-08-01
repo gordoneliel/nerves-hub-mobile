@@ -1,11 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createNativeBottomTabNavigator } from "@bottom-tabs/react-navigation";
-import {
-  useHasOrgProduct,
-  useNeedsOrgProduct,
-} from "../context/OrgProductContext";
-
-import OrgProductSelector from "../screens/org-product-selector";
 import FirmwareStack from "./firmware";
 import DeploymentsStack from "./deployments";
 import SettingsStack from "./settings";
@@ -70,21 +63,5 @@ const HomeNavigator = createNativeBottomTabNavigator({
     },
   },
 });
-
-// ── Home navigator ───────────────────────────────────────────────
-
-// const HomeNavigator = createNativeStackNavigator({
-//   screenOptions: { headerShown: false },
-//   screens: {
-//     OrgProduct: {
-//       if: useNeedsOrgProduct,
-//       screen: OrgProductSelector,
-//     },
-//     Main: {
-//       if: useHasOrgProduct,
-//       screen: MainTabs,
-//     },
-//   },
-// });
 
 export default HomeNavigator;

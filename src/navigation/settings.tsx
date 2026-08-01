@@ -4,18 +4,10 @@ import OrgUsersScreen from "../screens/settings/org-users-screen";
 import CACertificatesScreen from "../screens/settings/ca-certificates-screen";
 import SigningKeysScreen from "../screens/settings/signing-keys-screen";
 import AppearanceScreen from "../screens/settings/appearance-screen";
+import { sharedStackScreenOptions } from "./screen-options";
 
 const SettingsStack = createNativeStackNavigator({
-  screenOptions: {
-    headerBackButtonDisplayMode: "minimal",
-    headerTransparent: true,
-    headerLargeTitle: true,
-    headerLargeTitleStyle: {
-      fontFamily: "PlusJakartaSans-VariableFont_wght",
-      fontSize: 26,
-      fontWeight: "600",
-    },
-  },
+  screenOptions: sharedStackScreenOptions,
   screens: {
     SettingsMain: {
       screen: SettingsScreen,

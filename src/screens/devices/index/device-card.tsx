@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { View, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 import ContextMenu from "react-native-context-menu-view";
 
@@ -20,7 +20,9 @@ import PlatformIcon from "../../../../assets/icons/platform.svg";
 export type DeviceMenuAction =
   | "reboot"
   | "reconnect"
-  | "identify"
+  | "clearPenalty"
+  | "pin"
+  | "unpin"
   | "tags"
   | "delete";
 
@@ -28,8 +30,8 @@ export type DeviceCardProps = {
   device: Device;
   style?: StyleProp<ViewStyle>;
   onPress?: (device: Device) => void;
-  onEllipsisPress?: (device: Device) => void;
   onMenuAction?: (device: Device, action: DeviceMenuAction) => void;
+  isPinned?: boolean;
 };
 
 export const MENU_ACTIONS: {
@@ -40,7 +42,12 @@ export const MENU_ACTIONS: {
 }[] = [
   { title: "Reboot", systemIcon: "arrow.clockwise", key: "reboot" },
   { title: "Reconnect", systemIcon: "wifi", key: "reconnect" },
-  { title: "Identify", systemIcon: "scope", key: "identify" },
+  {
+    title: "Clear Update Penalty",
+    systemIcon: "arrow.counterclockwise.circle",
+    key: "clearPenalty",
+  },
+  { title: "Pin", systemIcon: "star", key: "pin" },
   { title: "Edit Tags", systemIcon: "tag", key: "tags" },
   { title: "Delete", systemIcon: "trash", key: "delete", destructive: true },
 ] as const;
@@ -53,9 +60,9 @@ export const DeviceCard = memo(DeviceCardRaw, (prev, next) => {
     prev.device.version === next.device.version &&
     prev.device.description === next.device.description &&
     prev.device.tags === next.device.tags &&
+    prev.device.updates_blocked_until === next.device.updates_blocked_until &&
     prev.device.deployment_group?.name === next.device.deployment_group?.name &&
-    prev.device.deployment_group?.platform ===
-      next.device.deployment_group?.platform &&
+    prev.isPinned === next.isPinned &&
     prev.onPress === next.onPress &&
     prev.onMenuAction === next.onMenuAction &&
     prev.style === next.style
@@ -67,8 +74,17 @@ function DeviceCardRaw({
   style,
   onPress,
   onMenuAction,
+  isPinned = false,
 }: DeviceCardProps) {
   const themedStyles = useThemedStyles(createStyles);
+  const menuActions = useMemo(
+    () =>
+      MENU_ACTIONS.filter(
+        (action) =>
+          action.key !== "clearPenalty" || !!device.updates_blocked_until,
+      ),
+    [device.updates_blocked_until],
+  );
 
   const handlePress = useCallback(() => {
     onPress?.(device);
@@ -76,20 +92,17 @@ function DeviceCardRaw({
 
   const handleMenuAction = useCallback(
     (e: { nativeEvent: { index: number } }) => {
-      const action = MENU_ACTIONS[e.nativeEvent.index];
+      const action = menuActions[e.nativeEvent.index];
+      if (action?.key === "pin" && isPinned) {
+        onMenuAction?.(device, "unpin");
+        return;
+      }
       if (action) onMenuAction?.(device, action.key);
     },
-    [onMenuAction, device],
+    [onMenuAction, device, isPinned, menuActions],
   );
 
-  const tags = Array.isArray(device.tags)
-    ? device.tags
-    : typeof device.tags === "string"
-      ? device.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean)
-      : [];
+  const tags = device.tags ?? [];
 
   return (
     <Card onPress={handlePress} style={style}>
@@ -117,8 +130,8 @@ function DeviceCardRaw({
 
         <ContextMenu
           title={`${device.identifier}`}
-          actions={MENU_ACTIONS.map(({ title, systemIcon, destructive }) => ({
-            title,
+          actions={menuActions.map(({ title, systemIcon, destructive, key }) => ({
+            title: key === "pin" && isPinned ? "Unpin" : title,
             systemIcon,
             destructive,
           }))}
@@ -201,15 +214,7 @@ function DeviceCardRaw({
           />
         )}
 
-        {(Array.isArray(device.tags)
-          ? device.tags
-          : typeof device.tags === "string"
-            ? device.tags
-                .split(",")
-                .map((t) => t.trim())
-                .filter(Boolean)
-            : []
-        ).map((tag) => (
+        {tags.map((tag) => (
           <Tag
             key={tag}
             label={`# ${tag}`}

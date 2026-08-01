@@ -1,15 +1,13 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useGetMe } from "../api/generated/users/users";
-import { useListProducts } from "../api/generated/products/products";
 import {
   listDevices,
   getListDevicesQueryKey,
-  useListDevices,
   useGetDevice,
 } from "../api/generated/devices/devices";
+import type { ListDevicesParams } from "../api/generated/schemas";
 import { useListFirmwares } from "../api/generated/firmwares/firmwares";
 import { useListDeploymentGroups } from "../api/generated/deployment-groups/deployment-groups";
-import { useListSigningKeys } from "../api/generated/signing-keys/signing-keys";
 import { useListScripts } from "../api/generated/scripts/scripts";
 import { useAuth } from "../context/AuthContext";
 import { useOrgProduct } from "../context/OrgProductContext";
@@ -19,9 +17,6 @@ import { useOrgProduct } from "../context/OrgProductContext";
  * org/product from context and enforce auth guards.
  */
 
-// ── Re-exports for manual hooks (no Orval equivalent) ────────────
-
-export { useOrgs } from "./useOrgs";
 export { useAllOrgProducts } from "./useAllOrgProducts";
 export type { OrgWithProducts } from "./useAllOrgProducts";
 
@@ -32,50 +27,63 @@ export function useMe() {
   return useGetMe({ query: { enabled: !!token, staleTime: 30_000 } });
 }
 
-// ── Products ─────────────────────────────────────────────────────
-
-export function useProducts(org: string | null) {
-  const { token } = useAuth();
-  return useListProducts(org ?? "", {
-    query: { enabled: !!token && !!org, staleTime: 30_000 },
-  });
-}
-
 // ── Devices ──────────────────────────────────────────────────────
-
-export function useDevices(params?: {
-  search?: string;
-  page?: number;
-  page_size?: number;
-}) {
-  const { token } = useAuth();
-  const { orgId: org, productId: product } = useOrgProduct();
-  return useListDevices(org ?? "", product ?? "", params, {
-    query: {
-      enabled: !!token && !!org && !!product,
-      staleTime: 30_000,
-      refetchInterval: 30_000,
-    },
-  });
-}
 
 const PAGE_SIZE = 25;
 
-export function useInfiniteDevices(search?: string) {
+/** Server-side device filters (NervesHub `filters[...]`). */
+export type DeviceFilters = {
+  search?: string;
+  connection?: "connected" | "disconnected" | "not_seen";
+  platform?: string;
+  tags?: string;
+  has_no_tags?: "true";
+  firmware_version?: string;
+  updates?: "enabled" | "disabled" | "penalty-box";
+};
+
+export type DeviceSort = {
+  field: "identifier" | "connection_established_at";
+  direction: "asc" | "desc";
+};
+
+export const DEFAULT_DEVICE_SORT: DeviceSort = {
+  field: "identifier",
+  direction: "asc",
+};
+
+export function useInfiniteDevices(
+  filters: DeviceFilters = {},
+  sort: DeviceSort = DEFAULT_DEVICE_SORT,
+) {
   const { token } = useAuth();
   const { orgId: org, productId: product } = useOrgProduct();
 
+  // Drop empty values so they don't pollute the query key or the request.
+  const activeFilters = Object.fromEntries(
+    Object.entries(filters).filter(([, v]) => v != null && v !== ""),
+  );
+  const hasFilters = Object.keys(activeFilters).length > 0;
+
   return useInfiniteQuery({
-    queryKey: getListDevicesQueryKey(
-      org ?? "",
-      product ?? "",
-      search ? { search } : undefined,
-    ),
+    // Keep the generated key prefix so list invalidations (edit tags, deploy
+    // changes, …) still match, then append the active filters so each filter
+    // combination caches separately.
+    queryKey: [
+      ...getListDevicesQueryKey(org ?? "", product ?? ""),
+      activeFilters,
+      sort,
+    ],
     queryFn: ({ pageParam, signal }) =>
       listDevices(
         org ?? "",
         product ?? "",
-        { search, page: pageParam, page_size: PAGE_SIZE },
+        {
+          pagination: { page: pageParam, page_size: PAGE_SIZE },
+          sort: sort.field,
+          sort_direction: sort.direction,
+          ...(hasFilters ? { filters: activeFilters } : {}),
+        } as ListDevicesParams,
         signal,
       ),
     initialPageParam: 1,
@@ -86,6 +94,7 @@ export function useInfiniteDevices(search?: string) {
     },
     enabled: !!token && !!org && !!product,
     staleTime: 30_000,
+    refetchInterval: 30_000,
   });
 }
 
@@ -126,25 +135,14 @@ export function useDeployments() {
   });
 }
 
-// ── Signing Keys ─────────────────────────────────────────────────
-
-export function useKeys() {
-  const { token } = useAuth();
-  const { orgId: orgId } = useOrgProduct();
-  return useListSigningKeys(orgId ?? "", {
-    query: {
-      enabled: !!token && !!orgId,
-      staleTime: 30_000,
-    },
-  });
-}
-
 // ── Scripts ─────────────────────────────────────────────────────
 
 export function useScripts() {
   const { token } = useAuth();
   const { orgId: org, productId: product } = useOrgProduct();
   return useListScripts(org ?? "", product ?? "", {
+    pagination: { page: 1, page_size: 100 },
+  }, {
     query: {
       enabled: !!token && !!org && !!product,
       staleTime: 30_000,

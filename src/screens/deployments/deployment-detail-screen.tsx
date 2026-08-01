@@ -10,10 +10,10 @@ import type { StaticScreenProps } from "@react-navigation/native";
 import { SwitchFirmwareCard } from "./switch-firmware-card";
 import type { DeploymentGroup } from "../../api/generated/schemas";
 import { useOrgProduct } from "../../context/OrgProductContext";
-import { customInstance } from "../../api/mutator/custom-instance";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getListDeploymentGroupsQueryKey,
+  updateDeploymentGroup,
   useDeleteDeploymentGroup,
 } from "../../api/generated/deployment-groups/deployment-groups";
 
@@ -57,11 +57,10 @@ export default function DeploymentDetailScreen({ route }: Props) {
 
   const isActive = active;
   const tags = dg.conditions?.tags ?? [];
-  const dgAny = dg as any;
-  const currentRelease = dgAny.current_release;
-  const releasesCount = dgAny.releases_count;
-  const deltaUpdatable = dgAny.delta_updatable;
-  const archiveUuid = dgAny.archive_uuid;
+  const currentRelease = dg.current_release;
+  const releasesCount = dg.releases_count;
+  const deltaUpdatable = dg.delta_updatable;
+  const archiveUuid = dg.archive_uuid;
 
   const handleToggle = useCallback(() => {
     const nextState = !isActive;
@@ -78,10 +77,8 @@ export default function DeploymentDetailScreen({ route }: Props) {
             if (!orgId || !productId || !dg.name) return;
             setToggling(true);
             try {
-              await customInstance({
-                url: `/orgs/${orgId}/products/${productId}/deployments/${dg.name}`,
-                method: "PUT",
-                data: { deployment: { state: nextState ? "on" : "off" } },
+              await updateDeploymentGroup(orgId, productId, dg.name, {
+                deployment: { state: nextState ? "on" : "off" },
               });
               setActive(nextState);
               queryClient.invalidateQueries({
@@ -183,7 +180,7 @@ export default function DeploymentDetailScreen({ route }: Props) {
         />
       </View>
 
-      {dg.firmware && (
+      {currentRelease?.firmware && (
         <View style={styles.section}>
           <Typography
             type="caption"
@@ -200,15 +197,11 @@ export default function DeploymentDetailScreen({ route }: Props) {
           <Card>
             <MetaRow
               label="Version"
-              value={dg.firmware.version ? `v${dg.firmware.version}` : null}
+              value={currentRelease.firmware.version ? `v${currentRelease.firmware.version}` : null}
             />
-            <MetaRow label="Platform" value={dg.firmware.platform} />
-            <MetaRow label="Architecture" value={dg.firmware.architecture} />
-            <MetaRow label="Author" value={dg.firmware.author} />
-            <MetaRow label="UUID" value={dg.firmware.uuid} />
-            <MetaRow label="FWUP Version" value={dg.firmware.fwup_version} />
-            <MetaRow label="VCS" value={dg.firmware.vcs_identifier} />
-            <MetaRow label="Signed" value={dg.firmware.signed ? "Yes" : "No"} />
+            <MetaRow label="Platform" value={currentRelease.firmware.platform} />
+            <MetaRow label="Architecture" value={currentRelease.firmware.architecture} />
+            <MetaRow label="UUID" value={currentRelease.firmware.uuid} />
           </Card>
         </View>
       )}
@@ -228,6 +221,7 @@ export default function DeploymentDetailScreen({ route }: Props) {
           </Typography>
           <Card>
             <MetaRow label="Version" value={dg.conditions?.version} />
+            <MetaRow label="Tag matching" value={dg.conditions?.tag_operator?.toUpperCase()} />
             {tags.length > 0 && (
               <View style={styles.tagsMetaRow}>
                 <Typography
@@ -316,6 +310,13 @@ export default function DeploymentDetailScreen({ route }: Props) {
 
       <SwitchFirmwareCard deploymentName={dg.name!} />
 
+      {dg.notes ? (
+        <View style={styles.section}>
+          <Typography type="caption" fontSize={11} textTransform="uppercase" letterSpacing={1} paddingBottom={spacing.xs} paddingHorizontal={spacing.lg} color={colors.textTertiary}>Notes</Typography>
+          <Card><Typography type="body" fontSize={13} color={colors.textSecondary}>{dg.notes}</Typography></Card>
+        </View>
+      ) : null}
+
       <View style={styles.section}>
         <Typography
           type="caption"
@@ -343,18 +344,6 @@ export default function DeploymentDetailScreen({ route }: Props) {
             />
           )}
           {archiveUuid && <MetaRow label="Archive UUID" value={archiveUuid} />}
-          <MetaRow
-            label="Created"
-            value={
-              dg.inserted_at ? new Date(dg.inserted_at).toLocaleString() : null
-            }
-          />
-          <MetaRow
-            label="Updated"
-            value={
-              dg.updated_at ? new Date(dg.updated_at).toLocaleString() : null
-            }
-          />
         </Card>
       </View>
     </ScrollView>

@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { trigger } from "react-native-haptic-feedback";
 import ContextMenu, { ContextMenuAction } from "react-native-context-menu-view";
@@ -29,7 +35,6 @@ interface DropdownProps<T> {
   disabled?: boolean;
   onSelect?: (item: DropDownItem<T>) => void;
   isDefaultOpen?: boolean;
-  /** Label shown when nothing is selected */
   placeholderLabel?: string;
   /** Prefix label shown before the selected value, e.g. "Status" → "Status: Online" */
   label?: string;
@@ -83,41 +88,66 @@ export function Dropdown<T>({
     defaultSelectedItem || null,
   );
 
-  // Build context menu actions from items/sections
-  const { actions, flatItems } = useMemo(() => {
+  // Sync internal selection when the controlling prop changes (e.g. parent
+  // resets the form or programmatically changes the selected id). We track
+  // the previous prop with a ref so uncontrolled consumers, whose
+  // `defaultSelectedItemId` never changes, keep their locally chosen item.
+  // Also bail out when the currently selected item's id already matches —
+  // otherwise duplicate-id sections (e.g. an SSID appearing in both a stored
+  // and a templates section) would snap the visual selection to the first
+  // match instead of the one the user actually picked.
+  const prevDefaultIdRef = useRef(defaultSelectedItemId);
+  useEffect(() => {
+    if (prevDefaultIdRef.current === defaultSelectedItemId) return;
+    prevDefaultIdRef.current = defaultSelectedItemId;
+    if (selectedItem?.id === defaultSelectedItemId) return;
+    setSelectedItem(
+      allItems.find((item) => item.id === defaultSelectedItemId) ?? null,
+    );
+  }, [defaultSelectedItemId, allItems, selectedItem?.id]);
+
+  // Build context menu actions from items/sections.
+  // `visibleSections` matches the order passed to ContextMenu (empty sections
+  // are dropped), which is how `indexPath[0]` from the native event maps back
+  // to the right section.
+  const { actions, visibleSections } = useMemo(() => {
     if (sections) {
-      const flat: DropDownItem<T>[] = [];
-      const menuActions: ContextMenuAction[] = sections
-        .filter((section) => section.items.length > 0)
-        .map((section) => {
-          const children: ContextMenuAction[] = section.items.map((item) => {
-            flat.push(item);
-            return {
-              title: item.label,
-              selected: item.id === selectedItem?.id,
-            };
-          });
-          return {
-            title: section.title,
-            inlineChildren: true,
-            actions: children,
-          };
-        });
-      return { actions: menuActions, flatItems: flat };
+      const visible = sections.filter((section) => section.items.length > 0);
+      const menuActions: ContextMenuAction[] = visible.map((section) => ({
+        title: section.title,
+        inlineChildren: true,
+        actions: section.items.map((item) => ({
+          title: item.label,
+          selected: item.id === selectedItem?.id,
+        })),
+      }));
+      return { actions: menuActions, visibleSections: visible };
     }
 
-    const flat = allItems;
     const menuActions: ContextMenuAction[] = allItems.map((item) => ({
       title: item.label,
       selected: item.id === selectedItem?.id,
     }));
-    return { actions: menuActions, flatItems: flat };
+    return { actions: menuActions, visibleSections: null };
   }, [allItems, sections, selectedItem?.id]);
 
   const handlePress = useCallback(
     (e: any) => {
-      const { index } = e.nativeEvent;
-      const item = flatItems[index];
+      const { index, indexPath } = e.nativeEvent;
+      // The native event sends a section-local `index` plus an `indexPath`
+      // of [sectionIdx, itemIdx]. With sections we MUST use indexPath,
+      // otherwise we'd look up the wrong item (e.g. tapping the first
+      // scanned network would resolve to the first stored network).
+      let item: DropDownItem<T> | undefined;
+      if (
+        visibleSections &&
+        Array.isArray(indexPath) &&
+        indexPath.length >= 2
+      ) {
+        item = visibleSections[indexPath[0]]?.items[indexPath[1]];
+      } else {
+        item = allItems[index];
+      }
       if (item) {
         trigger("selection", {
           enableVibrateFallback: true,
@@ -127,8 +157,23 @@ export function Dropdown<T>({
         onSelect?.(item);
       }
     },
-    [flatItems, onSelect],
+    [visibleSections, allItems, onSelect],
   );
+
+  // Compute height + radius once so the ContextMenu's lift mask matches the
+  // chip's actual rounded shape (otherwise iOS lifts a rectangular mask and
+  // the rounded corners reveal the preview background behind it).
+  const height =
+    size === "xs" ? 36 : size === "sm" ? 40 : size === "md" ? 52 : 60;
+  const borderRadius = pill
+    ? 26
+    : size === "xs"
+      ? 10
+      : size === "sm"
+        ? 14
+        : size === "md"
+          ? 18
+          : 14;
 
   return (
     <ContextMenu
@@ -136,9 +181,17 @@ export function Dropdown<T>({
       onPress={handlePress}
       dropdownMenuMode
       disabled={disabled}
+      // Suppress system preview chrome that fights the chip's own design:
+      // transparent background kills the white rectangle flashing behind the
+      // lift; disableShadow stops the system drop shadow from stacking on
+      // top of styles.shadow; borderRadius rounds the lift mask to match.
+      previewBackgroundColor="transparent"
+      disableShadow
+      borderRadius={borderRadius}
     >
       <LiquidGlassView
-        interactive
+        // `interactive` removed — it competes with ContextMenu's long-press
+        // gesture and contributed to the brief double-lift at press start.
         effect="regular"
         colorScheme={theme.mode}
         style={[
@@ -146,13 +199,8 @@ export function Dropdown<T>({
           disabled && styles.disabled,
           hasBorder && [styles.bordered, { borderColor: resolvedBorder }],
           hasShadow && styles.shadow,
-          { backgroundColor: resolvedBg },
-          size === "xs" && { height: 36, borderRadius: 10 },
-          size === "sm" && { height: 40, borderRadius: 14 },
-          size === "md" && { height: 52, borderRadius: 18 },
-          size === "lg" && { height: 60 },
-          pill && styles.pill,
-          fullWidth && { flex: 1 },
+          { backgroundColor: resolvedBg, height, borderRadius },
+          fullWidth && styles.flex1,
         ]}
       >
         <View style={styles.header}>
@@ -198,6 +246,7 @@ export function Dropdown<T>({
 }
 
 const styles = StyleSheet.create({
+  flex1: { flex: 1 },
   container: {
     height: 52,
     justifyContent: "center",

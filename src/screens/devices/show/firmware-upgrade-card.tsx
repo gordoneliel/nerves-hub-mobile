@@ -9,7 +9,7 @@ import { Tag } from "../../../components/tag";
 import { Dropdown, type DropDownItem } from "../../../components/dropdown";
 import { Button } from "../../../components/button";
 import { useFirmware } from "../../../hooks/useApi";
-import { customInstance } from "../../../api/mutator/custom-instance";
+import { upgradeDevice } from "../../../api/generated/devices/devices";
 import { useOrgProduct } from "../../../context/OrgProductContext";
 import type { Firmware } from "../../../api/generated/schemas";
 
@@ -80,10 +80,8 @@ export function FirmwareUpgradeCard({
           onPress: async () => {
             setUpgrading(true);
             try {
-              await customInstance({
-                url: `/orgs/${orgId}/products/${productId}/devices/${deviceIdentifier}/upgrade`,
-                method: "POST",
-                data: { uuid: selectedFirmware.uuid },
+              await upgradeDevice(orgId, productId, deviceIdentifier, {
+                uuid: selectedFirmware.uuid!,
               });
               Alert.alert("Success", "Upgrade command sent.");
             } catch {

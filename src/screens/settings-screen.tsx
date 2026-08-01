@@ -50,7 +50,7 @@ export default function SettingsScreen() {
   const { colors, mode } = useTheme();
   const navigation = useNavigation<any>();
   const { logout, instanceUrl } = useAuth();
-  const { orgId, productId, resetOrgAndProduct } = useOrgProduct();
+  const { orgId, productId } = useOrgProduct();
   const { data: meData } = useMe();
   const user = meData?.data;
 

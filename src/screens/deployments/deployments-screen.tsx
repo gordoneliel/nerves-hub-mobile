@@ -91,7 +91,7 @@ export default function DeploymentsScreen() {
           />
         </View>
 
-        {item.firmware?.version && (
+        {item.current_release?.firmware?.version && (
           <View style={themedStyles.firmwareRow}>
             <Typography
               type="caption"
@@ -106,12 +106,12 @@ export default function DeploymentsScreen() {
               fontSize={12}
               color={themedStyles.textSecondary.color}
             >
-              v{item.firmware.version}
+              v{item.current_release.firmware.version}
             </Typography>
           </View>
         )}
 
-        {item.firmware?.platform && (
+        {item.current_release?.firmware?.platform && (
           <View style={themedStyles.conditionRow}>
             <Typography
               type="caption"
@@ -126,12 +126,12 @@ export default function DeploymentsScreen() {
               fontSize={12}
               color={themedStyles.textSecondary.color}
             >
-              {item.firmware.platform}
+              {item.current_release.firmware.platform}
             </Typography>
           </View>
         )}
 
-        {item.firmware?.architecture && (
+        {item.current_release?.firmware?.architecture && (
           <View style={themedStyles.conditionRow}>
             <Typography
               type="caption"
@@ -146,7 +146,7 @@ export default function DeploymentsScreen() {
               fontSize={12}
               color={themedStyles.textSecondary.color}
             >
-              {item.firmware.architecture}
+              {item.current_release.firmware.architecture}
             </Typography>
           </View>
         )}

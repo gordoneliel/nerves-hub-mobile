@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 import { colors, ColorTheme } from "../../theme/colors";
-import { isLiquidGlassSupported } from "@callstack/liquid-glass";
 
 export const BUTTON_SIZES = {
   none: { height: 19, borderRadius: 0, fontSize: 14, paddingHorizontal: 0 },

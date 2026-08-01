@@ -31,11 +31,7 @@ export default function FirmwareScreen() {
       />
     );
 
-  const firmwares = [...(firmwareQuery.data?.data ?? [])].sort((a, b) => {
-    const da = a.inserted_at ? new Date(a.inserted_at).getTime() : 0;
-    const db = b.inserted_at ? new Date(b.inserted_at).getTime() : 0;
-    return db - da;
-  });
+  const firmwares = firmwareQuery.data?.data ?? [];
 
   const isEmpty = firmwares.length <= 0;
 
@@ -52,31 +48,7 @@ export default function FirmwareScreen() {
         >
           {item.version ?? "?"}
         </Typography>
-        <View style={themedStyles.badges}>
-          {item.signed && (
-            <View style={themedStyles.signedBadge}>
-              <Typography
-                type="caption"
-                fontSize={11}
-                color={themedStyles.success.color}
-              >
-                Signed
-              </Typography>
-            </View>
-          )}
-        </View>
       </View>
-
-      {item.description ? (
-        <Typography
-          type="body"
-          fontSize={12}
-          marginTop={4}
-          color={themedStyles.textSecondary.color}
-        >
-          {item.description}
-        </Typography>
-      ) : null}
 
       <View style={themedStyles.metaGrid}>
         {item.platform && <MetaItem label="Platform" value={item.platform} />}
@@ -98,16 +70,6 @@ export default function FirmwareScreen() {
         </Typography>
       )}
 
-      {item.inserted_at && (
-        <Typography
-          type="caption"
-          fontSize={11}
-          marginTop={4}
-          color={themedStyles.textTertiary.color}
-        >
-          {new Date(item.inserted_at).toLocaleDateString()}
-        </Typography>
-      )}
     </Card>
   );
 
@@ -197,16 +159,6 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
       justifyContent: "space-between",
       alignItems: "center",
     },
-    badges: {
-      flexDirection: "row",
-      gap: spacing[6],
-    },
-    signedBadge: {
-      borderRadius: 4,
-      paddingHorizontal: spacing[6],
-      paddingVertical: 2,
-      backgroundColor: colors.successSubtle,
-    },
     metaGrid: {
       flexDirection: "row",
       flexWrap: "wrap",
@@ -221,9 +173,6 @@ const createStyles = (colors: ColorTheme, spacing: Spacing) =>
     },
     textTertiary: {
       color: colors.textTertiary,
-    },
-    success: {
-      color: colors.success,
     },
   });
 

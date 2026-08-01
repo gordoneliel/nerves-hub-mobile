@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingBottom: 120,
-    paddingHorizontal: spacing[18],
+    paddingHorizontal: spacing.lg,
   },
   card: {
     borderRadius: radius.xxl,

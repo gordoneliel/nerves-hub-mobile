@@ -1,5 +1,6 @@
-import React from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import React, { useLayoutEffect } from "react";
+import { Alert, FlatList, Share, StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { spacing } from "../../components/tokens";
 import { useTheme } from "../../theme/ThemeProvider";
@@ -8,7 +9,7 @@ import { Card } from "../../components/card";
 import { Tag } from "../../components/tag";
 import { EmptyView, ErrorView, LoadingView } from "../../components/ui";
 import { useOrgProduct } from "../../context/OrgProductContext";
-import { useListCACertificates } from "../../api/generated/ca-certificates/ca-certificates";
+import { getCACertificateVerificationToken, useListCACertificates } from "../../api/generated/ca-certificates/ca-certificates";
 import type { CACertificate } from "../../api/generated/schemas";
 
 function formatDate(iso?: string) {
@@ -28,12 +29,35 @@ function isExpired(notAfter?: string) {
 export default function CACertificatesScreen() {
   const { colors } = useTheme();
   const { orgId } = useOrgProduct();
+  const navigation = useNavigation<any>();
 
   const query = useListCACertificates(orgId ?? "", {
     query: { enabled: !!orgId, staleTime: 30_000 },
   });
 
   const certs = query.data?.data ?? [];
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      unstable_headerRightItems: () => [
+        {
+          type: "button",
+          icon: { type: "sfSymbol", name: "key" },
+          onPress: async () => {
+            if (!orgId) return;
+            try {
+              const response = await getCACertificateVerificationToken(orgId);
+              const verificationToken = response.data?.verification_token;
+              if (!verificationToken) throw new Error();
+              await Share.share({ message: verificationToken, title: "CA verification token" });
+            } catch {
+              Alert.alert("Error", "Could not generate a CA verification token.");
+            }
+          },
+        },
+      ],
+    });
+  }, [navigation, orgId]);
 
   if (query.isLoading) return <LoadingView message="Loading certificates..." />;
   if (query.isError)

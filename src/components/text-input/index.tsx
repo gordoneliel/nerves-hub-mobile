@@ -146,15 +146,6 @@ export const TextInput = forwardRef<Input, TextInputOverlayProps>(
       onChangeText?.(clearedValue);
     }, [isManaged, onChangeText]);
 
-    const handlePress = useCallback(() => {
-      if (disabled) {
-        return;
-      }
-      if (ref && typeof ref === "object" && "current" in ref) {
-        ref.current?.focus();
-      }
-    }, [disabled, ref]);
-
     return (
       <LiquidGlassView
         interactive

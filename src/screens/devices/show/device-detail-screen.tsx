@@ -7,7 +7,7 @@ import useThemedStyles from "../../../theme/useThemedStyles";
 import type { ColorTheme } from "../../../theme/colors";
 import type { Spacing } from "../../../theme/spacing";
 import { Typography } from "../../../components/typography";
-import { Card, ErrorView, LoadingView } from "../../../components/ui";
+import { Card, ErrorView } from "../../../components/ui";
 import { Tag } from "../../../components/tag";
 import { Button } from "../../../components/button";
 import { PulsatingDotWithRipple } from "../../../components/pulsating-dot";
@@ -15,8 +15,10 @@ import { useDevice } from "../../../hooks/useApi";
 import {
   useRebootDevice,
   useReconnectDevice,
+  useClearDevicePenalty,
+  deleteDevice,
+  updateDevice,
 } from "../../../api/generated/devices/devices";
-import { customInstance } from "../../../api/mutator/custom-instance";
 import { useOrgProduct } from "../../../context/OrgProductContext";
 import { Divider } from "../../../components/divider";
 import { DeploymentGroupCard } from "./deployment-group-card";
@@ -24,15 +26,12 @@ import { FirmwareUpgradeCard } from "./firmware-upgrade-card";
 import { DeviceInfoCard } from "./device-info-card";
 import { DeviceDetailLoading } from "./device-detail-loading";
 
-import PowerIcon from "../../../../assets/icons/power.svg";
-import WifiIcon from "../../../../assets/icons/wifi-light.svg";
-import TargetIcon from "../../../../assets/icons/target.svg";
 import ConsoleIcon from "../../../../assets/icons/console.svg";
 import CheckShieldIcon from "../../../../assets/icons/check-shield.svg";
 import StackIcon from "../../../../assets/icons/stack.svg";
 import PlatformIcon from "../../../../assets/icons/platform.svg";
 
-type Props = StaticScreenProps<{ identifier: string; deviceId: number }>;
+type Props = StaticScreenProps<{ identifier: string }>;
 
 function MetaRow({ label, value }: { label: string; value?: string | null }) {
   const themedStyles = useThemedStyles(createStyles);
@@ -62,7 +61,7 @@ function MetaRow({ label, value }: { label: string; value?: string | null }) {
 }
 
 export default function DeviceDetailScreen({ route }: Props) {
-  const { identifier, deviceId } = route.params;
+  const { identifier } = route.params;
   const themedStyles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const { orgId, productId } = useOrgProduct();
@@ -71,6 +70,7 @@ export default function DeviceDetailScreen({ route }: Props) {
 
   const reboot = useRebootDevice();
   const reconnect = useReconnectDevice();
+  const clearPenalty = useClearDevicePenalty();
 
   const confirmAction = (label: string, onConfirm: () => void) => {
     Alert.alert(
@@ -105,18 +105,32 @@ export default function DeviceDetailScreen({ route }: Props) {
       ),
     );
 
-  const handleNavigateToConsole = () => {
+  const handleClearPenalty = () =>
     Alert.alert(
-      "Coming Soon",
-      "Device console is still in the works! We will update the app when its reaady.",
+      "Clear Update Penalty",
+      `Remove the temporary firmware update block for ${identifier}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Clear",
+          onPress: () =>
+            clearPenalty.mutate(
+              { orgName: orgId!, productName: productId!, identifier },
+              {
+                onSuccess: () => {
+                  Alert.alert("Success", "The update penalty was cleared.");
+                  refetch();
+                },
+                onError: () =>
+                  Alert.alert("Error", "Failed to clear the update penalty."),
+              },
+            ),
+        },
+      ],
     );
-  };
 
-  const handleIdentify = () => {
-    Alert.alert(
-      "Coming Soon",
-      "Identify devices is still in the works! We will update the app when its reaady.",
-    );
+  const handleNavigateToConsole = () => {
+    navigation.navigate("DeviceConsole", { identifier });
   };
 
   const handleDelete = () => {
@@ -129,10 +143,7 @@ export default function DeviceDetailScreen({ route }: Props) {
           text: "Delete",
           style: "destructive",
           onPress: () =>
-            customInstance({
-              url: `/orgs/${orgId}/products/${productId}/devices/${identifier}`,
-              method: "DELETE",
-            })
+            deleteDevice(orgId!, productId!, identifier)
               .then(() => navigation.goBack())
               .catch(() => Alert.alert("Error", "Failed to delete device.")),
         },
@@ -141,14 +152,7 @@ export default function DeviceDetailScreen({ route }: Props) {
   };
 
   const handleEditTags = useCallback(() => {
-    const tagList = Array.isArray(device?.tags)
-      ? device.tags
-      : typeof device?.tags === "string"
-        ? device.tags
-            .split(",")
-            .map((t) => t.trim())
-            .filter(Boolean)
-        : [];
+    const tagList = device?.tags ?? [];
     navigation.navigate("EditDeviceTags", {
       identifier,
       currentTags: tagList,
@@ -180,13 +184,20 @@ export default function DeviceDetailScreen({ route }: Props) {
                 state: "off" as const,
                 onPress: handleReconnect,
               },
-              {
-                type: "action" as const,
-                label: "Identify",
-                icon: { type: "sfSymbol" as const, name: "scope" },
-                state: "off" as const,
-                onPress: handleIdentify,
-              },
+              ...(device?.updates_blocked_until
+                ? [
+                    {
+                      type: "action" as const,
+                      label: "Clear Update Penalty",
+                      icon: {
+                        type: "sfSymbol" as const,
+                        name: "arrow.counterclockwise.circle",
+                      },
+                      state: "off" as const,
+                      onPress: handleClearPenalty,
+                    },
+                  ]
+                : []),
               {
                 type: "action" as const,
                 label: "Edit Tags",
@@ -211,9 +222,10 @@ export default function DeviceDetailScreen({ route }: Props) {
     navigation,
     handleReboot,
     handleReconnect,
-    handleIdentify,
+    handleClearPenalty,
     handleEditTags,
     handleDelete,
+    device?.updates_blocked_until,
   ]);
 
   if (isLoading) return <DeviceDetailLoading />;
@@ -310,15 +322,7 @@ export default function DeviceDetailScreen({ route }: Props) {
           horizontal
           contentContainerStyle={themedStyles.actionButton}
         >
-          {(Array.isArray(device.tags)
-            ? device.tags
-            : typeof device.tags === "string"
-              ? device.tags
-                  .split(",")
-                  .map((t) => t.trim())
-                  .filter(Boolean)
-              : []
-          ).map((tag) => (
+          {(device.tags ?? []).map((tag) => (
             <Tag
               key={tag}
               label={`# ${tag}`}
@@ -413,6 +417,14 @@ export default function DeviceDetailScreen({ route }: Props) {
                     device.updates_blocked_until,
                   ).toLocaleString()}
                 />
+                <Button
+                  label="Clear Update Penalty"
+                  type="primary"
+                  size="sm"
+                  fullWidth
+                  onPress={handleClearPenalty}
+                  isLoading={clearPenalty.isPending}
+                />
               </Card>
             </View>
           )}
@@ -444,10 +456,8 @@ function UpdatesToggleCard({
       setEnabled(value);
       setToggling(true);
       try {
-        await customInstance({
-          url: `/orgs/${orgId}/products/${productId}/devices/${deviceIdentifier}`,
-          method: "PUT",
-          data: { device: { updates_enabled: value } },
+        await updateDevice(orgId, productId, deviceIdentifier, {
+          updates_enabled: value,
         });
         onToggled();
       } catch {

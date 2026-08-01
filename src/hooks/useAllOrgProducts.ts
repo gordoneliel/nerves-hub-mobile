@@ -1,9 +1,5 @@
-import { useQueries } from "@tanstack/react-query";
-import {
-  listProducts,
-  getListProductsQueryKey,
-} from "../api/generated/products/products";
-import { useOrgs } from "./useOrgs";
+import { useListOrgs } from "../api/generated/organizations/organizations";
+import { useAuth } from "../context/AuthContext";
 
 export interface OrgWithProducts {
   org: string;
@@ -11,38 +7,25 @@ export interface OrgWithProducts {
 }
 
 export function useAllOrgProducts() {
-  const orgsQuery = useOrgs();
-  const orgs = orgsQuery.data?.data ?? [];
+  const { token } = useAuth();
+  const orgsQuery = useListOrgs(
+    { include: "products" },
+    { query: { enabled: !!token, staleTime: 30_000 } },
+  );
 
-  console.log("ORgs: ", orgs);
-
-  const productQueries = useQueries({
-    queries: orgs.map((o) => ({
-      queryKey: getListProductsQueryKey(o.name),
-      queryFn: ({ signal }: { signal: AbortSignal }) =>
-        listProducts(o.name, signal),
-      staleTime: 30_000,
-    })),
-  });
-
-  const isLoading =
-    orgsQuery.isLoading || productQueries.some((q) => q.isLoading);
-  const isError = orgsQuery.isError || productQueries.some((q) => q.isError);
-
-  const data: OrgWithProducts[] = orgs
-    .map((o, i) => ({
-      org: o.name,
-      products: (productQueries[i]?.data?.data ?? []).map((p) => ({
+  const data: OrgWithProducts[] = (orgsQuery.data?.data ?? [])
+    .map((o) => ({
+      org: o.name ?? "",
+      products: (o.products ?? []).map((p) => ({
         name: p.name ?? "",
-        id: p.id,
       })),
     }))
-    .filter((g) => g.products.length > 0);
+    .filter((g) => g.org && g.products.length > 0);
 
-  const refetch = () => {
-    orgsQuery.refetch();
-    productQueries.forEach((q) => q.refetch());
+  return {
+    data,
+    isLoading: orgsQuery.isLoading,
+    isError: orgsQuery.isError,
+    refetch: orgsQuery.refetch,
   };
-
-  return { data, isLoading, isError, refetch };
 }

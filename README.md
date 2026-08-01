@@ -11,9 +11,11 @@ Manage your NervesHub devices, deployments, and firmware from your phone.
 - Login to your NervesHub instance
 - View and select Organizations & Products
 - Browse and manage devices, deployment groups, and firmware
-- Live device console via Phoenix channels (Coming soon)
+- Live device console via the NervesHub API socket
 - Pin frequently accessed devices (Coming soon)
-- Run scripts on devices (Coming soon)
+- Create, edit, delete, and run support scripts on connected devices
+- Pin devices for quick access
+- Download firmware and generate CA verification tokens
 - Dark mode support
 
 ## Prerequisites
@@ -43,11 +45,13 @@ npx expo run:android
 
 ## API Client Generation
 
-The API client is generated from the NervesHub OpenAPI spec using [Orval](https://orval.dev/):
+The API client is generated from the live NervesHub OpenAPI spec using [Orval](https://orval.dev/). The sync step normalizes known upstream contract issues and keeps generated paths relative to the app's `/api` base URL:
 
 ```bash
-npm run api:generate
+yarn api:update
 ```
+
+Use `yarn api:generate` when `openapi/nerveshub.json` is already current, or `yarn api:sync` to refresh the normalized spec without regenerating.
 
 ## Project Structure
 

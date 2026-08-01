@@ -1,18 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import FirmwareScreen from "../screens/firmware/firmware-screen";
 import FirmwareDetailScreen from "../screens/firmware/firmware-detail-screen";
+import { sharedStackScreenOptions } from "./screen-options";
 
 const FirmwareStack = createNativeStackNavigator({
-  screenOptions: {
-    headerBackButtonDisplayMode: "minimal",
-    headerTransparent: true,
-    headerLargeTitle: true,
-    headerLargeTitleStyle: {
-      fontFamily: "PlusJakartaSans-VariableFont_wght",
-      fontSize: 26,
-      fontWeight: "600",
-    },
-  },
+  screenOptions: sharedStackScreenOptions,
   screens: {
     FirmwareList: {
       screen: FirmwareScreen,
@@ -24,7 +16,6 @@ const FirmwareStack = createNativeStackNavigator({
       screen: FirmwareDetailScreen,
       options: {
         title: "",
-        headerTransparent: true,
       },
     },
   },

@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   ORG: "org",
   PRODUCT: "product",
   THEME: "theme",
+  PINNED_DEVICES: "pinnedDevices",
 } as const;
 
 class Storage {
@@ -35,6 +36,10 @@ class Storage {
 
   remove(key: string): void {
     this.mmkv.delete(key);
+  }
+
+  setArray<T>(key: string, value: T[]): void {
+    this.mmkv.set(key, JSON.stringify(value));
   }
 }
 

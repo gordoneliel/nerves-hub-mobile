@@ -8,7 +8,9 @@
     "ios:prod": "react-native run-ios --scheme 'NervesHub Production' --mode Production",
     "android:dev": "react-native run-android --variant developmentDebug",
     "android:prod": "react-native run-android --variant productionDebug",
-    "api:generate": "orval",
+    "api:sync": "node scripts/sync-openapi.mjs",
+    "api:generate": "node scripts/clean-generated-api.mjs && orval && node scripts/fix-generated-api.mjs",
+    "api:update": "yarn api:sync && yarn api:generate",
     "api:generate:watch": "orval --watch"
   },
   "dependencies": {
@@ -25,6 +27,7 @@
     "react": "19.2.0",
     "react-hook-form": "^7.72.1",
     "react-native": "0.83.2",
+    "react-native-blob-util": "^0.24.10",
     "react-native-bottom-tabs": "^1.1.0",
     "react-native-config": "^1.6.1",
     "react-native-context-menu-view": "^1.21.0",

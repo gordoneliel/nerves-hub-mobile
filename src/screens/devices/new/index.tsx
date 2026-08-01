@@ -19,8 +19,7 @@ import { TextInput } from "../../../components/text-input";
 import { Button } from "../../../components/button";
 import { Tag } from "../../../components/tag";
 import { useOrgProduct } from "../../../context/OrgProductContext";
-import { getListDevicesQueryKey } from "../../../api/generated/devices/devices";
-import { customInstance } from "../../../api/mutator/custom-instance";
+import { createDevice, getListDevicesQueryKey } from "../../../api/generated/devices/devices";
 
 import CloseIcon from "../../../../assets/icons/close-big.svg";
 
@@ -83,19 +82,15 @@ export default function NewDeviceScreen() {
     async (data: NewDeviceForm) => {
       if (!orgId || !productId) return;
       try {
-        await customInstance({
-          url: `/orgs/${orgId}/products/${productId}/devices`,
-          method: "POST",
-          data: {
+        await createDevice(orgId, productId, {
             identifier: data.identifier.trim(),
             ...(data.description.trim()
               ? { description: data.description.trim() }
               : {}),
             ...(data.tags.length > 0
-              ? { tags: data.tags.map((t) => t.value).join(",") }
+              ? { tags: data.tags.map((t) => t.value) }
               : {}),
             updates_enabled: data.updatesEnabled,
-          },
         });
         queryClient.invalidateQueries({
           queryKey: getListDevicesQueryKey(orgId, productId),

@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { spacing } from "../../../components/tokens";
 import { useTheme } from "../../../theme/ThemeProvider";
@@ -12,7 +13,11 @@ import CloseIcon from "../../../../assets/icons/close-big.svg";
 import StackIcon from "../../../../assets/icons/stack.svg";
 import TrashIcon from "../../../../assets/icons/trash.svg";
 import { useDeployments } from "../../../hooks/useApi";
-import { useUpdateDevice } from "../../../api/generated/devices/devices";
+import {
+  getGetDeviceQueryKey,
+  getListDevicesQueryKey,
+  updateDevice,
+} from "../../../api/generated/devices/devices";
 import { useOrgProduct } from "../../../context/OrgProductContext";
 import type { DeploymentGroup } from "../../../api/generated/schemas";
 import { Button } from "../../../components/button";
@@ -52,9 +57,36 @@ export function DeploymentGroupCard({
   const { colors } = useTheme();
   const { orgId, productId } = useOrgProduct();
   const { data, isLoading } = useDeployments();
-  const updateDevice = useUpdateDevice();
+  const queryClient = useQueryClient();
   const selectedGroupIdRef = useRef<string | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<"assign" | "remove" | null>(
+    null,
+  );
+
+  const applyDeploymentGroup = useCallback(
+    async (groupId: number | null, successMsg: string) => {
+      if (!orgId || !productId) return;
+      setPendingAction(groupId == null ? "remove" : "assign");
+      try {
+        await updateDevice(orgId, productId, deviceIdentifier, {
+          deployment_id: groupId,
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetDeviceQueryKey(orgId, productId, deviceIdentifier),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getListDevicesQueryKey(orgId, productId),
+        });
+        Alert.alert("Success", successMsg);
+      } catch {
+        Alert.alert("Error", "Failed to update deployment group.");
+      } finally {
+        setPendingAction(null);
+      }
+    },
+    [orgId, productId, deviceIdentifier, queryClient],
+  );
 
   const deploymentGroups = data?.data ?? [];
   const current = deploymentGroups.find(
@@ -81,63 +113,38 @@ export function DeploymentGroupCard({
   }, []);
 
   const handleRemove = () => {
+    if (!currentDeploymentGroupId) return;
     Alert.alert(
-      "Coming Soon",
-      "Removing a device from a deployment is not ready yet!",
+      "Remove Deployment",
+      "Are you sure you want to remove this device from its deployment group?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () =>
+            applyDeploymentGroup(null, "Device removed from deployment group."),
+        },
+      ],
     );
-    // if (!currentDeploymentGroupId || !orgId || !productId) return;
-    // Alert.alert(
-    //   "Remove Deployment",
-    //   "Are you sure you want to remove this device from its deployment group?",
-    //   [
-    //     { text: "Cancel", style: "cancel" },
-    //     {
-    //       text: "Remove",
-    //       style: "destructive",
-    //       onPress: () => {
-    //         updateDevice.mutate(
-    //           {
-    //             orgName: orgId,
-    //             productName: productId,
-    //             identifier: deviceIdentifier,
-    //             data: { device: { deployment_group_id: 0 } },
-    //           },
-    //           {
-    //             onSuccess: () => Alert.alert("Success", "Device removed from deployment group."),
-    //             onError: () => Alert.alert("Error", "Failed to remove deployment group."),
-    //           },
-    //         );
-    //       },
-    //     },
-    //   ],
-    // );
   };
 
   const handleAssign = () => {
-    Alert.alert(
-      "Coming Soon",
-      "Assinging a device to a deployment is not ready yet!",
-    );
-
-    // const groupName = selectedGroupIdRef.current;
-    // if (groupName == null || !orgId || !productId) return;
-    // const selected = deploymentGroups.find((dg) => dg.name === groupName);
-    // if (!selected) return;
-    // console.log("Group: ", groupName, "id:", selected.id);
-
-    // updateDevice.mutate(
-    //   {
-    //     orgName: orgId,
-    //     productName: productId,
-    //     identifier: deviceIdentifier,
-    //     data: { device: { deployment_group_id: selected.id } },
-    //   },
-    //   {
-    //     onSuccess: () => Alert.alert("Success", "Deployment group updated."),
-    //     onError: () =>
-    //       Alert.alert("Error", "Failed to update deployment group."),
-    //   },
-    // );
+    const groupName = selectedGroupIdRef.current;
+    if (groupName == null) return;
+    const selected = deploymentGroups.find((dg) => dg.name === groupName);
+    if (!selected) return;
+    // Assignment is by integer deployment_id. Some NervesHub API
+    // versions don't expose the group id in deployment responses; bail with a
+    // clear message rather than sending an undefined id.
+    if (selected.id == null) {
+      Alert.alert(
+        "Unavailable",
+        "This server's API doesn't return a deployment group id, so assigning from the app isn't supported.",
+      );
+      return;
+    }
+    applyDeploymentGroup(selected.id, "Deployment group updated.");
   };
 
   return (
@@ -182,7 +189,7 @@ export function DeploymentGroupCard({
                 }}
               />
             </View>
-            <MetaRow label="Version" value={current.firmware?.version} />
+            <MetaRow label="Version" value={current.current_release?.firmware?.version} />
             <MetaRow
               label="Platform"
               value={current.conditions?.tags?.join(", ")}
@@ -217,8 +224,8 @@ export function DeploymentGroupCard({
               label="Assign"
               size="sm"
               type="tertiary"
-              disabled={selectedGroupId == null}
-              isLoading={updateDevice.isPending && !currentDeploymentGroupId}
+              disabled={selectedGroupId == null || pendingAction !== null}
+              isLoading={pendingAction === "assign"}
               onPress={handleAssign}
             />
             {current && (
@@ -232,7 +239,7 @@ export function DeploymentGroupCard({
                     color={colors.textDestructive}
                   />
                 }
-                isLoading={updateDevice.isPending && !!currentDeploymentGroupId}
+                isLoading={pendingAction === "remove"}
                 onPress={handleRemove}
               />
             )}

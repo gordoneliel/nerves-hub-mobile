@@ -27,7 +27,7 @@ export default function DeviceSearchScreen() {
   const [search, setSearch] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const devicesQuery = useInfiniteDevices();
+  const devicesQuery = useInfiniteDevices({ search });
 
   useEffect(() => {
     const timer = setTimeout(() => searchRef.current?.focus(), 100);
@@ -43,22 +43,10 @@ export default function DeviceSearchScreen() {
     return () => clearTimeout(debounceRef.current);
   }, []);
 
-  const allDevices =
-    devicesQuery.data?.pages.flatMap((p) => p.data ?? []) ?? [];
-
+  // Search runs server-side via `filters[search]`, so results span all
+  // devices (not just the pages already loaded into the list).
   const devices = search
-    ? allDevices.filter((d) => {
-        const q = search.toLowerCase();
-        return (
-          d.identifier?.toLowerCase().includes(q) ||
-          d.description?.toLowerCase().includes(q) ||
-          (Array.isArray(d.tags)
-            ? d.tags.some((t: string) => t.toLowerCase().includes(q))
-            : String(d.tags ?? "")
-                .toLowerCase()
-                .includes(q))
-        );
-      })
+    ? (devicesQuery.data?.pages.flatMap((p) => p.data ?? []) ?? [])
     : [];
 
   return (

@@ -7,39 +7,32 @@ import DeviceConsoleScreen from "../screens/devices/device-console-screen";
 import EditDeviceTagsScreen from "../screens/devices/edit-device-tags-screen";
 import NewDeviceScreen from "../screens/devices/new";
 import DeviceCertificatesScreen from "../screens/devices/show/device-certificates-screen";
+import DeviceFiltersScreen from "../features/device-filters/device-filters-screen";
+import { DeviceListControlsProvider } from "../features/device-filters/device-list-controls";
+import { sharedStackScreenOptions } from "./screen-options";
 
 const DevicesStack = createNativeStackNavigator({
-  screenOptions: {
-    headerBackButtonDisplayMode: "minimal",
-    headerTransparent: true,
-    headerLargeTitle: true,
-    headerLargeTitleEnabled: true,
-    headerLargeTitleStyle: {
-      fontFamily: "PlusJakartaSans-VariableFont_wght",
-      fontSize: 26,
-      fontWeight: "600",
-    },
-  },
+  screenOptions: sharedStackScreenOptions,
+  layout: ({ children }) => (
+    <DeviceListControlsProvider>{children}</DeviceListControlsProvider>
+  ),
   screens: {
     DevicesList: {
       screen: DevicesScreen,
       options: {
         title: "Devices",
-        // headerTitle: "Devices",
       },
     },
     DeviceDetail: {
       screen: DeviceDetailScreen,
       options: {
         title: "",
-        headerTransparent: true,
       },
     },
     PinnedDevices: {
       screen: PinnedDevicesScreen,
       options: {
         title: "",
-        headerTransparent: true,
       },
     },
     DeviceSearch: {
@@ -51,15 +44,13 @@ const DevicesStack = createNativeStackNavigator({
     DeviceConsole: {
       screen: DeviceConsoleScreen,
       options: {
-        title: "Console",
-        headerTransparent: true,
+        title: "",
       },
     },
     DeviceCertificates: {
       screen: DeviceCertificatesScreen,
       options: {
         title: "",
-        headerTransparent: true,
       },
     },
   },
@@ -84,6 +75,15 @@ const DevicesStack = createNativeStackNavigator({
             presentation: "formSheet",
             sheetAllowedDetents: "fitToContents",
             contentStyle: { backgroundColor: "transparent" },
+          },
+        },
+        DeviceFilters: {
+          screen: DeviceFiltersScreen,
+          options: {
+            title: "Filter Devices",
+            presentation: "pageSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.5, 1.0],
           },
         },
       },

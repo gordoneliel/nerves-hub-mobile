@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
-  ViewStyle,
   TouchableOpacity,
   LayoutChangeEvent,
 } from 'react-native';
@@ -127,8 +126,7 @@ export function SegmentedControl({
       damping: 24,
       stiffness: 200,
       overshootClamping: false,
-      restDisplacementThreshold: 0.001,
-      restSpeedThreshold: 1,
+      energyThreshold: 0.001,
     });
   }, [selectedIndex, selectedIndexValue, animationDuration]);
 
@@ -207,7 +205,7 @@ export function SegmentedControl({
             activeOpacity={0.7}
           >
             {segment.icon &&
-              React.cloneElement(segment?.icon as React.ReactElement, {
+              React.cloneElement(segment.icon as React.ReactElement<{ color?: string }>, {
                 color: isSelected ? selectedTextColor : textColor,
               })}
             <Typography
